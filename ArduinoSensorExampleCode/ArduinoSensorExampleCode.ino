@@ -23,7 +23,7 @@ void loop() {
 
 //buttonState = digitalRead(buttonPin); // read state of button value
 sweatSensorVal = analogRead(sweatSensorPin);
-HR = analogRead(hrSensorPin);
+//HR = analogRead(hrSensorPin);
 if (sweatSensorVal < sweatMinVal)
 {
   sweatMinVal = sweatSensorVal;
