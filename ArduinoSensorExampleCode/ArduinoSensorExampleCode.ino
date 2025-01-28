@@ -10,8 +10,8 @@ const int sweatSensorPin = A0;
 //int buttonState = 0; 
 int sweatSensorVal = 0;
 //int HR = 0;
-int sweatMinVal = 10000000;
-int sweatMaxVal = -1000000;
+int sweatMinVal = 0;
+int sweatMaxVal = 1023;
 
 void setup() {
   Serial.begin(9600); //start serial data
@@ -23,16 +23,16 @@ void loop() {
 
 //buttonState = digitalRead(buttonPin); // read state of button value
 sweatSensorVal = analogRead(sweatSensorPin);
-HR = analogRead(hrSensorPin);
-if (sweatSensorVal < sweatMinVal)
-{
-  sweatMinVal = sweatSensorVal;
-}
+//HR = analogRead(hrSensorPin);
+//if (sweatSensorVal < sweatMinVal)
+//{
+//  sweatMinVal = sweatSensorVal;
+//}
 
-if (sweatSensorVal > sweatMaxVal)
-{
-  sweatMaxVal = sweatSensorVal;
-}
+//if (sweatSensorVal > sweatMaxVal)
+//{
+//  sweatMaxVal = sweatSensorVal;
+//}
 //sensorVal = map(sensorVal, 1941, 1955, 0, 255); //scale value
  
 // check if pushbutton is pressed

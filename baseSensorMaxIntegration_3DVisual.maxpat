@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 153.0, 82.0, 1163.0, 771.0 ],
+		"rect" : [ 134.0, 87.0, 875.0, 711.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -45,7 +45,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 33.846151828765869, 461.846126794815063, 150.0, 48.0 ],
+					"patching_rect" : [ 33.846151828765869, 461.846126794815063, 150.0, 47.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 127.210883140563965, 97.727890014648438, 275.510201454162598, 20.0 ],
 					"text" : "2. make sure port matches. Edit if not. Then push",
@@ -60,7 +60,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 33.846151828765869, 459.0, 150.0, 34.0 ],
+					"patching_rect" : [ 33.846151828765869, 459.0, 150.0, 33.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 127.210883140563965, 45.578230857849121, 189.115644454956055, 20.0 ],
 					"text" : "1. make sure port is correct",
@@ -75,7 +75,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 26.0, 461.846126794815063, 150.0, 34.0 ],
+					"patching_rect" : [ 26.0, 461.846126794815063, 150.0, 33.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 10.204081535339355, 8.843537330627441, 189.115644454956055, 20.0 ],
 					"text" : "3. Turn on serial data acquisition",
@@ -400,7 +400,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 469.0, 639.5, 150.0, 34.0 ],
+					"patching_rect" : [ 469.0, 639.5, 150.0, 33.0 ],
 					"text" : "scope~ (set to automatic mode in inspector)"
 				}
 
@@ -534,7 +534,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3.0, 365.0, 102.0, 22.0 ],
-					"text" : "120 99 224"
+					"text" : "163 0 1023"
 				}
 
 			}
@@ -546,7 +546,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3.0, 319.0, 102.0, 22.0 ],
-					"text" : "\" 120 99 224\""
+					"text" : "\" 163 0 1023\""
 				}
 
 			}
@@ -662,7 +662,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 20.0, 177.0, 50.0, 22.0 ],
-					"text" : "10"
+					"text" : "48"
 				}
 
 			}
@@ -714,7 +714,7 @@
 					"patching_rect" : [ 175.0, 92.0, 39.0, 22.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 127.210883140563965, 119.727890014648438, 39.0, 22.0 ],
-					"text" : "port h"
+					"text" : "port b"
 				}
 
 			}

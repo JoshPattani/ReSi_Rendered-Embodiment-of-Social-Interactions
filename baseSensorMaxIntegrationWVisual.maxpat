@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 134.0, 134.0, 1469.0, 827.0 ],
+		"rect" : [ 34.0, 87.0, 972.0, 709.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -259,7 +259,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 469.0, 639.5, 150.0, 34.0 ],
+					"patching_rect" : [ 469.0, 639.5, 150.0, 33.0 ],
 					"text" : "scope~ (set to automatic mode in inspector)"
 				}
 
@@ -378,7 +378,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3.0, 365.0, 102.0, 22.0 ],
-					"text" : "230 50 649"
+					"text" : "458 0 1023"
 				}
 
 			}
@@ -390,7 +390,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3.0, 319.0, 102.0, 22.0 ],
-					"text" : "\" 230 50 649\""
+					"text" : "\" 458 0 1023\""
 				}
 
 			}
@@ -493,8 +493,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 39.0, 92.0, 69.0, 22.0 ],
-					"text" : "metro 2000"
+					"patching_rect" : [ 39.0, 92.0, 63.0, 22.0 ],
+					"text" : "metro 600"
 				}
 
 			}
@@ -506,7 +506,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 20.0, 177.0, 50.0, 22.0 ],
-					"text" : "13"
+					"text" : "50"
 				}
 
 			}
@@ -518,7 +518,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 119.0, 92.0, 39.0, 22.0 ],
-					"text" : "port h"
+					"text" : "port b"
 				}
 
 			}
@@ -554,7 +554,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 175.0, 92.0, 39.0, 22.0 ],
-					"text" : "port g"
+					"text" : "port a"
 				}
 
 			}
@@ -973,79 +973,79 @@
 ,
 		"dependency_cache" : [ 			{
 				"name" : "data-handler.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "exact_menu.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "lo_hi_UI_control.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "playr_controls.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "video-handler.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vizzie-datatexconvert.js",
-				"bootpath" : "C74:/packages/vizzie/code",
+				"bootpath" : "C74:/packages/Vizzie/code",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vizzie-global.js",
-				"bootpath" : "C74:/packages/vizzie/code",
+				"bootpath" : "C74:/packages/Vizzie/code",
 				"type" : "TEXT",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vz.kaleidr.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers",
+				"bootpath" : "C74:/packages/Vizzie/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vz.playr.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers",
+				"bootpath" : "C74:/packages/Vizzie/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vzgl-blackframe.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vzgl-object.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vzgl-outputdim.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "vzgl-pwindow.maxpat",
-				"bootpath" : "C74:/packages/vizzie/patchers/utils",
+				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
 				"implicit" : 1
 			}
