@@ -4,14 +4,14 @@
 // constants used to set pin numbers (don't change)
 //const int ledPin = 13; //define ledPin and digtal pin 13 on arduino
 //const int buttonPin = 2; //define button and digital pin 2 on arduino
-const int sweatSensorPin = A0;
+const int sweatSensorPin = 0;
 //const int hrSensorPin = A4; //define potentiometer and analog pin 0 on arduino
 
 //int buttonState = 0; 
 int sweatSensorVal = 0;
 //int HR = 0;
-int sweatMinVal = 0;
-int sweatMaxVal = 1023;
+int sweatMinVal = 10000000;
+int sweatMaxVal = -1000000;
 
 void setup() {
   Serial.begin(9600); //start serial data
@@ -24,15 +24,15 @@ void loop() {
 //buttonState = digitalRead(buttonPin); // read state of button value
 sweatSensorVal = analogRead(sweatSensorPin);
 //HR = analogRead(hrSensorPin);
-//if (sweatSensorVal < sweatMinVal)
-//{
-//  sweatMinVal = sweatSensorVal;
-//}
+if (sweatSensorVal < sweatMinVal)
+{
+  sweatMinVal = sweatSensorVal;
+}
 
-//if (sweatSensorVal > sweatMaxVal)
-//{
-//  sweatMaxVal = sweatSensorVal;
-//}
+if (sweatSensorVal > sweatMaxVal)
+{
+  sweatMaxVal = sweatSensorVal;
+}
 //sensorVal = map(sensorVal, 1941, 1955, 0, 255); //scale value
  
 // check if pushbutton is pressed
