@@ -64,3 +64,9 @@ async function fetchSensorValue() {
 
 // Schedule periodic API calls
 setInterval(fetchSensorValue, 2000);
+
+
+function post(message) 
+{
+    console.log(message); // Log to terminal
+}

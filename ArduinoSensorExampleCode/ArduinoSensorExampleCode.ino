@@ -4,7 +4,7 @@
 // constants used to set pin numbers (don't change)
 //const int ledPin = 13; //define ledPin and digtal pin 13 on arduino
 //const int buttonPin = 2; //define button and digital pin 2 on arduino
-const int sweatSensorPin = A0;
+const int sweatSensorPin = 0;
 //const int hrSensorPin = A4; //define potentiometer and analog pin 0 on arduino
 
 //int buttonState = 0; 
