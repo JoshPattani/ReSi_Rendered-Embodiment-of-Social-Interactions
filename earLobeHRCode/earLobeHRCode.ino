@@ -1,7 +1,7 @@
 #define SENSOR_PIN A0  
 
 // Variables for heart rate detection
-int signal, smoothedSignal;
+int HRsignal, smoothedSignal;
 int lastSignal = 0;
 unsigned long lastBeatTime = 0;
 unsigned long beatIntervals[3] = {0, 0, 0}; // Store last 3 intervals for small fluctuations
@@ -40,11 +40,11 @@ void setup() {
 
 void loop() {
     // Read raw signal
-    signal = analogRead(SENSOR_PIN);
+    HRsignal = analogRead(SENSOR_PIN);
 
     // Light filtering: Moving Average (4 samples)
     total -= readings[readIndex];  
-    readings[readIndex] = signal;  
+    readings[readIndex] = HRsignal;  
     total += readings[readIndex];  
     readIndex = (readIndex + 1) % filterSize;  
     smoothedSignal = total / filterSize;  
