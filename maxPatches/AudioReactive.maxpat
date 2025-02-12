@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 6,
-			"revision" : 5,
+			"revision" : 0,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 218.0, 87.0, 1156.0, 711.0 ],
+		"rect" : [ 148.0, 87.0, 918.0, 709.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,6 +40,55 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-20",
+					"linecount" : 3,
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "jit_gl_texture", "" ],
+					"patching_rect" : [ 322.0, 787.900001764297485, 435.399992942810059, 49.0 ],
+					"text" : "jit.gl.bfg @basis input.distorted @zoom 30. @basis.inner fractal.hetero @scale 45.906979 30. @distortion 0.001 @fractal_params 0.5 2. 0.05 0. @offset -22.953489 -15."
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"basictuning" : 440,
+					"data" : 					{
+						"clips" : [ 							{
+								"absolutepath" : "Macintosh HD:/Users/jazlinrodriguez/Downloads/backs.wav",
+								"filename" : "backs.wav",
+								"filekind" : "audiofile",
+								"id" : "u340002795",
+								"loop" : 0,
+								"content_state" : 								{
+
+								}
+
+							}
+ ]
+					}
+,
+					"followglobaltempo" : 0,
+					"formantcorrection" : 0,
+					"id" : "obj-16",
+					"maxclass" : "playlist~",
+					"mode" : "basic",
+					"numinlets" : 1,
+					"numoutlets" : 5,
+					"originallength" : [ 0.0, "ticks" ],
+					"originaltempo" : 120.0,
+					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 470.0, 181.0, 150.0, 30.0 ],
+					"pitchcorrection" : 0,
+					"quality" : "basic",
+					"timestretch" : [ 0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-14",
 					"maxclass" : "comment",
 					"numinlets" : 1,
@@ -63,12 +112,12 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-82",
-					"linecount" : 3,
+					"linecount" : 2,
 					"maxclass" : "newobj",
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 27.0, 672.800010025501251, 435.399992942810059, 49.0 ],
+					"patching_rect" : [ 27.000001999999995, 683.0, 680.0, 35.0 ],
 					"text" : "jit.gl.bfg @basis input.distorted @zoom 30. @basis.inner fractal.hetero @scale 45.906979 30. @distortion 0.001 @fractal_params 0.5 2. 0.05 0. @offset -22.953489 -15."
 				}
 
@@ -397,7 +446,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 706.600010693073273, 252.80000376701355, 44.0, 22.0 ],
+					"patching_rect" : [ 706.600010693073273, 230.466666221618652, 44.0, 22.0 ],
 					"text" : "noise~"
 				}
 
@@ -433,7 +482,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 9,
 					"outlettype" : [ "int", "int", "float", "float", "float", "", "int", "float", "" ],
-					"patching_rect" : [ 749.600011169910431, 44.800000667572021, 103.0, 22.0 ],
+					"patching_rect" : [ 753.0, 101.0, 103.0, 22.0 ],
 					"text" : "transport"
 				}
 
@@ -453,7 +502,6 @@
 							"parameter_longname" : "live.gain~",
 							"parameter_mmax" : 6.0,
 							"parameter_mmin" : -70.0,
-							"parameter_modmode" : 0,
 							"parameter_shortname" : "live.gain~",
 							"parameter_type" : 0,
 							"parameter_unitstyle" : 4
@@ -477,13 +525,13 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 6,
-							"revision" : 5,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "jit.gen",
-						"rect" : [ 176.0, 210.0, 1634.0, 1455.0 ],
+						"rect" : [ 34.0, 87.0, 1372.0, 713.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -900,14 +948,14 @@
 			}
 , 			{
 				"box" : 				{
-					"attr" : "distortion",
+					"attr" : "zoom",
 					"id" : "obj-83",
 					"maxclass" : "attrui",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 27.000001999999995, 639.599999976158188, 150.0, 22.0 ]
+					"patching_rect" : [ 63.0, 643.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -1345,6 +1393,13 @@
 		}
 ,
 		"dependency_cache" : [ 			{
+				"name" : "backs.wav",
+				"bootpath" : "~/Downloads",
+				"patcherrelativepath" : "../../../../Downloads",
+				"type" : "WAVE",
+				"implicit" : 1
+			}
+, 			{
 				"name" : "data-handler.maxpat",
 				"bootpath" : "C74:/packages/Vizzie/patchers/utils",
 				"type" : "JSON",
