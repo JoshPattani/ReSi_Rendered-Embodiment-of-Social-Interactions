@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 76.0, 1469.0, 755.0 ],
+		"rect" : [ 2574.0, 85.0, 534.0, 960.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
@@ -19,7 +19,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 906.0, 179.0, 50.0, 22.0 ]
+					"patching_rect" : [ 354.0, 544.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -28,10 +28,10 @@
 					"id" : "obj-3",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 838.0, 65.0, 66.0, 22.0 ],
-					"text" : "OSC-route"
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 286.0, 431.0, 109.0, 22.0 ],
+					"text" : "OSC-route /sensor"
 				}
 
 			}
@@ -42,7 +42,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 307.352935314178467, 88.970586538314819, 217.0, 22.0 ],
+					"patching_rect" : [ 255.0, 80.0, 217.0, 22.0 ],
 					"text" : "script npm i @arduino/arduino-iot-client"
 				}
 
@@ -54,7 +54,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 289.0, 51.0, 269.0, 22.0 ],
+					"patching_rect" : [ 237.0, 42.0, 269.0, 22.0 ],
 					"text" : "script npm install --save @types/request-promise"
 				}
 
@@ -66,7 +66,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 256.0, 27.0, 171.0, 22.0 ],
+					"patching_rect" : [ 204.0, 18.0, 171.0, 22.0 ],
 					"text" : "script npm install arduino-iot-js"
 				}
 
@@ -78,7 +78,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 183.0, 27.0, 63.0, 22.0 ],
+					"patching_rect" : [ 131.0, 18.0, 63.0, 22.0 ],
 					"text" : "script stop"
 				}
 
@@ -90,7 +90,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 99.0, 27.0, 64.0, 22.0 ],
+					"patching_rect" : [ 47.0, 18.0, 64.0, 22.0 ],
 					"text" : "script start"
 				}
 
@@ -111,7 +111,7 @@
 					"numoutlets" : 1,
 					"offset" : [ 0.0, 0.0 ],
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 99.0, 137.0, 400.0, 220.0 ],
+					"patching_rect" : [ 47.0, 128.0, 400.0, 220.0 ],
 					"viewvisibility" : 1
 				}
 
@@ -123,7 +123,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 679.0, 179.0, 50.0, 22.0 ]
+					"patching_rect" : [ 126.0, 544.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -134,7 +134,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 673.0, 82.0, 85.0, 22.0 ],
+					"patching_rect" : [ 120.0, 448.0, 85.0, 22.0 ],
 					"text" : "route /openbci"
 				}
 
@@ -147,7 +147,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 600.0, 150.0, 24.0, 24.0 ]
+					"patching_rect" : [ 47.0, 516.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -158,7 +158,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 600.0, 27.0, 104.0, 22.0 ],
+					"patching_rect" : [ 47.0, 392.0, 104.0, 22.0 ],
 					"text" : "udpreceive 12345"
 				}
 
@@ -170,12 +170,10 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 99.0, 82.0, 151.0, 22.0 ],
+					"patching_rect" : [ 47.0, 73.0, 151.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"autostart" : 0,
 						"defer" : 0,
-						"node_bin_path" : "",
-						"npm_bin_path" : "",
 						"watch" : 0
 					}
 ,
@@ -201,7 +199,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-1", 0 ],
-					"midpoints" : [ 316.852935314178467, 111.0, 261.0, 111.0, 261.0, 69.0, 108.5, 69.0 ],
+					"midpoints" : [ 264.5, 101.666650176048279, 209.333324193954468, 101.666650176048279, 209.333324193954468, 59.666650176048279, 56.5, 59.666650176048279 ],
 					"source" : [ "obj-11", 0 ]
 				}
 
