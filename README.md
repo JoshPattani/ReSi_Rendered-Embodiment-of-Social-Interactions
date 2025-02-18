@@ -17,9 +17,9 @@ RESI is designed to encourage participants to engage in a meaningful and authent
 
 ### 🎨 **Inspired by**
 
-🔹 **Neural Aesthetics**: Explore the beauty of brainwaves and biometric signals
-🔹 **Human Connection**: Articulating shared experiences through physiological interaction
-🔹 **Interactive Art**: Engaging audiences in a dialogue with technology and self
+🔹 **Neural Aesthetics**: Explore the beauty of brainwaves and biometric signals.
+🔹 **Human Connection**: Articulating shared experiences through physiological interaction.
+🔹 **Interactive Art**: Engaging audiences in a dialogue with technology and self.
 
 ---
 
@@ -27,12 +27,18 @@ RESI is designed to encourage participants to engage in a meaningful and authent
 
 1️⃣ **Sensors Capture Data**
 
-- EEG, PPG, GSR, and temperature readings are acquired via OpenBCI and additional biosensors.  
-  2️⃣ **Processing & Analysis**
-- Data is streamed in real-time using LabstreamingLayer (LSL), processed for **bandpower, coherence, HRV, and emotional states**.  
-  3️⃣ **Mapping to OSC/MIDI**
-- Biometric data is transformed into control signals for generative audiovisual systems in **Max/MSP, Unity, or custom shaders**.  
-  4️⃣ **Real-Time Audiovisual Synthesis**
+- EEG, PPG, GSR, and temperature readings are acquired via OpenBCI and additional biosensors.
+
+2️⃣ **Processing & Analysis**
+
+- Data is streamed in real-time using LabstreamingLayer (LSL), processed for **bandpower, coherence, HRV, and emotional states**.
+
+3️⃣ **Mapping to OSC/MIDI**
+
+- Biometric data is transformed into control signals for generative audiovisual systems in **Max/MSP, Unity, or custom shaders**.
+
+4️⃣ **Real-Time Audiovisual Synthesis**
+
 - Brainwaves shape particles, heart rate drives bass pulses, and skin conductivity sparks light bursts.
 
 ---
