@@ -17,9 +17,9 @@ RESI is designed to encourage participants to engage in a meaningful and authent
 
 ### 🎨 **Inspired by**
 
-🔹 **Neural Aesthetics**: Explore the beauty of brainwaves and biometric signals.
-🔹 **Human Connection**: Articulating shared experiences through physiological interaction.
-🔹 **Interactive Art**: Engaging audiences in a dialogue with technology and self.
+- **Neural Aesthetics**: Explore the beauty of brainwaves and biometric signals.
+- **Human Connection**: Articulating shared experiences through physiological interaction.
+- **Interactive Art**: Engaging audiences in a dialogue with technology and self.
 
 ---
 
@@ -119,9 +119,10 @@ graph TD;
 ## 🏗️ Installation & Setup
 
 🚀 Setting up your own RESI experience? Follow the guide in Installation_Environment_Setup.md for:
-✅ Projector & speaker positioning
-✅ EEG & biometric sensor placement
-✅ Acoustic & lighting recommendations
+
+- ✅ Projector & speaker positioning
+- ✅ EEG & biometric sensor placement
+- ✅ Acoustic & lighting recommendations
 
 ---
 
@@ -155,16 +156,45 @@ Open Max/MSP, Unity, or Ableton Live and connect to OSC signals.
 
 ## 🤯 Future Enhancements
 
-🔮 Complexity of EEG synchrony mapping
-🔮 AI-driven emotional state prediction
-🔮 Expanded sensor suite (ECG, EDA, motion tracking)
-🔮 Haptic feedback integration
+- 🔮 Complexity of EEG synchrony mapping
+- 🔮 AI-driven emotional state prediction
+- 🔮 Expanded sensor suite (ECG, EDA, motion tracking)
+- 🔮 Haptic feedback integration
 
 ---
 
-#💡 Credits & Inspiration
-🚀 Developed by: Cass Bliss, Josh Pattani, and Jazlin Rodriguez
-🔗 Related Projects: OpenBCI, Biofeedback VR, generative audiovisual synthesis
+## 💡 Credits & Inspiration
+
+### 🚀 Developed by: Cass Bliss, Josh Pattani, and Jazlin Rodriguez
+
+### 🎨 Artistic Direction: Cass Bliss
+
+### 🧠 Neurofeedback Design: Josh Pattani
+
+### 🎥 Visuals & Interaction: Jazlin Rodriguez
+
+---
+
+## 📚 References & Resources
+
+- 📖 [OpenBCI Cyton User Manual](https://docs.openbci.com/docs/02Cyton/CytonDataFormat)
+- 📖 [LabstreamingLayer (LSL) Documentation](https://labstreaminglayer.readthedocs.io/)
+- 📖 [Max/MSP Documentation](https://docs.cycling74.com/max8)
+
+---
+
+## 📅 Upcoming Events
+
+- 🎤 Workshops and demos happening in 2025
+- 📚 Publications and papers related to the project
+- 🛠️ User feedback sessions on system enhancements
+
+---
+
+## 🌟 Community Contributions
+
+- 🤝 Join our community discussions on project ideas and improvements.
+- 💬 Share your experiences and feedback to enhance RESI.
 
 ---
 
