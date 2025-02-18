@@ -100,12 +100,13 @@ graph TD;
 
 ## 🎨 Audiovisual Mapping
 
-| Biometric Data                 | Visual Effects               | Audio Effects           |
-| ------------------------------ | ---------------------------- | ----------------------- |
-| EEG Alpha Power (8–12Hz)       | Wave patterns, color shifts  | Reverb, drone harmonics |
-| EEG Beta Power (12–30Hz)       | Rapid particle movement      | Percussion modulations  |
-| HRV (Heart Rate Variability)   | Scene transitions            | Ambient pulses          |
-| GSR Spikes (Emotional Arousal) | Light bursts, glitch effects | Distorted textures      |
+| Biometric Data                  | Visual Effects               | Audio Effects           |
+| ------------------------------- | ---------------------------- | ----------------------- |
+| EEG Alpha Power (8–12Hz)        | Wave patterns, color shifts  | Reverb, drone harmonics |
+| EEG Beta Power (12–30Hz)        | Rapid particle movement      | Percussion modulations  |
+| HRV (Heart Rate Variability)    | Scene transitions            | Ambient pulses          |
+| GSR Spikes (Emotional Arousal)  | Light bursts, glitch effects | Distorted textures      |
+| Temperature (Emotional Valence) | Color temperature shifts     | Harmonic shifts         |
 
 ---
 
