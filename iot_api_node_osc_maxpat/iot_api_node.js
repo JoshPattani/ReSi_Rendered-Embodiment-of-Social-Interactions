@@ -3,6 +3,8 @@ const https = require("https");
 const dgram = require("dgram");
 const maxApi = require("max-api");
 
+const config = require("./secret.json");
+
 // Require third-party modules
 const { ArduinoIoTCloud } = require("arduino-iot-js");
 const ArduinoIotClient = require("@arduino/arduino-iot-client");
@@ -15,22 +17,6 @@ const fetch = require("node-fetch");
 // Arduino IoT Cloud API endpoint.
 // Replace YOUR_THING_ID with your actual Thing ID and adjust the URL as needed.
 const API_URL = "https://api2.arduino.cc/iot/v1/clients/token";
-
-// Replace with your actual API token.
-
-// Arduino IoT Client API credentials.
-const CLIENT_ID = "XUg1anbdoKyu5tHu4AL0CqobAKsl9CN5";
-const CLIENT_SECRET =
- "bOucUKZewfYnxkbPuItzVuZ0JXV61GJUpgQAAiHH7jCwPYjAN9rbxODhWhxHcl5m";
-
-// Arduino IoT Cloud credentials.
-const DEVICE_ID = "67cd42e1-e386-4a17-a8b7-e4daf07c5d72";
-const DEVICE_SECRET = "V3t@qC6XzKPF1WHsAhSCJxtW@";
-
-// Thing and variable IDs.
-const THING_ID = "9f817909-9317-4b6f-82dd-02620591f54b";
-const VARIABLE_ID = "9d55b47c-8b95-42b6-8634-2c24bb614fa0";
-const VARIABLE_NAME = "pulseTrigger";
 
 // Polling interval in milliseconds
 const POLL_INTERVAL = 1000; // 1 second

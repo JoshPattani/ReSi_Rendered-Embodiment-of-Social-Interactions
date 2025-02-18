@@ -1,0 +1,7 @@
+# Ignore sensitive information
+.env
+
+# Ignore anything starting with 'secret' in the name
+secret*
+
+# Add any other files or directories to ignore below
