@@ -81,11 +81,9 @@ graph TD;
     D[PPG] -->|HRV| E[Heart Rate Variability];
     A -->|Spikes| F[Emotional Arousal];
     G[Temp] -->|Skin Temp| H[Emotional Valence];
-    A[EEG] -->|Alpha, Beta Power| Bandpower;
-    A -->|Coherence| Inter-Brain Sync;
-    D[PPG] -->|HRV| HeartRateVariability;
-    A -->|Spikes| F[Emotional Arousal];
-    G[Temp] -->|Skin Temp| H[Emotional Valence];
+    I[GSR] -->|Conductivity| J[Stress Levels];
+    K[GSR] -->|Stress Levels| L[Emotional State];
+    M[GSR] -->|Stress Levels| N[Emotional State Adjustment];
 ```
 
 ### 🎨 **Audiovisual Effects Mapping**
