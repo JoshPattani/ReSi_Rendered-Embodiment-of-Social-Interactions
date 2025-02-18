@@ -155,8 +155,7 @@ Open Max/MSP, Unity, or Ableton Live and connect to OSC signals.
 ---
 
 #💡 Credits & Inspiration
-🚀 Developed by: [Your Name / Team Name]
-🎵 Inspired by: Neural aesthetics, generative music, immersive art
+🚀 Developed by: Cass Bliss, Josh Pattani, and Jazlin Rodriguez
 🔗 Related Projects: OpenBCI, Biofeedback VR, generative audiovisual synthesis
 
 ---
