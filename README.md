@@ -82,8 +82,8 @@ graph TD;
     A -->|Spikes| F[Emotional Arousal];
     G[Temp] -->|Skin Temp| H[Emotional Valence];
     I[GSR] -->|Conductivity| J[Stress Levels];
-    K[GSR] -->|Stress Levels| L[Emotional State];
-    M[GSR] -->|Stress Levels| N[Emotional State Adjustment];
+    I -->|Stress Levels| L[Emotional State];
+    I -->|Stress Levels| N[Emotional State Adjustment];
 ```
 
 ### 🎨 **Audiovisual Effects Mapping**
