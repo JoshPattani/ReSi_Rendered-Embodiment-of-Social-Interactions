@@ -62,7 +62,7 @@ RESI is designed to encourage participants to engage in a meaningful and authent
 
 ### 📡 **Data Flow**
 
-````mermaid
+```mermaid
 graph TD;
     A[Sensors] -- Raw Signals --> B[DataProcessing];
     B[DataProcessing] -- Filtered Metrics --> C[OSC_Conversion];
@@ -70,6 +70,7 @@ graph TD;
     C -- Control Signals --> E[Audio];
     D -- Generative Graphics --> Projector;
     E -- Ambient Soundscapes --> Speakers;
+```
 
 ### 🧬 **Biometric Data Processing**
 
@@ -85,15 +86,17 @@ graph TD;
     D[PPG] -->|HRV| HeartRateVariability;
     A -->|Spikes| F[Emotional Arousal];
     G[Temp] -->|Skin Temp| H[Emotional Valence];
+```
 
 ### 🎨 **Audiovisual Effects Mapping**
+
 ```mermaid
 graph TD;
     A[EEG_Alpha_Power] -->|Particle Density & Color Shifts| Effects;
     B[EEG_Beta_Power] -->|Particle Speed & Movement| Effects;
     C[HRV] -->|Ambient Drones & Scene Transitions| Effects;
     D[GSR_Spikes] -->|Short Bursts of Light & Sound Effects| Effects;
-````
+```
 
 ---
 
