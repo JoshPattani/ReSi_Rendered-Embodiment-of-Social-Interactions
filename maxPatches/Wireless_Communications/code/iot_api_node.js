@@ -2,6 +2,8 @@
 const https = require("https");
 const dgram = require("dgram");
 const maxApi = require("max-api");
+const config = require("./secret.json");
+const { arduino } = config; // Extract Arduino credentials from secret.json
 
 // Require third-party modules
 const { ArduinoIoTCloud } = require("arduino-iot-js");
@@ -16,28 +18,12 @@ const fetch = require("node-fetch");
 // Replace YOUR_THING_ID with your actual Thing ID and adjust the URL as needed.
 const API_URL = "https://api2.arduino.cc/iot/v1/clients/token";
 
-// Replace with your actual API token.
-
-// Arduino IoT Client API credentials.
-const CLIENT_ID = "XUg1anbdoKyu5tHu4AL0CqobAKsl9CN5";
-const CLIENT_SECRET =
- "bOucUKZewfYnxkbPuItzVuZ0JXV61GJUpgQAAiHH7jCwPYjAN9rbxODhWhxHcl5m";
-
-// Arduino IoT Cloud credentials.
-const DEVICE_ID = "67cd42e1-e386-4a17-a8b7-e4daf07c5d72";
-const DEVICE_SECRET = "V3t@qC6XzKPF1WHsAhSCJxtW@";
-
-// Thing and variable IDs.
-const THING_ID = "9f817909-9317-4b6f-82dd-02620591f54b";
-const VARIABLE_ID = "9d55b47c-8b95-42b6-8634-2c24bb614fa0";
-const VARIABLE_NAME = "pulseTrigger";
-
 // Polling interval in milliseconds
 const POLL_INTERVAL = 1000; // 1 second
 
 // OSC destination (e.g., where a udpreceive object in your patch is listening)
-const OSC_IP = "192.168.0.8";
-const OSC_PORT = 12345;
+const OSC_IP = arduino.oscIP; // updated
+const OSC_PORT = arduino.oscPort; // updated
 
 // Create a UDP socket (IPv4)
 const socket = dgram.createSocket("udp4");
@@ -60,8 +46,8 @@ async function getAccessToken() {
    },
    form: {
     grant_type: "client_credentials",
-    client_id: CLIENT_ID,
-    client_secret: CLIENT_SECRET,
+    client_id: arduino.clientId, // updated
+    client_secret: arduino.clientSecret, // updated
     audience: "https://api2.arduino.cc/iot",
    },
   });
@@ -87,8 +73,8 @@ async function connectToArduinoIoTClient() {
  oauth2.accessToken = await getAccessToken(); // Changed to getAccessToken() function
  // Create an instance of the API class
  var apiInstance = new ArduinoIotClient.ThingsV2Api(client);
- var thingId = THING_ID; // String | The id of the thing
- var propertyId = VARIABLE_ID; // String | The id of the property
+ var thingId = arduino.thingId; // String | The id of the thing
+ var propertyId = arduino.variableId; // String | The id of the property
  var opts = {
   onMessage: function (data, response) {
    // Callback function that is called when a message is received
@@ -109,10 +95,10 @@ async function connectToArduinoIoTCloud() {
  maxApi.post("Connecting to Arduino IoT Cloud API...\n");
  try {
   const client = await ArduinoIoTCloud.connect({
-   clientId: CLIENT_ID,
-   clientSecret: CLIENT_SECRET,
-   //     deviceId: DEVICE_ID,
-   //    secretKey: DEVICE_SECRET,
+   clientId: arduino.clientId, // updated
+   clientSecret: arduino.clientSecret, // updated
+   // deviceId: arduino.deviceId,          // Uncomment if needed
+   // secretKey: arduino.deviceSecret,     // Uncomment if needed
    onDisconnect: (message) => {
     maxApi.post("Disconnected from Arduino IoT Cloud: " + message + "\n");
     console.error(message);
@@ -120,7 +106,8 @@ async function connectToArduinoIoTCloud() {
   });
 
   maxApi.post("Connected to Arduino IoT Cloud API.\n");
-  client.onPropertyValue(THING_ID, VARIABLE_NAME, (value) => {
+  client.onPropertyValue(arduino.thingId, arduino.variableName, (value) => {
+   // updated
    maxApi.post(`Received value: ${value}\n`);
    processReceivedValue(value);
   });
@@ -130,15 +117,42 @@ async function connectToArduinoIoTCloud() {
 }
 
 /**
+ * Declares the OSC address according to the sensor type.
+ * Uses the arduino Thing ID and variable name after connecting to the Arduino IoT Cloud API.
+ * Assigns the address to a variable for use in the OSC message.
+ * @param {string} THING_ID - The name of the Thing.
+ */
+function declareOscAddress(THING_ID) {
+ // Determine the sensor type based on the thing name
+ let sensorType;
+ // Split the Thing ID to extract the sensor type
+ if (THING_ID.includes("GSR")) {
+  sensorType = "GSR";
+ } else if (THING_ID.includes("PPG")) {
+  sensorType = "PPG";
+ } else if (THING_ID.includes("Temperature")) {
+  sensorType = "Temperature";
+ } else {
+  sensorType = "sensor";
+ }
+
+ // Assign the OSC address based on the sensor type
+ const OSC_ADDRESS = "/" + sensorType + "_" + VARIABLE_NAME;
+
+ return OSC_ADDRESS;
+}
+
+/**
  * Processes the received value.
  *
  * @param {number} value - The received value.
  */
 function processReceivedValue(value) {
- // Create an OSC message with the address "/sensor".
- const oscMsg = createOscMessage("/sensor", value);
+ // Create an OSC message with the appropriate address for a specific sensor.
+ const address = declareOscAddress(arduino.thingId, arduino.variableName);
+ const oscMsg = createOscMessage(address, value);
 
- maxApi.post("OSC Message created \n");
+ maxApi.post("OSC Message created for " + address + "\n");
 
  // Send the OSC message via UDP.
  socket.send(oscMsg, 0, oscMsg.length, OSC_PORT, OSC_IP, (err) => {
@@ -201,29 +215,7 @@ function createOscMessage(address, value) {
 async function pollApi() {
  // Connect to the Arduino IoT Cloud API
  await connectToArduinoIoTCloud();
- //  await connectToArduinoIoTClient();
-
- //  const options = {
- //   uri: `https://api.arduino.cc/iot/v1/things/${THING_ID}/properties/${VARIABLE_ID}/value`,
- //   method: "GET",
- //   json: true,
- //   headers: {
- //    Authorization: `Bearer ${await getAccessToken()}`,
- //   },
- //  };
-
- //  try {
- //   const response = await fetch(options.uri, {
- //    method: options.method,
- //    headers: options.headers,
- //   });
-
- //   const data = await response.json();
- //   const sensorValue = data.value;
- //   processReceivedValue(sensorValue);
- //  } catch (error) {
- //   maxApi.post(`Error polling API: ${error.message}\n`);
- //  }
+ //  Sensor value updates are handled within connectToArduinoIoTCloud()
 }
 
 // ====================
