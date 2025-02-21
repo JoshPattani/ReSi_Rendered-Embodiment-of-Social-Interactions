@@ -14,6 +14,19 @@
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-1",
+					"linecount" : 3,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 893.0, 20.0, 340.0, 48.0 ],
+					"presentation_linecount" : 4,
+					"text" : "This midi monitor may help troubleshoot data flow into max if you're having trouble! https://maxforlive.com/library/device/7174/midi-monitor-plus"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-67",
 					"linecount" : 4,
 					"maxclass" : "comment",
@@ -127,7 +140,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 42.0, 70.0, 1309.0, 324.0 ],
-					"presentation_linecount" : 36,
 					"text" : "DOWNLOAD:\nFirst you need to make sure you have Ableton and Max open, and loopMIDI installed on your computer. Once installed, create a new virtual port and name it what you'd like in the loopMIDI interface.\n\nSETTING CHANGES:\n\nThen, go to Max -> Options -> MIDI Setup : and make sure that your virtual port is selected for Outputs - and deselect if it's checked for inputs (just in case) - as Max will be outputting on that port only\n\nThen, go to Ableton-> Options-> Settings -> Link,Tempo & MIDI : Under Input Ports, make sure that your port is selected by checking the box for \"Track\" - Track should be the only one you need to select for that port. Make sure that port is not selected as an output (just in case) - Ableton will be recieving the data from max through the port as an input.\n\nINTEGRATE:\n\n* Now, start the metro on one of the midi note generator patches below.\n* Make sure the patch is locked and double-click on the noteout object of that particular generator, to select your virtual port by name\n* Change the name of the port in the loadmess object to match your port's name - this makes sure when you open this patch back up, that the right port is selected.\n* Change the channel - the number parameter of the noteout object if you'd like.\n* At this point, data should be traveling through that virtual port, so go to Ableton\n* If Ableton is recieving data, a yellow blinking box will be showing in the top right corner. If this isn't happening - go back and make sure all settings above are correct and double check that the virtual port is the same across settings\n* If you see the blinking yellow box in Ableton: In a MIDI track, select your virtual port in the \"MIDI From\" section. \n*Then select the channel that matches the number in the noteout object in Max. \n* Change the Monitor to \"IN\" or \"Auto\"\n* You should see the data coming into that MIDI track, and make sure you have an instrument selected for that track (by dragging an instrument into the track) to hear the notes in that instrument. You will not hear anything if you don't have an instrument for that track."
 				}
 
@@ -139,7 +151,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 42.0, 34.0, 504.0, 34.0 ],
+					"patching_rect" : [ 42.0, 34.0, 506.0, 34.0 ],
 					"text" : "Max to Ableton: This patch allows you to send a midi note to ableton midi track instrument via a virtual port and play it in real-time with randomly generated note values"
 				}
 
@@ -762,7 +774,7 @@
 
 			}
  ],
-		"originid" : "pat-6",
+		"originid" : "pat-94",
 		"dependency_cache" : [  ],
 		"autosave" : 0
 	}
