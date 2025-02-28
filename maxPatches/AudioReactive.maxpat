@@ -10,7 +10,13 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 45.0, 82.0, 918.0, 709.0 ],
+		"rect" : [ 134.0, 87.0, 918.0, 708.0 ],
+		"bglocked" : 0,
+		"openinpresentation" : 0,
+		"default_fontsize" : 12.0,
+		"default_fontface" : 0,
+		"default_fontname" : "Arial",
+		"gridonopen" : 1,
 		"gridsize" : [ 15.0, 15.0 ],
 		"gridsnaponopen" : 1,
 		"objectsnaponopen" : 1,
@@ -359,7 +365,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 73.0, 435.0, 102.0, 50.0 ],
+					"patching_rect" : [ 73.0, 435.0, 102.0, 49.0 ],
 					"text" : "2489 0 2555 99 79 99 72.99 0. 94.94"
 				}
 
@@ -372,7 +378,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 73.0, 343.0, 102.0, 50.0 ],
+					"patching_rect" : [ 73.0, 343.0, 102.0, 49.0 ],
 					"text" : "\"2489 0 2555 99 79 99 72.99 0.00 94.94\""
 				}
 
@@ -1033,7 +1039,7 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "jit_gl_texture", "bang", "" ],
 					"patching_rect" : [ 95.0, 647.0, 733.0, 22.0 ],
-					"text" : "jit.world theworld @floating 1 @enable 1 @fsaa 1 @fps 30. @displaylink 0 @dim 1920 1080 @erase_color 0. 0. 0. 1. @output_texture 1"
+					"text" : "jit.world theworld @floating 1 @enable 1 @fsaa 1 @fps 30. @displaylink 0 @dim 7680 1080 @erase_color 0. 0. 0. 1. @output_texture 1"
 				}
 
 			}
