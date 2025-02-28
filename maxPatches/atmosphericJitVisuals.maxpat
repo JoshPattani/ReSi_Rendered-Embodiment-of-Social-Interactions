@@ -14,6 +14,18 @@
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-192",
+					"maxclass" : "slider",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 818.5, 928.0, 20.0, 140.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-190",
 					"maxclass" : "slider",
 					"numinlets" : 1,
@@ -1210,7 +1222,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 955.0, 1000.0, 50.0, 22.0 ]
+					"patching_rect" : [ 979.0, 1000.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1222,7 +1234,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 798.0, 928.0, 20.0, 140.0 ]
+					"patching_rect" : [ 784.0, 928.0, 20.0, 140.0 ]
 				}
 
 			}
@@ -1345,7 +1357,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 891.0, 1000.0, 50.0, 22.0 ]
+					"patching_rect" : [ 925.0, 1000.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -1896,7 +1908,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 586.0, 460.0, 20.0, 140.0 ],
+					"patching_rect" : [ 586.0, 444.0, 20.0, 140.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 130.0, 338.0, 22.0, 112.0 ]
 				}
@@ -2396,6 +2408,19 @@
 				}
 
 			}
+, 			{
+				"box" : 				{
+					"attr" : "erase_color",
+					"id" : "obj-193",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 502.0, 287.0, 150.0, 22.0 ]
+				}
+
+			}
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
@@ -2499,14 +2524,6 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-152", 0 ],
-					"order" : 2,
-					"source" : [ "obj-118", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-118", 0 ],
 					"source" : [ "obj-119", 0 ]
 				}
@@ -2564,7 +2581,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-124", 0 ],
-					"order" : 2,
+					"order" : 1,
 					"source" : [ "obj-127", 0 ]
 				}
 
@@ -2573,22 +2590,6 @@
 				"patchline" : 				{
 					"destination" : [ "obj-130", 0 ],
 					"order" : 0,
-					"source" : [ "obj-127", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-190", 0 ],
-					"order" : 1,
-					"source" : [ "obj-127", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-69", 0 ],
-					"order" : 3,
 					"source" : [ "obj-127", 0 ]
 				}
 
@@ -2701,14 +2702,6 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-137", 0 ],
-					"order" : 2,
-					"source" : [ "obj-144", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-146", 0 ],
 					"order" : 1,
 					"source" : [ "obj-144", 0 ]
 				}
@@ -2716,7 +2709,7 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-55", 0 ],
+					"destination" : [ "obj-146", 0 ],
 					"order" : 0,
 					"source" : [ "obj-144", 0 ]
 				}
@@ -2882,13 +2875,6 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-78", 0 ],
-					"source" : [ "obj-180", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-181", 0 ],
 					"source" : [ "obj-183", 0 ]
 				}
@@ -2913,14 +2899,6 @@
 				"patchline" : 				{
 					"destination" : [ "obj-187", 0 ],
 					"order" : 0,
-					"source" : [ "obj-185", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-189", 0 ],
-					"order" : 2,
 					"source" : [ "obj-185", 0 ]
 				}
 
@@ -2971,6 +2949,20 @@
 				"patchline" : 				{
 					"destination" : [ "obj-71", 0 ],
 					"source" : [ "obj-191", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-123", 4 ],
+					"source" : [ "obj-192", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-193", 0 ]
 				}
 
 			}
