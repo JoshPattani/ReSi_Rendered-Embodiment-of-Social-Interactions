@@ -498,7 +498,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 381.0, 2190.0, 151.0, 34.0 ],
+					"patching_rect" : [ 78.5, 2345.0, 151.0, 34.0 ],
 					"text" : "sets and rotates rendering view"
 				}
 
@@ -589,7 +589,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_gl_texture", "" ],
-					"patching_rect" : [ 397.0, 2361.0, 198.0, 22.0 ],
+					"patching_rect" : [ 96.0, 2535.0, 198.0, 22.0 ],
 					"text" : "jit.gl.camera RESI @lens_angle 80."
 				}
 
@@ -601,7 +601,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 481.0, 2276.0, 151.0, 22.0 ],
+					"patching_rect" : [ 180.0, 2439.0, 151.0, 22.0 ],
 					"text" : "jit.time.perlin @speed 0.05"
 				}
 
@@ -613,7 +613,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 453.0, 2250.0, 151.0, 22.0 ],
+					"patching_rect" : [ 152.0, 2412.0, 151.0, 22.0 ],
 					"text" : "jit.time.perlin @speed 0.05"
 				}
 
@@ -625,7 +625,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 424.0, 2226.0, 151.0, 22.0 ],
+					"patching_rect" : [ 124.0, 2380.0, 151.0, 22.0 ],
 					"text" : "jit.time.perlin @speed 0.05"
 				}
 
@@ -637,7 +637,7 @@
 					"numinlets" : 4,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 397.0, 2322.0, 103.0, 22.0 ],
+					"patching_rect" : [ 96.0, 2487.0, 103.0, 22.0 ],
 					"text" : "pak lookat 0. 0. 0."
 				}
 
