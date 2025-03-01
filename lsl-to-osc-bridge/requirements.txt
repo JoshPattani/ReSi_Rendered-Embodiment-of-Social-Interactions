@@ -1,0 +1,6 @@
+lsl
+python-osc
+pylsl
+numpy
+yaml
+```

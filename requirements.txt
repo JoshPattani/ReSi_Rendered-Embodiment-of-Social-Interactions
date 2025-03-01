@@ -1,0 +1,8 @@
+numpy==1.26.4
+PyYAML==6.0.2
+brainflow==5.16.0
+pyserial==3.5
+pylsl==1.17.6
+python-osc==1.9.3
+lsl
+vaml

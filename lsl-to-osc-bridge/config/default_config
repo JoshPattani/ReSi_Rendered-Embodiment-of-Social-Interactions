@@ -1,0 +1,15 @@
+lsl-to-osc-bridge/config/default_config.yml
+ls:
+  lsl:
+    ip_address: "127.0.0.1"
+    port: 5000
+  osc:
+    ip_address: "127.0.0.1"
+    port: 8000
+  data_stream:
+    stream_name: "BiometricData"
+    sample_rate: 256
+  processing:
+    enable_filtering: true
+    filter_type: "lowpass"
+    filter_cutoff: 30.0
