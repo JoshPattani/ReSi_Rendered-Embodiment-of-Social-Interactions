@@ -2,16 +2,42 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 9,
-			"minor" : 0,
-			"revision" : 4,
+			"major" : 8,
+			"minor" : 6,
+			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 249.0, 87.0, 1469.0, 827.0 ],
+		"rect" : [ 34.0, 87.0, 972.0, 708.0 ],
+		"bglocked" : 0,
+		"openinpresentation" : 0,
+		"default_fontsize" : 12.0,
+		"default_fontface" : 0,
+		"default_fontname" : "Arial",
+		"gridonopen" : 1,
 		"gridsize" : [ 15.0, 15.0 ],
+		"gridsnaponopen" : 1,
+		"objectsnaponopen" : 1,
+		"statusbarvisible" : 2,
+		"toolbarvisible" : 1,
+		"lefttoolbarpinned" : 0,
+		"toptoolbarpinned" : 0,
+		"righttoolbarpinned" : 0,
+		"bottomtoolbarpinned" : 0,
+		"toolbars_unpinned_last_save" : 0,
+		"tallnewobj" : 0,
+		"boxanimatetime" : 200,
+		"enablehscroll" : 1,
+		"enablevscroll" : 1,
+		"devicewidth" : 0.0,
+		"description" : "",
+		"digest" : "",
+		"tags" : "",
+		"style" : "",
+		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-167",
@@ -38,9 +64,8 @@
 				"box" : 				{
 					"id" : "obj-149",
 					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
+					"numinlets" : 1,
+					"numoutlets" : 0,
 					"patching_rect" : [ 1003.5, 324.25, 335.0, 22.0 ],
 					"text" : "jit.gl.syphonserver atmoscontext @servername \"max syphon\""
 				}
@@ -125,8 +150,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 2149.0, 1746.0, 24.0, 24.0 ],
-					"svg" : ""
+					"patching_rect" : [ 2149.0, 1746.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -135,8 +159,8 @@
 					"id" : "obj-185",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "int" ],
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
 					"patching_rect" : [ 2149.0, 1836.0, 72.0, 22.0 ],
 					"text" : "drunk 128 4"
 				}
@@ -195,8 +219,8 @@
 					"id" : "obj-178",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "int" ],
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
 					"patching_rect" : [ 295.0, 1843.0, 72.0, 22.0 ],
 					"text" : "drunk 128 2"
 				}
@@ -351,8 +375,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1676.0, 1753.0, 24.0, 24.0 ],
-					"svg" : ""
+					"patching_rect" : [ 1676.0, 1753.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -361,8 +384,8 @@
 					"id" : "obj-118",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "int" ],
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
 					"patching_rect" : [ 1676.0, 1843.0, 65.0, 22.0 ],
 					"text" : "drunk 80 2"
 				}
@@ -447,8 +470,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 1201.0, 1746.0, 24.0, 24.0 ],
-					"svg" : ""
+					"patching_rect" : [ 1201.0, 1746.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -457,8 +479,8 @@
 					"id" : "obj-127",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "int" ],
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
 					"patching_rect" : [ 1201.0, 1836.0, 72.0, 22.0 ],
 					"text" : "drunk 128 3"
 				}
@@ -543,8 +565,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 716.0, 1746.0, 24.0, 24.0 ],
-					"svg" : ""
+					"patching_rect" : [ 716.0, 1746.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -553,8 +574,8 @@
 					"id" : "obj-144",
 					"maxclass" : "newobj",
 					"numinlets" : 3,
-					"numoutlets" : 2,
-					"outlettype" : [ "", "int" ],
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
 					"patching_rect" : [ 716.0, 1836.0, 72.0, 22.0 ],
 					"text" : "drunk 128 5"
 				}
@@ -627,8 +648,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 295.0, 1757.0, 24.0, 24.0 ],
-					"svg" : ""
+					"patching_rect" : [ 295.0, 1757.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -652,7 +672,8 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "int", "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 285.0, 1913.0, 336.0, 53.0 ]
+					"patching_rect" : [ 285.0, 1913.0, 168.0, 53.0 ],
+					"range" : 24
 				}
 
 			}
@@ -1106,8 +1127,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 45.0, 14.0, 58.0, 58.0 ],
-					"svg" : ""
+					"patching_rect" : [ 45.0, 14.0, 58.0, 58.0 ]
 				}
 
 			}
@@ -1171,8 +1191,7 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 1044.0, 1348.0, 24.0, 24.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 621.0, 57.0, 65.0, 65.0 ],
-					"svg" : ""
+					"presentation_rect" : [ 621.0, 57.0, 65.0, 65.0 ]
 				}
 
 			}
@@ -1469,21 +1488,13 @@
 			}
 , 			{
 				"box" : 				{
-					"filename" : "bloom.jxp",
 					"id" : "obj-107",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "jit_gl_texture", "", "" ],
 					"patching_rect" : [ 767.0, 1557.0, 252.0, 22.0 ],
-					"text" : "jit.gl.pass @fxname bloom-hq @threshold 0.5",
-					"textfile" : 					{
-						"filename" : "bloom.jxp",
-						"flags" : 0,
-						"embed" : 0,
-						"autowatch" : 1
-					}
-
+					"text" : "jit.gl.pass @fxname bloom-hq @threshold 0.5"
 				}
 
 			}
@@ -1534,21 +1545,13 @@
 			}
 , 			{
 				"box" : 				{
-					"filename" : "dof.jxp",
 					"id" : "obj-103",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "jit_gl_texture", "", "" ],
 					"patching_rect" : [ 736.0, 1515.0, 414.0, 22.0 ],
-					"text" : "jit.gl.pass @fxname dof @blur_width 1. @focal_range 1. @focal_distance 1.",
-					"textfile" : 					{
-						"filename" : "dof.jxp",
-						"flags" : 0,
-						"embed" : 0,
-						"autowatch" : 1
-					}
-
+					"text" : "jit.gl.pass @fxname dof @blur_width 1. @focal_range 1. @focal_distance 1."
 				}
 
 			}
@@ -3462,13 +3465,12 @@
 
 			}
  ],
-		"originid" : "pat-85",
 		"dependency_cache" : [ 			{
 				"name" : "jit.*.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "jit.gl.syphonserver.mxo",
+				"name" : "jit.mo.time.mxo",
 				"type" : "iLaX"
 			}
  ],
