@@ -1,0 +1,62 @@
+{
+  "patcher": {
+    "fileversion": 1,
+    "rect": [0, 0, 600, 400],
+    "bgcolor": [1, 1, 1, 1],
+    "elements": [
+      {
+        "id": "obj1",
+        "patching_rect": [50, 50, 100, 50],
+        "maxclass": "newobj",
+        "text": "udpreceive 8000",
+        "numinlets": 1,
+        "numoutlets": 0
+      },
+      {
+        "id": "obj2",
+        "patching_rect": [50, 150, 100, 50],
+        "maxclass": "newobj",
+        "text": "unpack f f f",
+        "numinlets": 1,
+        "numoutlets": 1
+      },
+      {
+        "id": "obj3",
+        "patching_rect": [200, 50, 100, 50],
+        "maxclass": "newobj",
+        "text": "print received_data",
+        "numinlets": 1,
+        "numoutlets": 0
+      },
+      {
+        "id": "obj4",
+        "patching_rect": [200, 150, 100, 50],
+        "maxclass": "newobj",
+        "text": "message",
+        "numinlets": 1,
+        "numoutlets": 1
+      },
+      {
+        "id": "conn1",
+        "source": "obj1",
+        "destination": "obj2",
+        "sourceOutlet": 0,
+        "destinationInlet": 0
+      },
+      {
+        "id": "conn2",
+        "source": "obj2",
+        "destination": "obj3",
+        "sourceOutlet": 0,
+        "destinationInlet": 0
+      },
+      {
+        "id": "conn3",
+        "source": "obj2",
+        "destination": "obj4",
+        "sourceOutlet": 0,
+        "destinationInlet": 0
+      }
+    ]
+  }
+}
