@@ -47,7 +47,6 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <OSCMessage.h>
-#include "arduino_secrets.h"
 
 // ================================ //
 // ***** Configuration Params ***** //
@@ -69,12 +68,10 @@ const bool DEBUG = true;
 // !!!!!!!!!!!!!!!!!!
 
 // Mode selection flags:
-// User identifier (for multi-participant synchronization)
-// Used for tagging data from different users in multi-user scenarios.
-// Example:
-// const String USER = "A"; // Participant A
-// const String USER = "B"; // Participant B
-const String USER = "A"; // Current participant identifier
+// User identifier (for multi-participant synchronization) Used for tagging data from different users in multi-user scenarios.
+const String USER_A = "A";  // Participant A
+const String USER_B = "B";  // Participant B
+const String USER = USER_A; // Current participant identifier
 
 //   AnalogMode = true -> analog (oscilloscope) mode; false -> digital interval mode.
 //   CHANNEL: false selects channel A; true selects channel B.
@@ -82,6 +79,9 @@ const String USER = "A"; // Current participant identifier
 bool AnalogMode = false; // set to false for digital interval mode (required for HRV)
 bool CHANNEL = false;    // false selects channel A (for HRV analysis)
 bool CHANNELS = false;   // false means single channel
+
+bool newPulse = false;   // Flag for pulse detection
+bool calibrated = false; // Flag for user calibration
 
 // --------------------------------------------- //
 
@@ -98,33 +98,6 @@ const int analogPinB = A1; // Channel B
 // For digital mode (e.g., comparator outputs):
 const int digitalPinA = 2; // Channel A (INT0)
 const int digitalPinB = 3; // Channel B (INT1)
-
-// ================================= //
-// ****** HR BPM  ****** //
-// ================================= //
-
-unsigned long lastBeatTimeA = 0;
-unsigned long lastBeatTimeB = 0;
-int heartRateA = 0;
-int heartRateB = 0;
-
-int calculateBPM()
-{
-    unsigned long sum = 0;
-    for (int i = 0; i < 10; i++)
-    {
-        sum += NN_intervals[i];
-    }
-    unsigned long avgInterval = sum / 10;
-
-    if (avgInterval > 0)
-    {
-        return 60000 / avgInterval; // Convert ms to BPM
-    }
-    return 0;
-}
-
-// --------------------------------------------- //
 
 // =============================== //
 // ****** HRV Data Storage ******* //
@@ -147,10 +120,15 @@ float sdann; // Standard deviation of the average NN intervals
 float sdnn;  // Standard deviation of NN intervals
 
 // HRV buffer and index
-// error for NN_intervals in function 'void resetHRVMetrics()': invalid conversion from 'volatile void*' to 'void*' [-fpermissive]
 volatile unsigned long NN_intervals[HRV_BUFFER_SIZE];
 volatile unsigned long NN_index = 0;
 volatile unsigned long hrvWindowStart = 0;
+
+// --- Heart Rate Variables ---
+unsigned long lastBeatTimeA = 0;
+unsigned long lastBeatTimeB = 0;
+int heartRateA = 0;
+int heartRateB = 0;
 
 // Flags for HRV computation and pulse detection
 void resetHRVMetrics()
@@ -177,6 +155,28 @@ void resetHRVMetrics()
     heartRateB = 0;
     lastBeatTimeA = 0;
     lastBeatTimeB = 0;
+}
+
+// --------------------------------------------- //
+
+// ================================= //
+// ****** HR BPM  ****** //
+// ================================= //
+
+int calculateBPM()
+{
+    unsigned long sum = 0;
+    for (int i = 0; i < 10; i++)
+    {
+        sum += NN_intervals[i];
+    }
+    unsigned long avgInterval = sum / 10;
+
+    if (avgInterval > 0)
+    {
+        return 60000 / avgInterval; // Convert ms to BPM
+    }
+    return 0;
 }
 
 // --------------------------------------------- //
@@ -223,10 +223,10 @@ void sendOSCMessage(const char *address, float value)
     Udp.beginPacket(targetIP, TARGET_PORT);
 
     // Write OSC message to UDP
-    msg.send(udp);
+    msg.send(Udp);
 
     // End packet and send
-    udp.endPacket();
+    Udp.endPacket();
 
     // Free space
     msg.empty();
@@ -276,8 +276,8 @@ void setupTimerForAnalogSampling()
 void IRAM_ATTR sendIntervalA()
 {
     unsigned long currentTime = micros();
-    unsigned long interval = currentTime - lastTimeA;
-    lastTimeA = currentTime;
+    unsigned long interval = currentTime - lastBeatTimeA;
+    lastBeatTimeA = currentTime;
 
     if (interval > 300 && interval < 2000)
     { // Ignore noise (too fast/slow beats)
@@ -313,8 +313,8 @@ void IRAM_ATTR sendIntervalA()
 void IRAM_ATTR sendIntervalB()
 {
     unsigned long currentTime = micros();
-    unsigned long interval = currentTime - lastTimeB;
-    lastTimeB = currentTime;
+    unsigned long interval = currentTime - lastBeatTimeB;
+    lastBeatTimeB = currentTime;
 
     if (NN_index < HRV_BUFFER_SIZE)
     {
@@ -457,7 +457,7 @@ void setup()
         pinMode(digitalPinA, INPUT);
         attachInterrupt(digitalPinA, sendIntervalA, RISING);
         // Initialize the last beat time.
-        lastTimeA = micros();
+        lastBeatTimeA = micros();
         // Set the HRV window start time.
         hrvWindowStart = micros();
 
@@ -517,7 +517,7 @@ void setup()
     initProperties();
 
     // Begin UDP communication for OSC
-    Udp.begin(TARGET_PORT); // Bind local UDP port (here we use the memeport)
+    // Udp.begin(TARGET_PORT); // Bind local UDP port (here we use the memeport)
 
     // Connect to Arduino IoT Cloud
     ArduinoCloud.begin(ArduinoIoTPreferredConnection);
