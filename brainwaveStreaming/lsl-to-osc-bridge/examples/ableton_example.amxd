@@ -1,0 +1,102 @@
+{
+  "patcher": {
+    "fileversion": 1,
+    "name": "Max MSP Example",
+    "rect": [0, 0, 600, 400],
+    "bgcolor": [1, 1, 1, 1],
+    "boxes": [
+      {
+        "box": {
+          "maxclass": "comment",
+          "text": "This is an example Max patch for receiving OSC messages from the LSL to OSC bridge.",
+          "rect": [10, 10, 580, 50]
+        }
+      },
+      {
+        "box": {
+          "maxclass": "udpreceive",
+          "numport": 8000,
+          "rect": [10, 70, 100, 100],
+          "text": "Receive OSC messages on port 8000"
+        }
+      },
+      {
+        "box": {
+          "maxclass": "print",
+          "text": "Received OSC Message",
+          "rect": [120, 70, 100, 100]
+        }
+      },
+      {
+        "box": {
+          "maxclass": "route",
+          "text": "/biometric_data",
+          "rect": [230, 70, 100, 100]
+        }
+      },
+      {
+        "box": {
+          "maxclass": "float",
+          "rect": [340, 70, 50, 20]
+        }
+      },
+      {
+        "box": {
+          "maxclass": "float",
+          "rect": [340, 100, 50, 20]
+        }
+      },
+      {
+        "box": {
+          "maxclass": "float",
+          "rect": [340, 130, 50, 20]
+        }
+      },
+      {
+        "box": {
+          "maxclass": "message",
+          "text": "Send OSC message",
+          "rect": [10, 150, 100, 50]
+        }
+      },
+      {
+        "box": {
+          "maxclass": "button",
+          "rect": [120, 150, 50, 50]
+        }
+      }
+    ],
+    "lines": [
+      {
+        "patchline": {
+          "source": [1, 0],
+          "destination": [2, 0]
+        }
+      },
+      {
+        "patchline": {
+          "source": [2, 0],
+          "destination": [3, 0]
+        }
+      },
+      {
+        "patchline": {
+          "source": [3, 0],
+          "destination": [4, 0]
+        }
+      },
+      {
+        "patchline": {
+          "source": [3, 0],
+          "destination": [5, 0]
+        }
+      },
+      {
+        "patchline": {
+          "source": [3, 0],
+          "destination": [6, 0]
+        }
+      }
+    ]
+  }
+}

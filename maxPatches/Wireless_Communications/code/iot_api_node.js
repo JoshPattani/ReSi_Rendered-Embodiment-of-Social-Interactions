@@ -2,7 +2,7 @@
 const https = require("https");
 const dgram = require("dgram");
 const maxApi = require("max-api");
-const config = require("./secret.json");
+const config = require("../data/secret.json"); // Load the secret.json file
 const { arduino } = config; // Extract Arduino credentials from secret.json
 
 // Require third-party modules
@@ -15,8 +15,25 @@ const fetch = require("node-fetch");
 // ====================
 
 // Arduino IoT Cloud API endpoint.
-// Replace YOUR_THING_ID with your actual Thing ID and adjust the URL as needed.
 const API_URL = "https://api2.arduino.cc/iot/v1/clients/token";
+
+// Define a Configuration Structure for Multiple Things from secret.json to create an array of objects where each object represents a Thing with its associated variables.
+const THINGS = [];
+
+for (const thingKey in arduino.things) {
+ const thing = arduino.things[thingKey];
+ const thingConfig = {
+  thingId: thing.id,
+  thingName: thing.name,
+  deviceId: thing.deviceId,
+  deviceSecret: thing.deviceSecret,
+  variables: thing.variables.map((variable) => ({
+   name: variable.name,
+   type: variable.type || "unknown",
+  })),
+ };
+ THINGS.push(thingConfig);
+}
 
 // Polling interval in milliseconds
 const POLL_INTERVAL = 1000; // 1 second
@@ -38,18 +55,16 @@ const socket = dgram.createSocket("udp4");
  */
 async function getAccessToken() {
  try {
+  const params = new URLSearchParams();
+  params.append("grant_type", "client_credentials");
+  params.append("client_id", arduino.clientId);
+  params.append("client_secret", arduino.clientSecret);
+  params.append("audience", "https://api2.arduino.cc/iot");
+
   const response = await fetch(API_URL, {
    method: "POST",
-   url: API_URL,
-   headers: {
-    "Content-Type": "application/x-www-form-urlencoded",
-   },
-   form: {
-    grant_type: "client_credentials",
-    client_id: arduino.clientId, // updated
-    client_secret: arduino.clientSecret, // updated
-    audience: "https://api2.arduino.cc/iot",
-   },
+   headers: { "Content-Type": "application/x-www-form-urlencoded" },
+   body: params,
   });
 
   const data = await response.json();
@@ -106,13 +121,49 @@ async function connectToArduinoIoTCloud() {
   });
 
   maxApi.post("Connected to Arduino IoT Cloud API.\n");
-  client.onPropertyValue(arduino.thingId, arduino.variableName, (value) => {
-   // updated
-   maxApi.post(`Received value: ${value}\n`);
-   processReceivedValue(value);
+ } catch (error) {
+  maxApi.post("Error connecting to Arduino IoT Cloud: " + error.message + "\n");
+  console.error(error);
+ }
+}
+
+/**
+ * Gets the properties from the Arduino IoT Cloud API.
+ * Returns the properties as an array of objects.
+ */
+async function getPropertiesFromArduinoIoTCloud(thingId) {
+ try {
+  // Get the API client instance and set the OAuth2 token.
+  const client = ArduinoIotClient.ApiClient.instance;
+  const oauth2 = client.authentications["oauth2"];
+  oauth2.accessToken = await getAccessToken();
+
+  // Create an instance of the Things API.
+  const apiInstance = new ArduinoIotClient.ThingsV2Api();
+  var opts = {
+   across_user_ids: true, // {Boolean} | If true, the properties of all the devices of the user are returned. (optional)
+   device_id: arduino.deviceId, // String | The id of the device you want to get the properties of. (optional)
+   ids: [thingId], // {array} Filter only the desired things,
+   show_deleted: false, // {boolean} If true, shows the soft deleted things,
+   show_properties: true, // {boolean} If true, returns things with their properties, and last values,
+   tags: [], // {array} Filter by tags,
+   "X-Organization": "X-Organization_example", // {string}
+  };
+
+  // Wrap the API call in a Promise so we can use async/await.
+  return new Promise((resolve, reject) => {
+   apiInstance.thingsV2List(opts, (error, data, response) => {
+    if (error) {
+     reject(error);
+    } else {
+     resolve(data);
+     maxApi.post("Properties retrieved successfully.\n");
+    }
+   });
   });
  } catch (error) {
-  maxApi.post(`Error connecting to Arduino IoT Cloud: ${error.message}\n`);
+  maxApi.post("Error getting properties: " + error.message + "\n");
+  console.error(error);
  }
 }
 
@@ -122,24 +173,22 @@ async function connectToArduinoIoTCloud() {
  * Assigns the address to a variable for use in the OSC message.
  * @param {string} THING_ID - The name of the Thing.
  */
-function declareOscAddress(THING_ID) {
+function declareOscAddress(thingName, variableName) {
  // Determine the sensor type based on the thing name
  let sensorType;
  // Split the Thing ID to extract the sensor type
- if (THING_ID.includes("GSR")) {
+ if (thingName.includes("GSR")) {
   sensorType = "GSR";
- } else if (THING_ID.includes("PPG")) {
+ } else if (thingName.includes("PPG")) {
   sensorType = "PPG";
- } else if (THING_ID.includes("Temperature")) {
+ } else if (thingName.includes("Temperature")) {
   sensorType = "Temperature";
  } else {
   sensorType = "sensor";
  }
 
- // Assign the OSC address based on the sensor type
- const OSC_ADDRESS = "/" + sensorType + "_" + VARIABLE_NAME;
-
- return OSC_ADDRESS;
+ // Create an address that includes both the sensor type and the variable name.
+ return `/${sensorType}_${variableName}`;
 }
 
 /**
@@ -147,9 +196,9 @@ function declareOscAddress(THING_ID) {
  *
  * @param {number} value - The received value.
  */
-function processReceivedValue(value) {
+function processReceivedValue(thingName, variableName, value) {
  // Create an OSC message with the appropriate address for a specific sensor.
- const address = declareOscAddress(arduino.thingId, arduino.variableName);
+ const address = declareOscAddress(thingName, variableName);
  const oscMsg = createOscMessage(address, value);
 
  maxApi.post("OSC Message created for " + address + "\n");
@@ -213,9 +262,30 @@ function createOscMessage(address, value) {
  * On success, builds an OSC message and sends it via UDP.
  */
 async function pollApi() {
- // Connect to the Arduino IoT Cloud API
+ // Ensure we have a connection (preferably once, not on every poll)
  await connectToArduinoIoTCloud();
- //  Sensor value updates are handled within connectToArduinoIoTCloud()
+
+ for (let thing of THINGS) {
+  try {
+   const properties = await getPropertiesFromArduinoIoTCloud(thing.thingId);
+   // Assume properties is an array of property objects.
+   thing.variables.forEach((variable) => {
+    const prop = properties.find((p) => p.name === variable.name);
+    if (prop) {
+     processReceivedValue(thing.thingName, variable.name, prop.value);
+    } else {
+     maxApi.post(
+      `Property ${variable.name} not found for ${thing.thingName}\n`
+     );
+    }
+   });
+  } catch (error) {
+   maxApi.post(
+    `Error retrieving properties for ${thing.thingName}: ${error.message}\n`
+   );
+   console.error(error);
+  }
+ }
 }
 
 // ====================
