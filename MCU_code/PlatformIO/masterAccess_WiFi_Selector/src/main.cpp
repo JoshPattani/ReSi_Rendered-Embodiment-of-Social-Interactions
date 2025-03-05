@@ -1,19 +1,19 @@
 /*
-  Sketch associated with the Arduino IoT Cloud Thing "GSR-sensor_OSC"
-  https://create.arduino.cc/cloud/things/c5d93ee8-f2ff-4fff-8f3f-86e363dff34e
+This file contains the main code for the Atlas project, which is responsible for connecting an Arduino Nano esp32 to the appropriate WiFi network based on the environment, initializing the Arduino IoT Cloud, and sending OSC messages over UDP. It also includes functions for handling network stability and reconnection, as well as callbacks for cloud connection events.
 
-  Arduino IoT Cloud Variables description
+The code begins by including the necessary libraries and header files, such as "networkTypes.h" for defining network types, "customConnectionHandler.h" for custom connection handling, and "thingProperties.h" for defining properties for the Arduino IoT Cloud. It also includes the WiFi and UDP libraries for network communication.
 
-  The following variables are automatically generated and updated when changes are made to the Thing
+The setup function initializes the serial communication, detects the network type, and connects to the appropriate network based on the type. It then initializes the Arduino IoT Cloud connection and properties, and sets up the UDP connection for local communication. The loop function allows the system to stabilize and periodically checks for network changes.
 
-  int gSRCurrentValue;
-  int gSRUserMax;
-  int gSRUserMin;
+The main code also includes functions for sending OSC messages, connecting to local ports, and handling cloud connection events. It uses the WiFiStabilityManager library to configure the device for stability and handle network reconnection. The code also includes debug flags and variables for monitoring network status and sensor readings.
 
-  Variables which are marked as READ/WRITE in the Cloud Thing will also have functions
-  which are called when their values are changed from the Dashboard.
-  These functions are generated with the Thing and added at the end of this sketch.
+Overall, the main code for the Atlas project is well-organized and structured, with clear comments and modular functions for handling network connections, cloud initialization, and communication with external devices.
+
+The current system is supported on the ESP32 platform but can be adapted to other platforms with minimal changes to the network configuration and connection handling functions.
+
+✌️ Cheers!
 */
+
 #include <Arduino.h>
 #include "networkTypes.h"            // Include first
 #include "customConnectionHandler.h" // Then custom connection handler
@@ -31,14 +31,6 @@ WiFiUDP Udp;                           // Create a UDP instance for OSC communic
 bool UDPConnected = false;             // Flag to check if UDP connection is established
 extern NetworkType currentNetworkType; // Reference the type from wifiHandler.h
 
-const int sweatSensorPin = A0;
-const int sampleSize = 5; // Reduce the number of samples for less smoothing (try 2 or 3 as well)
-
-int readings[sampleSize]; // Array to hold sensor readings for moving average
-int readIndex = 0;        // Current index for the moving average
-int total = 0;            // Running total for the moving average
-int average = 0;          // Average value
-
 // Debug flag
 const bool DEBUG = true;
 
@@ -47,7 +39,6 @@ void setup()
   // Initialize serial and wait for port to open
   Serial.begin(9600);
   delay(2000); // Give more time for serial to initialize
-
   Serial.println("Starting RESI WiFi detection and connection...");
 
   // Configure device for stability
@@ -144,14 +135,6 @@ void setup()
     Serial.println("WiFi not connected - skipping Arduino IoT Cloud initialization");
   }
 
-  Serial.println("Initializing GSR sensor with OSC output...");
-
-  // Initialize GSR sensor readings
-  for (int i = 0; i < sampleSize; i++)
-  {
-    readings[i] = 0;
-  }
-
   // Check final connection status
   Serial.print("Final WiFi status: ");
   Serial.println(WiFi.status());
@@ -166,6 +149,13 @@ void setup()
   {
     connectLocalPort();
   }
+
+  // put your setup code here, to run once:
+  value1 = myFunction(2, 3); // Initialize value1, defined in thingProperties.h
+  Serial.println(value1);
+
+  // Don't run too fast to avoid network issues
+  delay(200);
 }
 
 void loop()
@@ -226,35 +216,20 @@ void loop()
     }
   }
 
-  // Even if not connected to cloud, read sensor data
-  // Add new reading to the total
-  total = total - readings[readIndex];              // Subtract the last reading
-  readings[readIndex] = analogRead(sweatSensorPin); // Get a new reading
-  total = total + readings[readIndex];              // Add the new reading to total
-  readIndex = (readIndex + 1) % sampleSize;         // Advance to the next index
+  // put your main code here, to run repeatedly:
 
-  // Calculate the average of the readings
-  average = total / sampleSize;
-
-  // Update variables and send OSC messages
-  gSRCurrentValue = map(average, 0, 1023, 0, 500);
-
+  // Send OSC messages
   if (WiFi.status() == WL_CONNECTED && UDPConnected)
   {
     // Send OSC messages only if connected
-    String address = "/User_" + String(USER) + "/gsr/value";
-    sendOSCMessage(address.c_str(), gSRCurrentValue);
-
-    // Debug output (limited to avoid serial buffer issues)
-    if (DEBUG && (millis() % 2000) < 100)
-    { // Only print every ~2 seconds
-      Serial.print("GSR value: ");
-      Serial.println(gSRCurrentValue);
-    }
+    sendOSCMessage("/value1", value1);
   }
+}
 
-  // Don't run too fast to avoid network issues
-  delay(200);
+// put function definitions here:
+int myFunction(int x, int y)
+{
+  return x + y;
 }
 
 // =============================== //
