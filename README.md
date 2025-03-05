@@ -140,6 +140,20 @@ cd ReSi_Rendered-Embodiment-of-Social-Interactions
 Set up your Python environment:
 
 ```sh
+python -m venv .venv
+
+```
+
+Activate the virtual environment:
+
+```sh
+source .venv/bin/activate  # On macOS/Linux
+.venv\Scripts\activate     # On Windows
+```
+
+Install the required packages:
+
+```sh
 pip install -r requirements.txt
 ```
 
