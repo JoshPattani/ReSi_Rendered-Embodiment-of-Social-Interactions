@@ -21,6 +21,11 @@ WiFiUDP Udp;                           // Create a UDP instance for OSC communic
 bool UDPConnected = false;             // Flag to check if UDP connection is established
 extern NetworkType currentNetworkType; // Reference the type from wifiHandler.h
 
+// IP and port for OSC communication
+const IPAddress outIp(SECRET_TARGET_IP); // Use the secret target IP defined in arduino_secrets.h
+// Alternatively: const IPAddress outIp;  // Declare first, initialize in setup()
+const unsigned int outPort = SECRET_TARGET_PORT; // Target port. Must match the port in your Max/MSP patch.
+
 // Example sensor variables (replace with your actual sensor code)
 int sensorValue = 0;
 
