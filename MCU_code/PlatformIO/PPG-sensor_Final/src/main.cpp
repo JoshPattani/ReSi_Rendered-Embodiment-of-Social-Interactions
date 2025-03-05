@@ -13,11 +13,15 @@ The current system is supported on the ESP32 platform but can be adapted to othe
 
 ✌️ Cheers!
 */
-
+/*
+ * WiFi Network Auto-Selection with OSC Messaging for GSR Sensor
+ *
+ * This version removes Arduino IoT Cloud connectivity while preserving
+ * the ability to automatically detect and connect to different network
+ * environments and send OSC messages.
+ */
 #include <Arduino.h>
-#include "networkTypes.h"            // Include first
-#include "customConnectionHandler.h" // Then custom connection handler
-#include "thingProperties.h"         // Then thing properties
+#include "networkTypes.h"
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <OSCMessage.h>
@@ -30,6 +34,15 @@ The current system is supported on the ESP32 platform but can be adapted to othe
 WiFiUDP Udp;                           // Create a UDP instance for OSC communication
 bool UDPConnected = false;             // Flag to check if UDP connection is established
 extern NetworkType currentNetworkType; // Reference the type from wifiHandler.h
+
+// IP and port for OSC communication
+const IPAddress outIp(SECRET_TARGET_IP); // Use the secret target IP defined in arduino_secrets.h
+// Alternatively: const IPAddress outIp;  // Declare first, initialize in setup()
+const unsigned int outPort = SECRET_TARGET_PORT; // Target port. Must match the port in your Max/MSP patch.
+
+// Declarations
+void sendOSCMessage(const char *address, float value);
+void connectLocalPort();
 
 // Debug flag
 const bool DEBUG = true;
@@ -63,15 +76,15 @@ const int sensorPin = digitalPin;
 
 // HR metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
-// float hRCurrentValue; // Current heart rate
-// float hRUserMax;      // User-defined maximum heart rate
-// float hRUserMin;      // User-defined minimum heart rate
+float hRCurrentValue; // Current heart rate
+float hRUserMax;      // User-defined maximum heart rate
+float hRUserMin;      // User-defined minimum heart rate
 
 // HRV metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
-// float rmssd; // Root mean square of successive differences
-// float sdann; // Standard deviation of the average NN intervals
-// float sdnn;  // Standard deviation of NN intervals
+float rmssd; // Root mean square of successive differences
+float sdann; // Standard deviation of the average NN intervals
+float sdnn;  // Standard deviation of NN intervals
 
 // HRV buffer and index
 unsigned long NN_intervals[HRV_BUFFER_SIZE]; // Buffer to store NN intervals
@@ -294,13 +307,14 @@ void setup()
 {
   // Initialize serial and wait for port to open
   Serial.begin(9600);
-  delay(2000); // Give more time for serial to initialize
-  Serial.println("Starting RESI WiFi detection and connection...");
+  delay(4000); // Give more time for serial to initialize
+
+  Serial.println("Starting RESI WiFi detection and connection (No Cloud Version)...");
 
   // Configure device for stability
   WiFiStabilityManager::configureDevice();
 
-  // First detect network type (but don't connect yet)
+  // First detect network type
   currentNetworkType = detectNetworkType();
 
   // Connect to the appropriate network based on type
@@ -310,15 +324,11 @@ void setup()
   {
     Serial.println("Home network detected");
     wifiConnected = WiFiStabilityManager::connectToNetwork(SECRET_HOME_SSID, SECRET_WIFI_PASS);
-    AtlasPreferredConnection.setCustomCredentials(SECRET_HOME_SSID, SECRET_WIFI_PASS);
-    AtlasPreferredConnection.setNetworkType(NETWORK_HOME);
   }
   else if (currentNetworkType == NETWORK_STUDIO)
   {
     Serial.println("Studio network detected");
     wifiConnected = WiFiStabilityManager::connectToNetwork(SECRET_STUDIO_SSID, SECRET_STUDIO_WIFI_PASS);
-    AtlasPreferredConnection.setCustomCredentials(SECRET_STUDIO_SSID, SECRET_STUDIO_WIFI_PASS);
-    AtlasPreferredConnection.setNetworkType(NETWORK_STUDIO);
   }
   else if (currentNetworkType == NETWORK_CAMPUS)
   {
@@ -327,8 +337,6 @@ void setup()
     if (handleUCBWirelessAuth())
     {
       Serial.println("Successfully connected to campus network");
-      AtlasPreferredConnection.setPreserveConnection(true);
-      AtlasPreferredConnection.setNetworkType(NETWORK_CAMPUS);
       wifiConnected = true;
 
       // Ensure we're stable before proceeding
@@ -344,51 +352,6 @@ void setup()
     Serial.println("Unknown network environment");
     // Try home network as default
     wifiConnected = WiFiStabilityManager::connectToNetwork(SECRET_HOME_SSID, SECRET_WIFI_PASS);
-    AtlasPreferredConnection.setCustomCredentials(SECRET_HOME_SSID, SECRET_WIFI_PASS);
-  }
-
-  // Only initialize Arduino Cloud if WiFi is connected
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    // Initialize properties first
-    initProperties();
-
-    Serial.println("Initializing Arduino IoT Cloud connection...");
-    Serial.print("WiFi status: ");
-    Serial.println(WiFi.status());
-    Serial.print("Connected to: ");
-    Serial.println(WiFi.SSID());
-
-    // Give system time to stabilize before cloud initialization
-    delay(3000);
-
-    try
-    {
-      // Initialize cloud with try-catch to prevent crashes
-      ArduinoCloud.begin(AtlasPreferredConnection);
-      ArduinoCloud.addCallback(ArduinoIoTCloudEvent::CONNECT, doThisOnConnect);
-      ArduinoCloud.addCallback(ArduinoIoTCloudEvent::DISCONNECT, doThisOnDisconnect);
-
-      Serial.println("Arduino Cloud initialized");
-      setDebugMessageLevel(2);
-      ArduinoCloud.printDebugInfo();
-
-      // First update cycle
-      ArduinoCloud.update();
-    }
-    catch (const std::exception &e)
-    {
-      Serial.print("Exception during cloud initialization: ");
-      Serial.println(e.what());
-    }
-    catch (...)
-    {
-      Serial.println("Unknown exception during cloud initialization");
-    }
-  }
-  else
-  {
-    Serial.println("WiFi not connected - skipping Arduino IoT Cloud initialization");
   }
 
   // Check final connection status
@@ -398,10 +361,12 @@ void setup()
   {
     Serial.print("Connected to: ");
     Serial.println(WiFi.SSID());
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
   }
 
-  // Try to initialize UDP anyway for local communications
-  if (!UDPConnected)
+  // Initialize UDP for OSC communications
+  if (WiFi.status() == WL_CONNECTED)
   {
     connectLocalPort();
   }
@@ -432,8 +397,14 @@ void setup()
     pinMode(analogPin, INPUT);
   }
 
-  // Don't run too fast to avoid network issues
-  delay(200);
+  // Check final connection status
+  Serial.print("Final WiFi status: ");
+  Serial.println(WiFi.status());
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    Serial.print("Connected to: ");
+    Serial.println(WiFi.SSID());
+  }
 }
 
 void loop()
@@ -478,19 +449,12 @@ void loop()
       {
         WiFi.begin(SECRET_HOME_SSID, SECRET_WIFI_PASS);
       }
-    }
-  }
 
-  // Handle ArduinoCloud updates safely
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    try
-    {
-      ArduinoCloud.update();
-    }
-    catch (...)
-    {
-      Serial.println("Error in ArduinoCloud.update()");
+      // Check if we need to reinitialize UDP
+      if (WiFi.status() == WL_CONNECTED && !UDPConnected)
+      {
+        connectLocalPort();
+      }
     }
   }
 
@@ -504,16 +468,22 @@ void loop()
     // (The computeHRVMetrics() function resets the window start and clears the buffer.)
 
     // Send the HRV metrics through OSC.
-    sendOSCMessage("/rmssd", rmssd);
-    sendOSCMessage("/sdann", sdann);
-    sendOSCMessage("/sdnn", sdnn);
+    String addressRMSSD = "/User_" + String(USER) + "/hrv/rmssd";
+    sendOSCMessage(addressRMSSD.c_str(), rmssd);
+
+    String addressSDANN = "/User_" + String(USER) + "/hrv/sdann";
+    sendOSCMessage(addressSDANN.c_str(), sdann);
+
+    String addressSDNN = "/User_" + String(USER) + "/hrv/sdnn";
+    sendOSCMessage(addressSDNN.c_str(), sdnn);
   }
   if (newPulse)
   {
     newPulse = false;
 
     // Sending pulse message with static value indicating pulse detection
-    sendOSCMessage("/pulse", 1);
+    String address = "/User_" + String(USER) + "/pulse";
+    sendOSCMessage(address.c_str(), 1);
 
     // Update the cloud variable with the latest BPM value.
     hRCurrentValue = calculateBPM(); // Assuming calculateBPM() is a function that computes the latest BPM
@@ -528,18 +498,24 @@ void loop()
         hRUserMin = hRCurrentValue;
         hRUserMax = hRCurrentValue;
         calibrated = true;
+        String addressMin = "/User_" + String(USER) + "/hr/min";
+        sendOSCMessage(addressMin.c_str(), hRUserMin);
+        String addressMax = "/User_" + String(USER) + "/hr/max";
+        sendOSCMessage(addressMax.c_str(), hRUserMax);
       }
       else
       {
         if (hRUserMax < hRCurrentValue)
         {
           hRUserMax = hRCurrentValue;
-          sendOSCMessage("/maxHeartRate", hRUserMax);
+          String addressMax = "/User_" + String(USER) + "/hr/max";
+          sendOSCMessage(addressMax.c_str(), hRUserMax);
         }
         if (hRUserMin > hRCurrentValue)
         {
           hRUserMin = hRCurrentValue;
-          sendOSCMessage("/minHeartRate", hRUserMin);
+          String addressMin = "/User_" + String(USER) + "/hr/min";
+          sendOSCMessage(addressMin.c_str(), hRUserMin);
         }
       }
     }
@@ -553,7 +529,8 @@ void loop()
     if (currentTime - lastOscSendTime >= oscSendInterval)
     {
       lastOscSendTime = currentTime;
-      sendOSCMessage("/heartRate", hRCurrentValue);
+      String address = "/User_" + String(USER) + "/hr/value";
+      sendOSCMessage(address.c_str(), hRCurrentValue);
     }
   }
 }
@@ -561,6 +538,16 @@ void loop()
 // =============================== //
 // ****** OSC Communication ****** //
 // =============================== //
+
+// Connect to local UDP port for OSC communication
+void connectLocalPort()
+{
+  delay(1000);
+  Serial.println("Connecting to UDP port...");
+  Udp.begin(outPort); // Local port to listen on (doesn't matter much for sending)
+  UDPConnected = true;
+  Serial.println("UDP connection established!");
+}
 
 // Send an OSC message
 void sendOSCMessage(const char *address, float value)
@@ -587,82 +574,9 @@ void sendOSCMessage(const char *address, float value)
     Serial.print(address);
     Serial.print(" ");
     Serial.println(value);
-  }
-}
-
-void connectLocalPort()
-{
-  delay(1000);
-  Serial.println("Connecting to UDP port...");
-  Udp.begin(outPort); // Local port to listen on (doesn't matter much for sending)
-  UDPConnected = true;
-  Serial.println("UDP connection established!");
-}
-
-// Callback function to run when connected to Arduino IoT Cloud
-void doThisOnConnect()
-{
-  Serial.println("Connected to Arduino IoT Cloud!");
-
-  // Verify we're still on the correct network for campus connections
-  if (currentNetworkType == NETWORK_CAMPUS && WiFi.SSID() != "UCB Wireless")
-  {
-    Serial.print("WARNING: Network changed from UCB Wireless to ");
-    Serial.println(WiFi.SSID());
-    Serial.println("Attempting to reconnect to campus network...");
-
-    // Try to reconnect to campus network
-    WiFi.disconnect();
-    delay(1000);
-    WiFi.begin(SECRET_UCB_SSID);
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20)
-    {
-      delay(500);
-      Serial.print(".");
-      attempts++;
-    }
-    Serial.println();
-
-    if (WiFi.status() == WL_CONNECTED && WiFi.SSID() == "UCB Wireless")
-    {
-      Serial.println("Successfully reconnected to campus network!");
-    }
-    else
-    {
-      Serial.println("Failed to reconnect. Using current network: " + WiFi.SSID());
-    }
-  }
-
-  if (!UDPConnected)
-  {
-    connectLocalPort();
-    Serial.println("Ready to send OSC messages");
-  }
-}
-
-// Callback function to run when disconnected from Arduino IoT Cloud
-void doThisOnDisconnect()
-{
-  Serial.println("Disconnected from Arduino IoT Cloud!");
-  UDPConnected = false;
-
-  WiFi.disconnect();
-  delay(1000);
-  WiFi.begin(SECRET_UCB_SSID);
-  Serial.println("Attempting to reconnect to the campus network...");
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20)
-  {
-    delay(500);
-    Serial.print(".");
-    attempts++;
-  }
-  Serial.println("Reconnected successfully!");
-
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    connectLocalPort();
-    Serial.println("Ready to send OSC messages");
+    Serial.print("...to IP address: ");
+    Serial.print(outIp);
+    Serial.print(" on port: ");
+    Serial.println(outPort);
   }
 }

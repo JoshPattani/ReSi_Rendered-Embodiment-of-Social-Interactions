@@ -199,6 +199,10 @@ void loop()
     gSRUserMin = average;
     gSRUserMax = average;
     calibrated = true;
+    String address = "/User_" + String(USER) + "/gsr/min";
+    sendOSCMessage(address.c_str(), gSRUserMin);
+    String address2 = "/User_" + String(USER) + "/gsr/max";
+    sendOSCMessage(address2.c_str(), gSRUserMax);
   }
   else if (average < gSRUserMin)
   {
