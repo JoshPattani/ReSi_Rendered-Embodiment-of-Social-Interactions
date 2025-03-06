@@ -14,6 +14,24 @@
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
+					"bgcolor" : [ 0.180392156862745, 0.164705882352941, 0.164705882352941, 0.0 ],
+					"bubble" : 1,
+					"bubble_bgcolor" : [ 0.0, 0.0, 0.0, 1.0 ],
+					"bubbleside" : 2,
+					"fontsize" : 36.0,
+					"id" : "obj-71",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 2127.666728734970093, 214.000006794929504, 1434.666709423065186, 67.0 ],
+					"text" : "USER #2 Data Acquisition",
+					"textcolor" : [ 0.525490196078431, 1.0, 0.0, 1.0 ],
+					"textjustification" : 1
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"bubble" : 1,
 					"bubble_bgcolor" : [ 0.0, 0.0, 0.0, 1.0 ],
 					"bubbleside" : 2,
@@ -6626,20 +6644,6 @@
 					"outlettype" : [ "bang" ],
 					"patching_rect" : [ 425.333346009254456, 1256.0, 63.0, 22.0 ],
 					"text" : "metro 600"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"bgcolor" : [ 0.180392156862745, 0.164705882352941, 0.164705882352941, 0.0 ],
-					"fontsize" : 36.0,
-					"id" : "obj-369",
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 3006.0, 238.333343148231506, 169.0, 48.0 ],
-					"text" : "USER #2 ",
-					"textcolor" : [ 1.0, 0.968627450980392, 0.0, 1.0 ]
 				}
 
 			}
