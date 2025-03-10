@@ -1,50 +1,49 @@
 /*
 This example will show you how to configure your device to the ArduinoIoTCloud library and send data to an OSC server.
 
-Start by changing the name of this file to `arduino_secrets.h` and fill in the information below.
+1. Start by changing the name of this file to `arduino_secrets.h` and fill in the information below.
 
-Be sure to add the `arduino_secrets.h` file to your `.gitignore` file to keep your personal information safe.
+2. Add the `arduino_secrets.h` file to your `.gitignore` file to keep your personal information safe.
 
-This file allows for easier hot-swapping of devices and WiFi networks by defining the necessary information in one place. Uncomment the device(s) and WiFi you are using and fill in the necessary information.
+
+
+Run in the terminal: `IPconfig/all` to find your IP address (IPv4).
 */
-// =============================== //
-// *********** Devices *********** //
-// =============================== //
-// RESI_1
-#define SECRET_DEVICE "Your_Device_1_ID"
-#define SECRET_DEVICE_KEY "Your_Device_1_Key"
-
-// RESI_2
-// #define SECRET_DEVICE "Your_Device_2_ID"
-// #define SECRET_DEVICE_KEY "Your_Device_2_Key"
-
-// RESI_3
-// #define SECRET_DEVICE "Your_Device_3_ID"
-// #define SECRET_DEVICE_KEY "Your_Device_3_Key"
-
-// RESI_4
-// #define SECRET_DEVICE "Your_Device_4_ID"
-// #define SECRET_DEVICE_KEY "Your_Device_4_Key"
-
-// Add more devices here as needed
-// #define SECRET_DEVICE_ID "Your_Device_ID"
-// #define SECRET_DEVICE_KEY "Your_Device"
 
 // =============================== //
 // *********** WiFi ************** //
 // =============================== //
 
-// IP Address and port for OSC communication
-#define SECRET_TARGET_IP 192, 168, 0, 8
+/*
+IP ADDRESSING
+- IP addresses are used to identify devices on a network
+
+HOME NETWORK
+- IP Address: your_ip_address_here. Local IP should work too (127, 0, 0, 1)
+
+Black Box STUDIO NETWORK
+- Your Computer IP Address: your_ip_address_here
+- Bbox Mac IP Address: 192, 168, 0, 10
+- Bbox Mac 2 IP Address: 192, 168, 0, 11
+
+UCB NETWORK
+- Your Computer IP Address: your_ip_address_here
+*/
+
+#define SECRET_TARGET_IP 127, 0, 0, 1 // () Home, () UCB, () B2
 #define SECRET_TARGET_PORT 42069
 
-// Your Home WiFi
-#define SECRET_SSID "Your_SSID"
-#define SECRET_WIFI_PASS "Your_Password"
+// DEFAULT WIFI
+#define SECRET_SSID ""
+#define SECRET_WIFI_PASSWORD ""
 
-// Studio WiFi
-// #define SECRET_SSID "Your_Studio"
-// #define SECRET_WIFI_PASS "Your_Password"
+// HOME WIFI
+#define SECRET_HOME_SSID "Your_home_wifi_ssid_here"
+#define SECRET_WIFI_PASS "your_home_wifi_password_here"
+
+// b2 Studio WIFI - Black Box Performance Studio (Shouldn't need to change)
+#define SECRET_STUDIO_SSID "BlackBox_wifi_ssid_here"             // Corrected definition name
+#define SECRET_STUDIO_WIFI_PASS "your_studio_wifi_password_here" // Updated WIFI password for studio
 
 // Captive Portal
 #define SECRET_UCB_SSID "UCB Wireless"
