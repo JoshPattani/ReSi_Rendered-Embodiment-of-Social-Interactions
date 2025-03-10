@@ -72,13 +72,13 @@ const int sensorPin = digitalPin;
 // We assume a 2.5‑minute window. At high heart rates, you might see up to 300 beats.
 // For simplicity, we use a fixed-size buffer. Modify as needed.
 #define HRV_BUFFER_SIZE 300
-#define HRV_WINDOW_US 150000000UL // 2.5 minutes in microseconds
+#define HRV_WINDOW_MS 150000UL // 2.5 minutes in milliseconds
 
 // HR metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
-float hRCurrentValue; // Current heart rate
-float hRUserMax;      // User-defined maximum heart rate
-float hRUserMin;      // User-defined minimum heart rate
+int hRCurrentValue; // Current heart rate
+int hRUserMax;      // User-defined maximum heart rate
+int hRUserMin;      // User-defined minimum heart rate
 
 // HRV metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
@@ -111,7 +111,7 @@ void resetHRV()
     NN_intervals[i] = 0;
   }
   NN_index = 0;
-  hrvWindowStart = micros();
+  hrvWindowStart = millis();
 }
 
 // --------------------------------------------- //
@@ -187,7 +187,7 @@ void pulseISR()
 // "/sdnn" -> Standard deviation of NN intervals
 
 // Update intervals
-const unsigned long oscSendInterval = 50;      // 50ms = 20Hz send rate
+const unsigned long oscSendInterval = 500;     // 500ms = 2Hz send rate
 const unsigned long cloudSendInterval = 1000;  // 1000ms = 1Hz cloud update rate
 const unsigned long minMaxSendInterval = 1000; // 1000ms = 1Hz send rate
 
@@ -195,6 +195,13 @@ const unsigned long minMaxSendInterval = 1000; // 1000ms = 1Hz send rate
 unsigned long lastOscSendTime = 0;
 unsigned long lastCloudSendTime = 0;
 unsigned long lastMinMaxSendTime = 0; // timer for min/max updates
+
+void resetTimers()
+{
+  lastOscSendTime = 0;
+  lastCloudSendTime = 0;
+  lastMinMaxSendTime = 0;
+}
 
 // --------------------------------------------- //
 
@@ -213,12 +220,12 @@ void computeHRVMetrics()
   double intervals_ms[HRV_BUFFER_SIZE];
   for (int i = 0; i < n && i < HRV_BUFFER_SIZE; i++)
   {
-    intervals_ms[i] = NN_intervals[i] * 0.001; // convert µs to ms
+    intervals_ms[i] = NN_intervals[i];
   }
   // Reset the global buffer for the next window.
   NN_index = 0;
   // Reset the window start time.
-  hrvWindowStart = micros();
+  hrvWindowStart = millis();
   interrupts();
 
   if (n < 2)
@@ -291,6 +298,7 @@ void computeHRVMetrics()
   if (DEBUG)
   {
     // Print the computed HRV metrics.
+    Serial.println();
     Serial.print("HRV Metrics: SDNN = ");
     Serial.print(sdnn);
     Serial.print(" ms, RMSSD = ");
@@ -298,6 +306,7 @@ void computeHRVMetrics()
     Serial.print(" ms, SDANN = ");
     Serial.print(sdann);
     Serial.println(" ms");
+    Serial.println();
   }
 }
 
@@ -378,9 +387,11 @@ void setup()
     pinMode(sensorPin, INPUT);
     attachInterrupt(digitalPinToInterrupt(sensorPin), pulseISR, RISING);
     // Initialize the last beat time.
-    lastBeatTime = micros();
+    lastBeatTime = millis();
     // Set the HRV window start time.
-    hrvWindowStart = micros();
+    hrvWindowStart = millis(); // Change from micros() to millis() for consistency
+
+    resetTimers();
 
     // Initialize HRV metrics.
     resetHRV();
@@ -458,79 +469,91 @@ void loop()
     }
   }
 
-  // Beat intervals are captured in the ISR.
-  // Check if the current window (2.5 minutes) has elapsed.
-  unsigned long now = micros();
-  if (!AnalogMode && (now - hrvWindowStart) >= HRV_WINDOW_US)
-  {
-    // Compute and output HRV metrics for the current window.
-    computeHRVMetrics();
-    // (The computeHRVMetrics() function resets the window start and clears the buffer.)
-
-    // Send the HRV metrics through OSC.
-    String addressRMSSD = "/User_" + String(USER) + "/hrv/rmssd";
-    sendOSCMessage(addressRMSSD.c_str(), rmssd);
-
-    String addressSDANN = "/User_" + String(USER) + "/hrv/sdann";
-    sendOSCMessage(addressSDANN.c_str(), sdann);
-
-    String addressSDNN = "/User_" + String(USER) + "/hrv/sdnn";
-    sendOSCMessage(addressSDNN.c_str(), sdnn);
-  }
-  if (newPulse)
-  {
-    newPulse = false;
-
-    // Sending pulse message with static value indicating pulse detection
-    String address = "/User_" + String(USER) + "/pulse";
-    sendOSCMessage(address.c_str(), 1);
-
-    // Update the cloud variable with the latest BPM value.
-    hRCurrentValue = calculateBPM(); // Assuming calculateBPM() is a function that computes the latest BPM
-
-    if (hRCurrentValue > 0)
-    {
-      Serial.print("Heart Rate: ");
-      Serial.println(hRCurrentValue);
-
-      if (!calibrated)
-      {
-        hRUserMin = hRCurrentValue;
-        hRUserMax = hRCurrentValue;
-        calibrated = true;
-        String addressMin = "/User_" + String(USER) + "/hr/min";
-        sendOSCMessage(addressMin.c_str(), hRUserMin);
-        String addressMax = "/User_" + String(USER) + "/hr/max";
-        sendOSCMessage(addressMax.c_str(), hRUserMax);
-      }
-      else
-      {
-        if (hRUserMax < hRCurrentValue)
-        {
-          hRUserMax = hRCurrentValue;
-          String addressMax = "/User_" + String(USER) + "/hr/max";
-          sendOSCMessage(addressMax.c_str(), hRUserMax);
-        }
-        if (hRUserMin > hRCurrentValue)
-        {
-          hRUserMin = hRCurrentValue;
-          String addressMin = "/User_" + String(USER) + "/hr/min";
-          sendOSCMessage(addressMin.c_str(), hRUserMin);
-        }
-      }
-    }
-  }
-
   unsigned long currentTime = millis();
   // Send OSC messages
   if (WiFi.status() == WL_CONNECTED && UDPConnected)
   {
-    // Send OSC messages at specified interval
-    if (currentTime - lastOscSendTime >= oscSendInterval)
+
+    // Beat intervals are captured in the ISR.
+    // Check if the current window (2.5 minutes) has elapsed.
+    unsigned long now = millis(); // Changed from mis() to millis() for consistency
+    if (!AnalogMode && (now - hrvWindowStart) >= HRV_WINDOW_MS)
     {
-      lastOscSendTime = currentTime;
-      String address = "/User_" + String(USER) + "/hr/value";
-      sendOSCMessage(address.c_str(), hRCurrentValue);
+      // Compute and output HRV metrics for the current window.
+      computeHRVMetrics();
+      // (The computeHRVMetrics() function resets the window start and clears the buffer.)
+
+      // Send the HRV metrics through OSC.
+      String addressRMSSD = "/User_" + String(USER) + "/hrv/rmssd";
+      sendOSCMessage(addressRMSSD.c_str(), rmssd);
+
+      String addressSDANN = "/User_" + String(USER) + "/hrv/sdann";
+      sendOSCMessage(addressSDANN.c_str(), sdann);
+
+      String addressSDNN = "/User_" + String(USER) + "/hrv/sdnn";
+      sendOSCMessage(addressSDNN.c_str(), sdnn);
+    }
+    if (newPulse)
+    {
+      newPulse = false;
+
+      // Sending pulse message with static value indicating pulse detection
+      String address = "/User_" + String(USER) + "/pulse";
+      sendOSCMessage(address.c_str(), 1);
+
+      // Update the cloud variable with the latest BPM value.
+      hRCurrentValue = calculateBPM(); // Assuming calculateBPM() is a function that computes the latest BPM
+
+      if (hRCurrentValue > 0)
+      {
+        if (DEBUG)
+        {
+          Serial.println();
+          Serial.print("Pulse detected at: ");
+          Serial.print(currentTime);
+          Serial.print(" with interval: ");
+          Serial.print(pulseIntervals[pulseIndex]);
+          Serial.print(" ms, BPM: ");
+          Serial.println(hRCurrentValue);
+          Serial.println();
+        }
+
+        // Send OSC messages at specified interval
+        if (currentTime - lastOscSendTime >= oscSendInterval)
+        {
+          lastOscSendTime = currentTime;
+          String address = "/User_" + String(USER) + "/hr/value";
+          sendOSCMessage(address.c_str(), hRCurrentValue);
+        }
+
+        if (!calibrated)
+        {
+          hRUserMin = hRCurrentValue;
+          hRUserMax = hRCurrentValue;
+          calibrated = true;
+          String addressMin = "/User_" + String(USER) + "/hr/min";
+          sendOSCMessage(addressMin.c_str(), hRUserMin);
+          String addressMax = "/User_" + String(USER) + "/hr/max";
+          sendOSCMessage(addressMax.c_str(), hRUserMax);
+        }
+        else
+        {
+          if (hRUserMax < hRCurrentValue)
+          {
+            hRUserMax = hRCurrentValue;
+            String addressMax = "/User_" + String(USER) + "/hr/max";
+            sendOSCMessage(addressMax.c_str(), hRUserMax);
+          }
+          if (hRUserMin > hRCurrentValue)
+          {
+            hRUserMin = hRCurrentValue;
+            String addressMin = "/User_" + String(USER) + "/hr/min";
+            sendOSCMessage(addressMin.c_str(), hRUserMin);
+          }
+        }
+      }
+      // Send pulse off message
+      sendOSCMessage(address.c_str(), 0);
     }
   }
 }

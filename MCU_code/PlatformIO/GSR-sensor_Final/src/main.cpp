@@ -33,9 +33,9 @@ void connectLocalPort();
 void sendOSCMessage(const char *address, float value);
 
 // GSR sensor variables
-int gSRCurrentValue = 0;
-int gSRUserMax = 0;
-int gSRUserMin = 1023; // Default to maximum value
+int gSRCurrentValue;
+int gSRUserMin;
+int gSRUserMax;
 
 const int sweatSensorPin = A0;
 const int sampleSize = 5; // Reduce the number of samples for less smoothing (try 2 or 3 as well)
@@ -116,6 +116,10 @@ void setup()
 
   Serial.println("Initializing GSR sensor with OSC output...");
 
+  gSRCurrentValue = 0;
+  gSRUserMin = 0;
+  gSRUserMax = 1023;
+
   // Initialize GSR sensor readings
   for (int i = 0; i < sampleSize; i++)
   {
@@ -183,46 +187,46 @@ void loop()
     }
   }
 
-  // Even if not connected to cloud, read sensor data
-  // Add new reading to the total
-  total = total - readings[readIndex];              // Subtract the last reading
-  readings[readIndex] = analogRead(sweatSensorPin); // Get a new reading
-  total = total + readings[readIndex];              // Add the new reading to total
-  readIndex = (readIndex + 1) % sampleSize;         // Advance to the next index
-
-  // Calculate the average of the readings
-  average = total / sampleSize;
-
-  if (!calibrated)
-  {
-    // Calibrate the sensor
-    gSRUserMin = average;
-    gSRUserMax = average;
-    calibrated = true;
-    String address = "/User_" + String(USER) + "/gsr/min";
-    sendOSCMessage(address.c_str(), gSRUserMin);
-    String address2 = "/User_" + String(USER) + "/gsr/max";
-    sendOSCMessage(address2.c_str(), gSRUserMax);
-  }
-  else if (average < gSRUserMin)
-  {
-    // Update max and min values dynamically
-    gSRUserMin = average;
-    String address = "/User_" + String(USER) + "/gsr/min";
-    sendOSCMessage(address.c_str(), gSRUserMin);
-  }
-  if (average > gSRUserMax)
-  {
-    gSRUserMax = average;
-    String address = "/User_" + String(USER) + "/gsr/max";
-    sendOSCMessage(address.c_str(), gSRUserMax);
-  }
-
-  // Update variables and send OSC messages
-  gSRCurrentValue = map(average, 0, 1023, 0, 500);
-
   if (WiFi.status() == WL_CONNECTED && UDPConnected)
   {
+    // Even if not connected to cloud, read sensor data
+    // Add new reading to the total
+    total = total - readings[readIndex];              // Subtract the last reading
+    readings[readIndex] = analogRead(sweatSensorPin); // Get a new reading
+    total = total + readings[readIndex];              // Add the new reading to total
+    readIndex = (readIndex + 1) % sampleSize;         // Advance to the next index
+
+    // Calculate the average of the readings
+    average = total / sampleSize;
+
+    if (!calibrated)
+    {
+      // Calibrate the sensor
+      gSRUserMin = average;
+      gSRUserMax = average;
+      calibrated = true;
+      String address = "/User_" + String(USER) + "/gsr/min";
+      sendOSCMessage(address.c_str(), gSRUserMin);
+      String address2 = "/User_" + String(USER) + "/gsr/max";
+      sendOSCMessage(address2.c_str(), gSRUserMax);
+    }
+    else if (average < gSRUserMin)
+    {
+      // Update max and min values dynamically
+      gSRUserMin = average;
+      String address = "/User_" + String(USER) + "/gsr/min";
+      sendOSCMessage(address.c_str(), gSRUserMin);
+    }
+    if (average > gSRUserMax)
+    {
+      gSRUserMax = average;
+      String address = "/User_" + String(USER) + "/gsr/max";
+      sendOSCMessage(address.c_str(), gSRUserMax);
+    }
+
+    // Update variables and send OSC messages
+    gSRCurrentValue = map(average, 0, 1023, 0, 500);
+
     // Send OSC messages only if connected
     String address = "/User_" + String(USER) + "/gsr/value";
     sendOSCMessage(address.c_str(), gSRCurrentValue);
