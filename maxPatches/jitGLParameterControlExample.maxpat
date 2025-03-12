@@ -21,7 +21,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1266.0, 368.0, 100.0, 36.0 ],
-					"presentation_linecount" : 2,
 					"text" : "scale 0 128 0.01 0.7"
 				}
 
@@ -234,7 +233,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 1471.0, 641.0, 85.0, 48.0 ],
-					"presentation_linecount" : 3,
 					"text" : "interesting in the range of 0.3-4"
 				}
 
@@ -248,7 +246,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1017.0, 554.0, 100.0, 36.0 ],
-					"presentation_linecount" : 2,
 					"text" : "scale 0 128 0.01 0.7"
 				}
 
@@ -355,7 +352,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
 					"patching_rect" : [ 1182.0, 546.0, 177.0, 36.0 ],
-					"presentation_linecount" : 2,
 					"text" : "jit.bfg 3 float32 50 50 1 @basis noise.distorted"
 				}
 
@@ -736,7 +732,7 @@
 
 							}
  ],
-						"originid" : "pat-37"
+						"originid" : "pat-50"
 					}
 ,
 					"patching_rect" : [ 93.0, 852.0, 41.0, 22.0 ],
@@ -1056,8 +1052,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "jit_matrix", "" ],
-					"patching_rect" : [ 18.0, 751.0, 344.0, 64.0 ],
-					"text" : "jit.gl.gridshape @gl_color 0. 0.938722 1. 0.2 @mat_diffuse 0. 0.938722 1. 0.2 @poly_mode 1 1 @scale 1. 1. 1. @rotatexyz -123.091476 157. 36.221565 @lighting_enable 1 @dim 100 100 @matrixoutput 1 @shape cube"
+					"patching_rect" : [ 18.0, 751.0, 438.0, 64.0 ],
+					"text" : "jit.gl.gridshape @gl_color 0. 1. 0. 0. @mat_diffuse 0. 1. 0. 0. @poly_mode 1 1 @scale 1. 1. 1. @rotatexyz -123.091476 157. 36.221565 @lighting_enable 1 @dim 100 100 @matrixoutput 1 @shape cube @automatic 0 @shadow_caster 0 @filterclass ob3d_filterclass_ignore"
 				}
 
 			}
@@ -1307,6 +1303,19 @@
 				}
 
 			}
+, 			{
+				"box" : 				{
+					"attr" : "erase_color",
+					"id" : "obj-75",
+					"maxclass" : "attrui",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 84.0, 25.0, 150.0, 22.0 ]
+				}
+
+			}
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
@@ -1446,7 +1455,16 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-80", 3 ],
+					"order" : 0,
+					"source" : [ "obj-26", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-80", 0 ],
+					"order" : 1,
 					"source" : [ "obj-26", 0 ]
 				}
 
@@ -1775,6 +1793,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-75", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-64", 0 ],
 					"source" : [ "obj-77", 0 ]
 				}
@@ -1902,7 +1927,7 @@
 
 			}
  ],
-		"originid" : "pat-35",
+		"originid" : "pat-48",
 		"dependency_cache" : [ 			{
 				"name" : "jit.*.mxe64",
 				"type" : "mx64"
