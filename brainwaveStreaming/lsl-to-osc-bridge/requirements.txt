@@ -3,4 +3,6 @@ python-osc
 pylsl
 numpy
 yaml
+matplotlib
+pandas
 ```

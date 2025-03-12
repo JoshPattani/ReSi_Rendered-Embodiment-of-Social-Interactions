@@ -18,7 +18,7 @@ args:
  uid: brainflow # required!
  daisy_attached: no # yes- Daisy is physically attached to Cyton; no- no Daisy
  max_time:
-  1800 # required! Max 30 min.; if unlimited time needed, ->
+  7200 # required! Max 30 min.; if unlimited time needed, ->
   # use some huge number here e.g. 360000 (100h)
  delay: 0
 
