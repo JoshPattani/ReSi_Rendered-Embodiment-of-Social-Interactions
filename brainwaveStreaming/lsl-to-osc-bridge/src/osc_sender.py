@@ -89,38 +89,89 @@ class OSCSender:
             print("No data to send.")
             return
 
-        for stream_id, stream_data in data.items():
-            stream_type = stream_data["type"]
-            stream_name = stream_data["name"]
-            samples = stream_data["samples"]
-            timestamps = stream_data["timestamps"]
-
-            # Get the appropriate port for this stream
-            port = self._get_port_for_stream(stream_type)
+        # Check if this is a standard LSL data format or a custom message
+        if "type" in data and isinstance(data["type"], str):
+            # This appears to be a direct/custom message
+            port = self._get_port_for_stream(data["type"])
             self._ensure_client_exists(port)
 
-            # Choose the send method based on stream type
-            if stream_type in ["EEG", "EXG"]:
-                # Debug print
-                print(f"Sending EEG data for {stream_name} to port {port}")
-                self._send_eeg_data(port, stream_name, samples, timestamps)
-            elif stream_type in ["AUX", "Accelerometer"]:
-                # Debug print
-                print(f"Sending AUX data for {stream_name} to port {port}")
-                self._send_aux_data(port, stream_name, samples, timestamps)
-            elif stream_type in ["Marker", "Markers"]:
-                # Debug print
-                print(f"Sending Marker data for {stream_name} to port {port}")
-                self._send_marker_data(port, stream_name, samples, timestamps)
+            # Handle EEG_Metrics formatted message
+            if data["type"] == "EEG_Metrics":
+                stream_name = data["name"]
+
+                # Send band powers if present
+                if "bands" in data and isinstance(data["bands"], dict):
+                    for band_name, power in data["bands"].items():
+                        address = f"/{stream_name}/band/{band_name}"
+                        # Convert numpy types to Python native types
+                        if hasattr(power, "item"):
+                            power = float(power.item())
+                        self.clients[port].send_message(address, float(power))
+
+                # Send metrics if present
+                if "metrics" in data and isinstance(data["metrics"], dict):
+                    for metric_name, value in data["metrics"].items():
+                        address = f"/{stream_name}/metric/{metric_name}"
+                        # Convert numpy types to Python native types
+                        if hasattr(value, "item"):
+                            value = float(value.item())
+                        self.clients[port].send_message(address, float(value))
+
+                print(f"Sent metrics data for {stream_name} to port {port}")
+
             else:
-                # Generic handler for other stream types
-                # Debug print
-                print(
-                    f"Cannot find stream type. Sending generic data for {stream_name} to port {port}"
-                )
-                self._send_generic_data(
-                    port, stream_name, stream_type, samples, timestamps
-                )
+                # Generic custom message handler
+                for key, value in data.items():
+                    if isinstance(value, dict):
+                        # Handle nested dictionary
+                        for subkey, subval in value.items():
+                            address = f"/{data['name']}/{key}/{subkey}"
+                            self.clients[port].send_message(address, subval)
+                    else:
+                        # Handle simple values
+                        address = f"/{data['name']}/{key}"
+                        self.clients[port].send_message(address, value)
+
+            # Update stats and return
+            self.messages_sent += 1
+            self.last_sent_time = time.time()
+            return
+
+        # Standard LSL data format (stream_id -> stream_data mapping)
+        for stream_id, stream_data in data.items():
+            try:
+                stream_type = stream_data["type"]
+                stream_name = stream_data["name"]
+                samples = stream_data["samples"]
+                timestamps = stream_data["timestamps"]
+
+                # Get the appropriate port for this stream
+                port = self._get_port_for_stream(stream_type)
+                self._ensure_client_exists(port)
+
+                # Choose the send method based on stream type
+                if stream_type in ["EEG", "EXG"]:
+                    # Debug print
+                    print(f"Sending EEG data for {stream_name} to port {port}")
+                    self._send_eeg_data(port, stream_name, samples, timestamps)
+                elif stream_type in ["AUX", "Accelerometer"]:
+                    # Debug print
+                    print(f"Sending AUX data for {stream_name} to port {port}")
+                    self._send_aux_data(port, stream_name, samples, timestamps)
+                elif stream_type in ["Marker", "Markers"]:
+                    # Debug print
+                    print(f"Sending Marker data for {stream_name} to port {port}")
+                    self._send_marker_data(port, stream_name, samples, timestamps)
+                else:
+                    # Generic handler for other stream types
+                    # Debug print
+                    print(f"Sending generic data for {stream_name} to port {port}")
+                    self._send_generic_data(
+                        port, stream_name, stream_type, samples, timestamps
+                    )
+
+            except Exception as e:
+                print(f"Error processing stream {stream_id}: {e}")
 
         # Update stats
         self.messages_sent += 1
@@ -143,11 +194,11 @@ class OSCSender:
             client.send_message(f"{base_address}/timestamp", timestamp)
 
             # Debug print
-            print(f"Sent EEG data: {sample}")
+            print(f"Sent EEG data: {sample} to {address} at {timestamp}")
 
             # Optional: Send individual channels (useful for some Max/MSP patches)
-            # for ch_idx, ch_value in enumerate(sample):
-            #    client.send_message(f"{base_address}/ch{ch_idx+1}", ch_value)
+            for ch_idx, ch_value in enumerate(sample):
+                client.send_message(f"{base_address}/ch{ch_idx+1}", ch_value)
 
     def _send_aux_data(self, port, stream_name, samples, timestamps):
         """Send auxiliary data (like accelerometer)."""

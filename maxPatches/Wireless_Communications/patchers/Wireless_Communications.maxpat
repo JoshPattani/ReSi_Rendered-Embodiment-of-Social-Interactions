@@ -15,6 +15,30 @@
 		"toolbars_unpinned_last_save" : 1,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-36",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 54.0, 447.0, 45.0, 22.0 ],
+					"text" : "0"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-19",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 66.134149670600891, 347.0, 147.0, 22.0 ],
+					"text" : "OSC-route /openbci/focus"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"fontface" : 1,
 					"fontname" : "Hanken Grotesk",
 					"fontsize" : 16.0,
@@ -62,7 +86,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 1400.000033378601074, 698.0, 202.0, 27.0 ],
-					"presentation_linecount" : 2,
 					"text" : "Heart Rate Variability"
 				}
 
@@ -76,7 +99,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 1400.000033378601074, 612.634144306182861, 190.0, 27.0 ],
-					"presentation_linecount" : 2,
 					"text" : "PPG Heart Beat Pulse"
 				}
 
@@ -418,7 +440,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 339.0, 668.0, 64.0, 22.0 ],
-					"text" : "0.467743"
+					"text" : "0.147768"
 				}
 
 			}
@@ -430,7 +452,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 54.0, 668.0, 63.0, 22.0 ],
-					"text" : "0."
+					"text" : "0.003462"
 				}
 
 			}
@@ -442,7 +464,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 192.0, 668.0, 66.0, 22.0 ],
-					"text" : "0.136178"
+					"text" : "0.048851"
 				}
 
 			}
@@ -454,7 +476,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 265.0, 668.0, 67.0, 22.0 ],
-					"text" : "0.253164"
+					"text" : "0.370749"
 				}
 
 			}
@@ -466,7 +488,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 124.0, 668.0, 61.0, 22.0 ],
-					"text" : "0.003214"
+					"text" : "0.429171"
 				}
 
 			}
@@ -491,7 +513,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 35.0, 530.0, 69.0, 91.0 ],
-					"text" : "/4 0.003214 0.136178 0.253164 0.467743 0.139702"
+					"text" : "/4 0.003462 0.429171 0.048851 0.370749 0.147768"
 				}
 
 			}
@@ -510,12 +532,13 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-47",
+					"linecount" : 3,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 53.658537864685059, 169.0, 171.951223611831665, 22.0 ],
-					"text" : "/User_A/hr/value 0."
+					"patching_rect" : [ 53.658537864685059, 169.0, 171.951223611831665, 50.0 ],
+					"text" : "/openbci/average-band-power/4 0.003462 0.429171 0.048851 0.370749 0.147768"
 				}
 
 			}
@@ -1022,7 +1045,7 @@
 
 											}
  ],
-										"originid" : "pat-38"
+										"originid" : "pat-118"
 									}
 ,
 									"patching_rect" : [ 742.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -1258,7 +1281,7 @@
 
 											}
  ],
-										"originid" : "pat-40"
+										"originid" : "pat-120"
 									}
 ,
 									"patching_rect" : [ 634.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -1601,7 +1624,7 @@
 
 											}
  ],
-										"originid" : "pat-42"
+										"originid" : "pat-122"
 									}
 ,
 									"patching_rect" : [ 527.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -1837,7 +1860,7 @@
 
 											}
  ],
-										"originid" : "pat-44"
+										"originid" : "pat-124"
 									}
 ,
 									"patching_rect" : [ 417.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -2073,7 +2096,7 @@
 
 											}
  ],
-										"originid" : "pat-46"
+										"originid" : "pat-126"
 									}
 ,
 									"patching_rect" : [ 310.0, 309.000030999999979, 100.0, 25.0 ],
@@ -2726,7 +2749,7 @@
 
 							}
  ],
-						"originid" : "pat-36",
+						"originid" : "pat-116",
 						"styles" : [ 							{
 								"name" : "AudioStatus_Menu",
 								"default" : 								{
@@ -3040,7 +3063,7 @@
 
 							}
  ],
-						"originid" : "pat-48"
+						"originid" : "pat-128"
 					}
 ,
 					"patching_rect" : [ 897.0, 908.0, 61.0, 22.0 ],
@@ -3230,7 +3253,7 @@
 
 							}
  ],
-						"originid" : "pat-50"
+						"originid" : "pat-130"
 					}
 ,
 					"patching_rect" : [ 790.0, 908.0, 61.0, 22.0 ],
@@ -3420,7 +3443,7 @@
 
 							}
  ],
-						"originid" : "pat-52"
+						"originid" : "pat-132"
 					}
 ,
 					"patching_rect" : [ 677.0, 908.0, 61.0, 22.0 ],
@@ -3610,7 +3633,7 @@
 
 							}
  ],
-						"originid" : "pat-54"
+						"originid" : "pat-134"
 					}
 ,
 					"patching_rect" : [ 573.0, 908.0, 61.0, 22.0 ],
@@ -3830,7 +3853,7 @@
 
 							}
  ],
-						"originid" : "pat-56"
+						"originid" : "pat-136"
 					}
 ,
 					"patching_rect" : [ 466.0, 908.0, 61.0, 22.0 ],
@@ -4266,6 +4289,8 @@
 					"saved_object_attributes" : 					{
 						"autostart" : 0,
 						"defer" : 0,
+						"node_bin_path" : "",
+						"npm_bin_path" : "",
 						"watch" : 0
 					}
 ,
@@ -4507,6 +4532,21 @@
 					"midpoints" : [ 1219.256126403808594, 612.19511866569519, 1183.323167562484741, 612.19511866569519, 1183.323167562484741, 606.19511866569519, 1181.451247453689575, 606.19511866569519 ],
 					"order" : 0,
 					"source" : [ "obj-18", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-36", 1 ],
+					"source" : [ "obj-19", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-19", 0 ],
+					"order" : 5,
+					"source" : [ "obj-2", 0 ]
 				}
 
 			}
@@ -4910,7 +4950,7 @@
 
 			}
  ],
-		"originid" : "pat-34",
+		"originid" : "pat-114",
 		"dependency_cache" : [ 			{
 				"name" : "OSC-route.mxe64",
 				"type" : "mx64"

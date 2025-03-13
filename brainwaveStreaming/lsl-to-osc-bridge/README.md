@@ -10,6 +10,7 @@ The lsl-to-osc-bridge project facilitates the real-time transmission of biometri
 - Configurable settings for LSL and OSC connections.
 - Example patches for Max/MSP and Ableton Live to demonstrate usage.
 - Optional data processing capabilities to filter or transform data before sending.
+- Feature extraction for EEG data including alpha, beta, delta, and theta band power, focus (mindfulness) and relation.
 
 ## Installation
 
@@ -20,14 +21,21 @@ The lsl-to-osc-bridge project facilitates the real-time transmission of biometri
    cd lsl-to-osc-bridge
    ```
 
-2. Install the required dependencies:
+2. Create a virtual environment (optional but recommended):
+
+   ```
+   python -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install the required dependencies:
    ```
    pip install -r requirements.txt
    ```
 
 ## Configuration
 
-Configuration settings can be adjusted in `config/default_config.yml`. This file includes parameters such as IP addresses and ports for both LSL and OSC connections.
+Configuration settings can be adjusted in `src/config.py`. This file includes parameters such as IP addresses and ports for both LSL and OSC connections.
 
 ## Usage
 
