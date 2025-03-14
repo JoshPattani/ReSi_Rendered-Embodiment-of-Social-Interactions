@@ -1425,7 +1425,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 2200.000065565109253, 1266.666704416275024, 1764.000052571296692, 67.0 ],
-					"text" : "Simulation data for USER1 sensor set",
+					"text" : "Simulation data for USER #2 sensor set",
 					"textcolor" : [ 0.035294117647059, 0.984313725490196, 1.0, 1.0 ],
 					"textjustification" : 1
 				}
@@ -3170,7 +3170,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 245.333340644836426, 1266.666704416275024, 1764.000052571296692, 67.0 ],
-					"text" : "Simulation data for USER1 sensor set",
+					"text" : "Simulation data for USER #1 sensor set",
 					"textcolor" : [ 0.035294117647059, 0.984313725490196, 1.0, 1.0 ],
 					"textjustification" : 1
 				}
