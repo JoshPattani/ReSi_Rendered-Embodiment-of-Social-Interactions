@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 84.0, 140.0, 1000.0, 749.0 ],
+		"rect" : [ 810.0, 82.0, 690.0, 819.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
@@ -292,7 +292,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 241.0, 398.0, 24.0, 24.0 ],
+					"patching_rect" : [ 241.0, 385.0, 24.0, 24.0 ],
 					"svg" : ""
 				}
 
@@ -353,7 +353,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 324.5, 185.0, 24.0, 24.0 ],
+					"patching_rect" : [ 325.0, 172.0, 24.0, 24.0 ],
 					"svg" : ""
 				}
 
@@ -365,7 +365,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 324.5, 221.0, 63.0, 22.0 ],
+					"patching_rect" : [ 325.0, 208.0, 63.0, 22.0 ],
 					"text" : "metro 600"
 				}
 
