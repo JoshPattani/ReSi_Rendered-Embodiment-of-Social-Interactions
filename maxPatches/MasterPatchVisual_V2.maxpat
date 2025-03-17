@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 76.0, 1469.0, 827.0 ],
+		"rect" : [ 5.0, 152.0, 1469.0, 827.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
@@ -161,9 +161,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 2326.905658066272736, 1940.402574300765991, 77.0, 23.0 ],
-					"presentation_linecount" : 2,
-					"text" : "70, 30 1000"
+					"patching_rect" : [ 2326.905658066272736, 1940.402574300765991, 70.0, 23.0 ],
+					"text" : "70, 30 600"
 				}
 
 			}
@@ -218,7 +217,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 2341.999997437000275, 1969.333391427993774, 172.000002562999725, 40.0 ],
-					"presentation_linecount" : 2,
 					"text" : "generate a ramp from 50 to 150 in 1000 ms"
 				}
 
@@ -280,7 +278,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 277.453562140464783, 2148.947533369064331, 181.0, 36.0 ],
-					"presentation_linecount" : 2,
 					"style" : "helpfile_label",
 					"text" : "a bang is output when the ramp has completed"
 				}
@@ -1493,7 +1490,7 @@
 
 											}
  ],
-										"originid" : "pat-134"
+										"originid" : "pat-91"
 									}
 ,
 									"patching_rect" : [ 742.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -1729,7 +1726,7 @@
 
 											}
  ],
-										"originid" : "pat-136"
+										"originid" : "pat-93"
 									}
 ,
 									"patching_rect" : [ 634.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -2072,7 +2069,7 @@
 
 											}
  ],
-										"originid" : "pat-138"
+										"originid" : "pat-95"
 									}
 ,
 									"patching_rect" : [ 527.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -2308,7 +2305,7 @@
 
 											}
  ],
-										"originid" : "pat-140"
+										"originid" : "pat-97"
 									}
 ,
 									"patching_rect" : [ 417.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -2544,7 +2541,7 @@
 
 											}
  ],
-										"originid" : "pat-142"
+										"originid" : "pat-99"
 									}
 ,
 									"patching_rect" : [ 310.0, 309.000030999999979, 100.0, 25.0 ],
@@ -3197,7 +3194,7 @@
 
 							}
  ],
-						"originid" : "pat-132",
+						"originid" : "pat-89",
 						"styles" : [ 							{
 								"name" : "AudioStatus_Menu",
 								"default" : 								{
@@ -3477,7 +3474,7 @@
 
 							}
  ],
-						"originid" : "pat-144"
+						"originid" : "pat-101"
 					}
 ,
 					"patching_rect" : [ 2684.000079989433289, 841.333358407020569, 61.0, 22.0 ],
@@ -3667,7 +3664,7 @@
 
 							}
  ],
-						"originid" : "pat-146"
+						"originid" : "pat-103"
 					}
 ,
 					"patching_rect" : [ 2577.333410143852234, 841.333358407020569, 61.0, 22.0 ],
@@ -3857,7 +3854,7 @@
 
 							}
  ],
-						"originid" : "pat-148"
+						"originid" : "pat-105"
 					}
 ,
 					"patching_rect" : [ 2464.000073432922363, 841.333358407020569, 61.0, 22.0 ],
@@ -4047,7 +4044,7 @@
 
 							}
  ],
-						"originid" : "pat-150"
+						"originid" : "pat-107"
 					}
 ,
 					"patching_rect" : [ 2360.000070333480835, 841.333358407020569, 61.0, 22.0 ],
@@ -4267,7 +4264,7 @@
 
 							}
  ],
-						"originid" : "pat-152"
+						"originid" : "pat-109"
 					}
 ,
 					"patching_rect" : [ 2253.33340048789978, 841.333358407020569, 61.0, 22.0 ],
@@ -6752,7 +6749,7 @@
 
 											}
  ],
-										"originid" : "pat-162"
+										"originid" : "pat-121"
 									}
 ,
 									"patching_rect" : [ 742.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -6988,7 +6985,7 @@
 
 											}
  ],
-										"originid" : "pat-164"
+										"originid" : "pat-123"
 									}
 ,
 									"patching_rect" : [ 634.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -7331,7 +7328,7 @@
 
 											}
  ],
-										"originid" : "pat-166"
+										"originid" : "pat-125"
 									}
 ,
 									"patching_rect" : [ 527.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -7567,7 +7564,7 @@
 
 											}
  ],
-										"originid" : "pat-168"
+										"originid" : "pat-127"
 									}
 ,
 									"patching_rect" : [ 417.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -7803,7 +7800,7 @@
 
 											}
  ],
-										"originid" : "pat-170"
+										"originid" : "pat-129"
 									}
 ,
 									"patching_rect" : [ 310.0, 309.000030999999979, 100.0, 25.0 ],
@@ -8456,7 +8453,7 @@
 
 							}
  ],
-						"originid" : "pat-160",
+						"originid" : "pat-119",
 						"styles" : [ 							{
 								"name" : "AudioStatus_Menu",
 								"default" : 								{
@@ -8736,7 +8733,7 @@
 
 							}
  ],
-						"originid" : "pat-172"
+						"originid" : "pat-131"
 					}
 ,
 					"patching_rect" : [ 882.666692972183228, 845.333358526229858, 61.0, 22.0 ],
@@ -8926,7 +8923,7 @@
 
 							}
  ],
-						"originid" : "pat-174"
+						"originid" : "pat-133"
 					}
 ,
 					"patching_rect" : [ 776.000023126602173, 845.333358526229858, 61.0, 22.0 ],
@@ -9116,7 +9113,7 @@
 
 							}
  ],
-						"originid" : "pat-176"
+						"originid" : "pat-135"
 					}
 ,
 					"patching_rect" : [ 662.666686415672302, 845.333358526229858, 61.0, 22.0 ],
@@ -9306,7 +9303,7 @@
 
 							}
  ],
-						"originid" : "pat-178"
+						"originid" : "pat-137"
 					}
 ,
 					"patching_rect" : [ 558.666683316230774, 845.333358526229858, 61.0, 22.0 ],
@@ -9526,7 +9523,7 @@
 
 							}
  ],
-						"originid" : "pat-180"
+						"originid" : "pat-139"
 					}
 ,
 					"patching_rect" : [ 452.000013470649719, 845.333358526229858, 61.0, 22.0 ],
@@ -16105,7 +16102,7 @@
 
 			}
  ],
-		"originid" : "pat-130",
+		"originid" : "pat-87",
 		"dependency_cache" : [ 			{
 				"name" : "OSC-route.mxe64",
 				"type" : "mx64"
