@@ -77,6 +77,34 @@ class OSCSender:
         for port in self.clients:
             print(f"- OSC port {port} configured")
 
+    def _send_value(self, address, value, port):
+        """Helper method to send different types of values"""
+        # Handle different data types
+        if isinstance(value, dict):
+            # Handle nested dictionaries
+            for sub_key, sub_value in value.items():
+                sub_address = f"{address}/{sub_key}"
+                self._send_value(sub_address, sub_value, port)
+        elif isinstance(value, (list, np.ndarray)):
+            # Handle arrays by sending each element with an index
+            for i, item in enumerate(value):
+                item_address = f"{address}/{i}"
+                self._send_value(item_address, item, port)
+        else:
+            # Handle primitive types (convert to float if numeric)
+            try:
+                if isinstance(value, (int, float, np.number)):
+                    value = float(value)
+                elif value is None:
+                    value = 0.0
+                self.clients[port].send_message(address, value)
+            except Exception as e:
+                print(
+                    f"Error sending OSC message to {address}: {e} (value: {value}, type: {type(value)})"
+                )
+                # Fallback to string representation if conversion fails
+                self.clients[port].send_message(address, str(value))
+
     def send_message(self, data):
         """
         Send data via OSC.
@@ -99,23 +127,29 @@ class OSCSender:
             if data["type"] == "EEG_Metrics":
                 stream_name = data["name"]
 
-                # Send band powers if present
-                if "bands" in data and isinstance(data["bands"], dict):
-                    for band_name, power in data["bands"].items():
-                        address = f"/{stream_name}/band/{band_name}"
-                        # Convert numpy types to Python native types
-                        if hasattr(power, "item"):
-                            power = float(power.item())
-                        self.clients[port].send_message(address, float(power))
+                # # Send band powers if present
+                # if "bands" in data and isinstance(data["bands"], dict):
+                #     for band_name, power in data["bands"].items():
+                #         address = f"/{stream_name}/band/{band_name}"
+                #         # Convert numpy types to Python native types
+                #         if hasattr(power, "item"):
+                #             power = float(power.item())
+                #         self.clients[port].send_message(address, float(power))
 
-                # Send metrics if present
-                if "metrics" in data and isinstance(data["metrics"], dict):
-                    for metric_name, value in data["metrics"].items():
-                        address = f"/{stream_name}/metric/{metric_name}"
-                        # Convert numpy types to Python native types
-                        if hasattr(value, "item"):
-                            value = float(value.item())
-                        self.clients[port].send_message(address, float(value))
+                # # Send metrics if present
+                # if "metrics" in data and isinstance(data["metrics"], dict):
+                #     for metric_name, value in data["metrics"].items():
+                #         address = f"/{stream_name}/metric/{metric_name}"
+                #         # Convert numpy types to Python native types
+                #         if hasattr(value, "item"):
+                #             value = float(value.item())
+                #         self.clients[port].send_message(address, float(value))
+
+                # Use the helper method to handle any type of value
+                for key in ["bands", "metrics"]:
+                    if key in data and data[key]:
+                        base_address = f"/{stream_name}/{key}"
+                        self._send_value(base_address, data[key], port)
 
                 print(f"Sent metrics data for {stream_name} to port {port}")
 

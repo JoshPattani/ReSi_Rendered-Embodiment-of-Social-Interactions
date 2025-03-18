@@ -47,6 +47,16 @@ python src/bridge.py
 
 Ensure that your LSL source is active and that the OSC destination is correctly configured in the settings.
 
+## OSC message addresses and data format
+
+The bridge sends OSC messages with the following addresses:
+
+- `/eeg` for EEG data
+- `/focus` for focus data
+- `/relaxation` for relaxation data
+
+The base address can be configured in `src/config.py`.
+
 ## Examples
 
 - **Max/MSP Example**: Open `examples/max_msp_example.maxpat` to see how to receive OSC messages in Max/MSP.

@@ -1,4 +1,4 @@
-from pylsl import StreamInlet, resolve_streams
+from mne_lsl.lsl import StreamInlet, resolve_streams, local_clock
 import threading
 import time
 import numpy as np
@@ -8,11 +8,12 @@ class LSLReceiver:
     """
     Receives data from LSL streams and makes it available for the OSC bridge.
     Can handle multiple streams and different data types (EEG, markers, etc.).
+    Uses MNE-LSL library for improved handling of EEG streams.
     """
 
     def __init__(self, source_names=None, stream_types=None):
         """
-        Initialize LSL receiver.
+        Initialize LSL receiver using MNE-LSL.
 
         Args:
             source_names: List of stream source names to look for (e.g. ['OpenBCI_EXG', 'OpenBCI_AUX'])
@@ -30,7 +31,7 @@ class LSLReceiver:
             if isinstance(stream_types, list)
             else [stream_types] if stream_types else None
         )
-        self.inlets = []
+        self.inlets = []  # MNE-LSL StreamInlet objects
         self.stream_info = []
         self.data_buffers = {}  # Dictionary to store latest data for each stream
         self.running = False
@@ -38,42 +39,54 @@ class LSLReceiver:
         self.lock = threading.Lock()  # For thread-safe access to data_buffers
 
     def find_streams(self):
-        """Find all LSL streams matching the specified criteria."""
+        """Find all LSL streams matching the specified criteria using MNE-LSL."""
         print("Looking for LSL streams...")
 
-        # Prepare the result list
-        streams = []
+        # Get all available LSL streams using resolve_streams()
+        all_streams = resolve_streams()
 
-        # If no specific criteria, get all available streams
+        if not all_streams:
+            print("No LSL streams found.")
+            return []
+
+        # Print all available streams for debugging
+        print(f"Found {len(all_streams)} LSL streams:")
+        for i, stream in enumerate(all_streams):
+            print(
+                f"  Stream {i+1}: name='{stream.name}', type='{stream.stype}', channels={stream.n_channels}"
+            )
+
+        # Filter streams based on criteria
+        matching_streams = []
+
+        # If no specific criteria, return all streams
         if not self.source_names and not self.stream_types:
-            streams = resolve_streams()
-        else:
-            # Check for streams matching source names
-            if self.source_names:
-                for name in self.source_names:
-                    matching_streams = resolve_streams()
-                    if matching_streams:
-                        streams.extend(matching_streams)
+            print("No filters applied - returning all streams")
+            return all_streams
 
-            # Check for streams matching types
-            if self.stream_types:
-                for stream_type in self.stream_types:
-                    matching_streams = resolve_streams()
-                    if matching_streams:
-                        streams.extend(matching_streams)
+        for stream in all_streams:
+            # Check if stream name matches any of the source names
+            name_match = False
+            if not self.source_names:
+                name_match = True
+            else:
+                # Try to match partial names - OpenBCI streams often have serial port added to name
+                for source_name in self.source_names:
+                    if source_name in stream.name:
+                        name_match = True
+                        break
 
-        # Remove duplicates
-        unique_streams = []
-        unique_ids = set()
-        for stream in streams:
-            if stream.uid() not in unique_ids:
-                unique_streams.append(stream)
-                unique_ids.add(stream.uid())
+            # Check if stream type matches any of the stream types
+            type_match = not self.stream_types or stream.stype in self.stream_types
 
-        return unique_streams
+            if name_match and type_match:
+                matching_streams.append(stream)
+                print(f"  Matched stream: '{stream.name}' of type '{stream.stype}'")
+
+        return matching_streams
 
     def start_streams(self):
-        """Start receiving data from LSL streams."""
+        """Start receiving data from LSL streams using MNE-LSL."""
         if self.running:
             print("LSL receiver is already running.")
             return
@@ -81,27 +94,38 @@ class LSLReceiver:
         # Find streams
         streams = self.find_streams()
         if not streams:
-            print("No LSL streams found. Make sure your devices are streaming.")
+            print(
+                "No matching LSL streams found. Make sure your devices are streaming."
+            )
             return
 
         # Create inlets for each stream
         for stream in streams:
             print(
-                f"Found stream: {stream.name()} - {stream.type()} ({stream.channel_count()} channels at {stream.nominal_srate()} Hz)"
+                f"Found stream: {stream.name} - {stream.stype} ({stream.n_channels} channels at {stream.sfreq} Hz)"
             )
+
+            # Create a StreamInlet for this stream
             inlet = StreamInlet(stream)
+            # Open the stream to establish the connection
+            inlet.open_stream()
             self.inlets.append(inlet)
+
+            # Generate a unique ID for the stream
+            stream_uid = f"{stream.name}_{stream.source_id}"
+
             self.stream_info.append(
                 {
-                    "name": stream.name(),
-                    "type": stream.type(),
-                    "channel_count": stream.channel_count(),
-                    "sample_rate": stream.nominal_srate(),
-                    "uid": stream.uid(),
+                    "name": stream.name,
+                    "type": stream.stype,
+                    "channel_count": stream.n_channels,
+                    "sample_rate": stream.sfreq,
+                    "uid": stream_uid,
                 }
             )
+
             # Initialize buffer for this stream
-            self.data_buffers[stream.uid()] = {
+            self.data_buffers[stream_uid] = {
                 "samples": [],
                 "timestamps": [],
                 "latest_update": 0,
@@ -116,29 +140,24 @@ class LSLReceiver:
         print(f"LSL receiver started, listening to {len(self.inlets)} streams.")
 
     def _receive_data(self):
-        """Background thread that continuously receives data from LSL streams."""
+        """Background thread that continuously receives data from LSL streams using MNE-LSL."""
         while self.running:
             for i, inlet in enumerate(self.inlets):
                 stream_id = self.stream_info[i]["uid"]
 
-                # Pull data chunk from the stream
-                # Use a timeout of 0 for non-blocking
                 try:
-                    # For faster streams (e.g. EEG), pull multiple samples at once
-                    if self.stream_info[i]["sample_rate"] > 100:
-                        samples, timestamps = inlet.pull_chunk(max_samples=32)
-                    else:
-                        # For marker streams, pull one sample at a time
-                        sample, timestamp = inlet.pull_sample(timeout=0)
-                        samples = [sample] if sample else []
-                        timestamps = [timestamp] if timestamp else []
+                    # Use pull_chunk to get multiple samples at once if available
+                    # Set timeout=0 for non-blocking operation
+                    samples, timestamps = inlet.pull_chunk(timeout=0, max_samples=32)
 
-                    if samples:
+                    if samples.size > 0:
                         with self.lock:
                             # Store new data in buffer
-                            self.data_buffers[stream_id]["samples"].extend(samples)
+                            self.data_buffers[stream_id]["samples"].extend(
+                                samples.tolist()
+                            )
                             self.data_buffers[stream_id]["timestamps"].extend(
-                                timestamps
+                                timestamps.tolist()
                             )
 
                             # Keep only the latest 1000 samples to avoid memory issues

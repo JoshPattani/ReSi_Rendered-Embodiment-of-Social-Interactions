@@ -50,8 +50,9 @@ RESI is designed to encourage participants to engage in a meaningful and authent
 - OpenBCI Cyton (8-16 channel EEG)
 - PPG sensors
 - GSR sensors
-- Temperature sensors
-- Spatialized speaker system & projection mapping
+- ~Temperature sensors~
+- High-fidelity speakers (at least 2 channels, 5.1 surround recommended)
+- Projector (minimum 1080p resolution, 4K recommended), short-throw lens may be required depending on space
 
 ### 🖥 **Software**
 
@@ -82,10 +83,16 @@ graph TD;
 
 ```mermaid
 graph TD;
+    A[PPG] -->|Heart Rate (BPM)| B[Basic indicator of autonomic activity];
+    B -->|Lower Values [40-60] --> Deep Relaxation/Sleep;
+    B -->|Mid Values [60-80] --> Resting, Normal State;
+    B -->|Upper Mid Values [80-100] --> Mild Stress, Cognitive Effort;
+    B -->|High Values [100+] --> High Stress/Physical Exertion;
+    D -->|Heart Rate Variability| E[];
+    A -->|Spikes| F[Emotional Arousal];
     A[EEG] -->|Bandpower| B[Alpha, Beta Power];
     A -->|Coherence| C[Inter-Brain Sync];
-    D[PPG] -->|HRV| E[Heart Rate Variability];
-    A -->|Spikes| F[Emotional Arousal];
+
     G[Temp] -->|Skin Temp| H[Emotional Valence];
     I[GSR] -->|Conductivity| J[Stress Levels];
     I -->|Stress Levels| L[Emotional State];
