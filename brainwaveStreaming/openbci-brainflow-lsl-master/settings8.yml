@@ -7,7 +7,7 @@ args:
  board_id: 0 # required!
  serial_port: COM12 # Mac: /dev/cu.usbserial-DM00D7TW
  streamer_params:
- name: my_obci # required!
+ name: obci_cyton # required!
  data_type: # required!
   - EXG
   #- AUX
@@ -88,14 +88,14 @@ args:
 
 # 'x' enters Channel Settings mode. Channel 3 is set up to be powered up, with gain of 2, normal input, removed from BIAS generation, removed from SRB2, removed from SRB1. The final 'X' latches the settings to the ADS1299 channel settings register.
 commands:
- chan1: x1060110X # +
- chan2: x2060110X # +
- chan3: x3060110X # +
- chan4: x4060110X # +
- chan5: x5060110X # +
- chan6: x6060110X # +
- chan7: x7060110X # +
- chan8: x8161000X # -
+ chan1: x1060110Xx2060110Xx3060110Xx4060110Xx5060110Xx6060110Xx7060110Xx8161000X # +
+ #chan2:  # +
+ #chan3:  # +
+ #chan4:  # +
+ #chan5:  # +
+ #chan6:  # +
+ #chan7:  # +
+ #chan8:  # -
  #chan9: xQ060110X   # -
  #chan10: xW060110X  # -
  #chan11: xE060110X  # -

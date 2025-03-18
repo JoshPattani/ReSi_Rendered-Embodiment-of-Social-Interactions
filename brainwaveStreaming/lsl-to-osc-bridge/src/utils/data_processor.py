@@ -25,6 +25,17 @@ import pandas as pd
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+# Constants
+focusCurrent = 0.0
+focusMin = 0.0
+focusMax = 0.0
+
+relaxCurrent = 0.0
+relaxMin = 0.0
+relaxMax = 0.0
+
+calibrated = False
+
 
 def check_eeg_quality(data):
     """
@@ -67,9 +78,9 @@ def filter_data(
     data,
     sampling_rate=250,
     filter_type="bandpass",
-    low_cutoff=1.0,
+    low_cutoff=2.0,
     high_cutoff=50.0,
-    order=3,
+    order=4,
     notch=True,
 ):
     """
@@ -87,52 +98,75 @@ def filter_data(
     Returns:
         array: Filtered data
     """
-    # Make a copy to avoid modifying original data
-    data_copy = np.array(data, dtype=np.float64)
+    # Check data dimensionality
+    data_array = np.array(data)
+    original_shape = data_array.shape
+    print(f"Filter input shape: {original_shape}")
 
-    # Apply detrending to remove DC offset and linear trends
-    DataFilter.detrend(data_copy, DetrendOperations.LINEAR.value)
+    # Handle different data shapes
+    if len(original_shape) == 1:
+        # Already 1D array (single channel)
+        channels = [data_array]
+    elif len(original_shape) == 2:
+        # 2D array - can be [samples, channels] or [channels, samples]
+        # For LSL data, it's typically [samples, channels]
+        # Convert to list of 1D arrays (one per channel)
+        channels = [data_array[:, i] for i in range(original_shape[1])]
+    else:
+        raise ValueError(f"Unsupported data shape: {original_shape}")
 
-    # Apply bandpass filter to remove noise
-    if filter_type == "bandpass":
-        DataFilter.perform_bandpass(
-            data_copy,
-            sampling_rate,
-            low_cutoff,
-            high_cutoff,
-            order,
-            FilterTypes.BUTTERWORTH.value,
-            0,
-        )
-    elif filter_type == "lowpass":
-        DataFilter.perform_lowpass(
-            data_copy,
-            sampling_rate,
-            high_cutoff,
-            order,
-            FilterTypes.BUTTERWORTH.value,
-            0,
-        )
-    elif filter_type == "highpass":
-        DataFilter.perform_highpass(
-            data_copy,
-            sampling_rate,
-            low_cutoff,
-            order,
-            FilterTypes.BUTTERWORTH.value,
-            0,
-        )
+    # Process each channel separately
+    filtered_channels = []
+    for i, channel_data in enumerate(channels):
+        # Make a copy to avoid modifying original data
+        data_copy = np.array(channel_data, dtype=np.float64)
+        # Apply bandpass filter to remove noise
+        if filter_type == "bandpass":
+            DataFilter.perform_bandpass(
+                data_copy,
+                sampling_rate,
+                low_cutoff,
+                high_cutoff,
+                order,
+                FilterTypes.BESSEL_ZERO_PHASE.value,
+                0,
+            )
+        elif filter_type == "lowpass":
+            DataFilter.perform_lowpass(
+                data_copy,
+                sampling_rate,
+                high_cutoff,
+                5,
+                FilterTypes.CHEBYSHEV_TYPE_1_ZERO_PHASE.value,
+                1,
+            )
+        elif filter_type == "highpass":
+            DataFilter.perform_highpass(
+                data_copy,
+                sampling_rate,
+                low_cutoff,
+                order,
+                FilterTypes.BUTTERWORTH.value,
+                0,
+            )
 
-    # Apply notch filter to remove power line interference (50/60 Hz)
-    if notch:
-        # Detect if we're more likely dealing with 50Hz (Europe/Asia) or 60Hz (Americas)
-        # Default to 60Hz
-        line_freq = 60.0
-        DataFilter.remove_environmental_noise(
-            data_copy, sampling_rate, NoiseTypes.FIFTY_AND_SIXTY.value
-        )
+        # Apply notch filter to remove power line interference (50/60 Hz)
+        if notch:
+            # Detect if we're more likely dealing with 50Hz (Europe/Asia) or 60Hz (Americas)
+            # Default to 60Hz
+            line_freq = 60.0
+            DataFilter.remove_environmental_noise(
+                data_copy, sampling_rate, NoiseTypes.FIFTY_AND_SIXTY.value
+            )
 
-    return data_copy
+        # Append the filtered channel data
+        filtered_channels.append(data_copy)
+
+    # Reconstruct the data into its original shape
+    if len(original_shape) == 1:
+        return filtered_channels[0]
+    else:
+        return np.column_stack(filtered_channels)
 
 
 def scale_data(data, scale_factor=1.0, normalize=False):
@@ -174,54 +208,61 @@ def bandPower(data, band, sampling_rate):
         float: Power in the specified frequency band
     """
     # Make a copy to avoid modifying original data
-    data_copy = np.array(data, dtype=np.float64)
+    data_copy = np.array(data, dtype=np.float64).flatten()  # Ensure 1D array
 
     data_len = len(data_copy)
 
-    if data_len < 10:
-        print(
-            f"Warning: Data length too small ({data_len} samples). Cannot calculate band power."
-        )
-        return 0.0
+    # Check minimum data requirements (at least 1 second of data)
+    # BrainFlow needs enough data for reliable spectral analysis
+    min_samples_needed = sampling_rate
+
+    if data_len < min_samples_needed:
+        print(f"Data too short ({data_len}/{min_samples_needed} samples) - padding")
+        # Pad by repeating the data to reach minimum length
+        repeats_needed = int(np.ceil(min_samples_needed / data_len))
+        data_copy = np.tile(data_copy, repeats_needed)[:min_samples_needed]
+        data_len = len(data_copy)
 
     # Apply linear detrending
     DataFilter.detrend(data_copy, DetrendOperations.LINEAR.value)
 
     try:
-        # Calculate appropriate FFT size - CRITICAL FIX
-        # nfft must be SMALLER than data length
+        # Calculate appropriate FFT size for spectrum analysis
+        # For short data segments, use smaller nfft
         if data_len <= 256:
-            # For small data segments, use a smaller nfft
-            nfft = min(128, data_len - 1)
+            # Use simpler calculations for short data
+            nfft = max(64, 2 ** int(np.log2(data_len / 4)))
+            overlap = nfft // 4  # Less overlap for stability
+            window = WindowOperations.HANNING.value  # More stable window
         else:
-            # For larger data, use a power of 2 but ensure it's smaller than data length
-            nfft = min(DataFilter.get_nearest_power_of_two(sampling_rate), data_len - 1)
+            # For longer data use optimal FFT size
+            nfft = min(512, DataFilter.get_nearest_power_of_two(sampling_rate))
+            overlap = nfft // 2
+            window = WindowOperations.BLACKMAN_HARRIS.value
 
-        # Further ensure nfft is valid
+        # Sanity checks
         if nfft <= 0 or nfft >= data_len:
-            print(f"Error: Invalid nfft={nfft} for data_len={data_len}")
-            return 0.0
+            nfft = max(32, data_len // 2)
+
+        # Print diagnostics for troubleshooting
+        # print(f"PSD params: data_len={data_len}, nfft={nfft}, overlap={overlap}")
 
         # Calculate PSD using Welch's method
         # get_psd_welch returns a tuple of (frequencies, psd_values)
         psd_data = DataFilter.get_psd_welch(
             data_copy,
             nfft,
-            nfft // 2,
+            overlap,
             sampling_rate,
             WindowOperations.BLACKMAN_HARRIS.value,
         )
 
-        # Validate frequency range
-        freqs = psd_data[0]  # Frequencies are in the first element of the tuple
+        # print(f"PSD data: {psd_data}")
+        if not psd_data:
+            print("Error: No PSD data returned")
 
-        # Ensure band limits are within available frequency range
-        low_freq = min(band[0], band[1])
-        high_freq = max(band[0], band[1])
-
-        # Ensure band limits are within available frequency range
-        low_freq = max(low_freq, freqs[0])
-        high_freq = min(high_freq, freqs[-1])
+        # Find low and high frequency limits for the specified band
+        low_freq, high_freq = band
 
         if low_freq >= high_freq:
             print(f"Warning: Invalid frequency range [{low_freq}, {high_freq}]")
@@ -232,8 +273,29 @@ def bandPower(data, band, sampling_rate):
         return band_power if band_power > 0 else 0.0
     except Exception as e:
         print(f"Error calculating band power: {e}")
-        # Return a default value if calculation fails
-        return 0.0
+        # For error cases, use a fallback method or default value
+
+        # Fallback: use simple bandpower estimate based on filtered data
+        # This is less accurate but better than returning zero
+        try:
+            # Simple bandpower: apply bandpass filter and calculate signal power
+            data_filtered = data_copy.copy()
+
+            # Bandpass filter to isolate the frequency band
+            DataFilter.perform_bandpass(
+                data_filtered,
+                sampling_rate,
+                max(0.5, band[0]),  # Ensure lower bound is at least 0.5 Hz
+                min(band[1], sampling_rate / 2 - 1),  # Below Nyquist
+                3,  # Lower order for stability
+                FilterTypes.BUTTERWORTH.value,
+                0,
+            )
+
+            # Calculate power as mean squared amplitude
+            return np.mean(data_filtered**2)
+        except:
+            return 0.0
 
 
 def calculate_band_powers(data, sampling_rate):
@@ -249,24 +311,67 @@ def calculate_band_powers(data, sampling_rate):
     """
     # Standard EEG frequency bands
     bands = {
-        "delta": (1.0, 4.0),
-        "theta": (4.0, 7.0),
-        "alpha": (7.0, 13.0),
-        "beta": (14.0, 30.0),
-        "gamma": (30.0, 100.0),
+        "delta": (0.5, 4.0),
+        "theta": (4.0, 8.0),
+        "alpha": (8.0, 13.0),
+        "beta": (13.0, 32.0),
+        "gamma": (32.0, 100.0),
     }
 
+    # Check if we have 1D or 2D data
+    data_array = np.array(data)
+    data_shape = data_array.shape
+
+    if len(data_shape) == 1:
+        # Single channel data - process directly
+        return _calculate_single_channel_powers(data_array, bands, sampling_rate)
+    elif len(data_shape) == 2:
+        # Multi-channel data [samples, channels]
+        print(f"Processing multi-channel data with shape {data_shape}")
+        channels_count = data_shape[1]
+        all_channel_powers = []
+
+        # Calculate powers for each channel
+        for ch in range(channels_count):
+            channel_data = data_array[:, ch]
+            channel_powers = _calculate_single_channel_powers(
+                channel_data, bands, sampling_rate
+            )
+            all_channel_powers.append(channel_powers)
+
+        # Average powers across all channels
+        avg_powers = {}
+        for band_name in bands.keys():
+            avg_powers[band_name] = np.mean(
+                [ch_power[band_name] for ch_power in all_channel_powers]
+            )
+
+        # Calculate ratios from averages
+        # if avg_powers["beta"] != 0:
+        #     avg_powers["alpha/beta"] = avg_powers["alpha"] / avg_powers["beta"]
+        #     avg_powers["theta/beta"] = avg_powers["theta"] / avg_powers["beta"]
+        # else:
+        #     avg_powers["alpha/beta"] = 0
+        #     avg_powers["theta/beta"] = 0
+
+        return avg_powers
+    else:
+        raise ValueError(f"Unsupported data shape: {data_shape}")
+
+
+def _calculate_single_channel_powers(channel_data, bands, sampling_rate):
+    """Helper function to calculate powers for a single channel"""
     powers = {}
     for band_name, band_range in bands.items():
-        powers[band_name] = bandPower(data, band_range, sampling_rate)
+        powers[band_name] = bandPower(channel_data, band_range, sampling_rate)
 
     # Calculate useful ratios
-    if powers["beta"] != 0:
-        powers["alpha/beta"] = powers["alpha"] / powers["beta"]
-        powers["theta/beta"] = powers["theta"] / powers["beta"]
-    else:
-        powers["alpha/beta"] = 0
-        powers["theta/beta"] = 0
+    # if powers["beta"] != 0:
+    #     powers["alpha/beta"] = powers["alpha"] / powers["beta"]
+    #     powers["theta/beta"] = powers["theta"] / powers["beta"]
+    # else:
+    #     powers["alpha/beta"] = 0
+    #     powers["theta/beta"] = 0
 
     return powers
 
@@ -278,7 +383,15 @@ def transform_data(data, transformation_function):
     return transformation_function(data)
 
 
-def eeg_metrics(data, sampling_rate):
+# simple hash function to track changes in data
+def hash_data(data):
+    """Generate a simple hash of the data to detect changes"""
+    if isinstance(data, np.ndarray):
+        return hash(np.sum(data) + np.mean(data))
+    return 0
+
+
+def eeg_metrics(data, eeg_channels, sampling_rate):
     """
     Calculate EEG metrics for focus (mindfulness) and relaxation.
 
@@ -289,34 +402,36 @@ def eeg_metrics(data, sampling_rate):
     Returns:
         dict: Dictionary containing mindfulness and restfulness scores
     """
-    metrics = {"mindfulness": 0.0, "restfulness": 0.0}
+    global calibrated, focusMin, focusMax, relaxMin, relaxMax
 
-    # Check if there's enough data
-    min_length = sampling_rate * 4  # At least 4 seconds of data
-    if len(data) < min_length:
-        print(
-            f"Warning: Not enough data for metrics calculation ({len(data)} < {min_length}). Padding data."
-        )
-        # Pad the data by repeating it
-        repeats_needed = int(np.ceil(min_length / len(data)))
-        data = np.tile(data, repeats_needed)[:min_length]
+    # Add a data hash to check for updates
+    data_hash = hash_data(data)
+    print(f"Data hash: {data_hash}")
 
-    # Reshape data for BrainFlow's get_avg_band_powers function
-    # BrainFlow expects data in shape [channels x samples]
-    # data_reshaped = np.array([data])
+    # Add timestamp for uniqueness
+    timestamp = time.time()
 
-    # # Get average band powers - this returns a tuple (feature_vector, psd_values)
-    # bands = DataFilter.get_avg_band_powers(data_reshaped, [0], sampling_rate, True)
-    # feature_vector = bands[0]
+    metrics = {
+        "mindfulness": 0.0,
+        "focusMin": focusMin,
+        "focusMax": focusMax,
+        "restfulness": 0.0,
+        "relaxMin": relaxMin,
+        "relaxMax": relaxMax,
+        "timestamp": timestamp,
+        "avg_band_powers": {},
+    }
 
-    # metrics = {}
     try:
-        # Instead of using get_avg_band_powers directly, calculate band powers manually
-        # This gives us more control over the calculation
-        band_powers = calculate_band_powers(data, sampling_rate)
+        # Check if we have 1D or 2D data
+        data_array = np.array(data)
+        data_shape = data_array.shape
 
-        # Create feature vector for ML models (format expected by BrainFlow)
-        # Standard order: delta, theta, alpha, beta, gamma
+        # Calculate band powers manually since that's working
+        band_powers = calculate_band_powers(data_array, sampling_rate)
+        metrics["avg_band_powers"] = band_powers
+
+        # Create feature vector in format BrainFlow expects (5 values: delta, theta, alpha, beta, gamma)
         feature_vector = np.array(
             [
                 band_powers["delta"],
@@ -327,51 +442,84 @@ def eeg_metrics(data, sampling_rate):
             ]
         )
 
-        # Normalize feature vector to sum to 1 (relative power)
-        sum_powers = np.sum(feature_vector)
-        if sum_powers > 0:
-            feature_vector = feature_vector / sum_powers
+        # Normalize to sum to 1.0 (important for BrainFlow's models)
+        feature_sum = np.sum(feature_vector)
+        if feature_sum > 0:
+            feature_vector = feature_vector / feature_sum
 
-        # Create a BrainFlow ML model instance
-        mindfulness_params = BrainFlowModelParams(
-            BrainFlowMetrics.MINDFULNESS.value,
-            BrainFlowClassifiers.DEFAULT_CLASSIFIER.value,
-        )
-        mindfulness = MLModel(mindfulness_params)
+        # Calculate mindfulness (focus)
+        try:
+            mindfulness_params = BrainFlowModelParams(
+                BrainFlowMetrics.MINDFULNESS.value,
+                BrainFlowClassifiers.DEFAULT_CLASSIFIER.value,
+            )
+            mindfulness = MLModel(mindfulness_params)
+            mindfulness.prepare()
+            focus = mindfulness.predict(feature_vector)
+            print(f"Mindfulness: {focus} at {timestamp:.2f}")
+            mindfulness.release()
 
-        # Prepare the model and get predictions
-        mindfulness.prepare()
-        focus = mindfulness.predict(feature_vector)
-        print("Mindfulness: %s" % str(focus))
-        mindfulness.release()
+            # Convert to scalar if needed
+            if hasattr(focus, "item"):
+                focus = float(focus.item())
 
-        # Create a BrainFlow ML model instance
-        restfulness_params = BrainFlowModelParams(
-            BrainFlowMetrics.RESTFULNESS.value,
-            BrainFlowClassifiers.DEFAULT_CLASSIFIER.value,
-        )
-        restfulness = MLModel(restfulness_params)
+            metrics["mindfulness"] = focus
 
-        # Prepare the model and get predictions
-        restfulness.prepare()
-        relax = restfulness.predict(feature_vector)
-        print("Restfulness: %s" % str(relax))
-        restfulness.release()
+        except Exception as e:
+            print(f"Error calculating mindfulness: {e}")
 
-        # Update metrics with the calculated values
-        metrics["mindfulness"] = focus
-        metrics["restfulness"] = relax
+        # Calculate restfulness (relaxation)
+        try:
+            restfulness_params = BrainFlowModelParams(
+                BrainFlowMetrics.RESTFULNESS.value,
+                BrainFlowClassifiers.DEFAULT_CLASSIFIER.value,
+            )
+            restfulness = MLModel(restfulness_params)
+            restfulness.prepare()
+            relax = restfulness.predict(feature_vector)
+            print(f"Restfulness: {relax} at {timestamp:.2f}")
+            restfulness.release()
 
+            # Convert to scalar if needed
+            if hasattr(relax, "item"):
+                relax = float(relax.item())
+
+            metrics["restfulness"] = relax
+
+        except Exception as e:
+            print(f"Error calculating restfulness: {e}")
+
+        if not calibrated:
+            focusMin = focus
+            focusMax = focus
+            relaxMin = relax
+            relaxMax = relax
+            calibrated = True
+
+        if focus < focusMin:
+            focusMin = focus
+        if focus > focusMax:
+            focusMax = focus
+        if relax < relaxMin:
+            relaxMin = relax
+        if relax > relaxMax:
+            relaxMax = relax
+
+        metrics["focusMin"] = focusMin
+        metrics["focusMax"] = focusMax
+        metrics["relaxMin"] = relaxMin
+        metrics["relaxMax"] = relaxMax
     except Exception as e:
         print(f"Error in eeg_metrics: {e}")
-        # Return default values if calculation fails
-        return metrics
+        import traceback
 
+        traceback.print_exc()
     return metrics
 
 
 def process_data(
     lsl_data,
+    eeg_channels=4,
     scale_factor=1.0,
     transformation_function=None,
     calculate_bands=False,
@@ -392,7 +540,17 @@ def process_data(
     Returns:
         Processed data and optional band powers and metrics
     """
-    filtered_data = filter_data(lsl_data)
+    # Ensure data is correctly formatted
+    data_array = np.array(lsl_data)
+
+    # Calculate a simple data signature to detect changes
+    data_signature = np.sum(data_array) / data_array.size if data_array.size > 0 else 0
+
+    # Debug the data shape and signature
+    print(f"Data shape: {data_array.shape}, signature: {data_signature:.4f}")
+
+    # Apply filtering to each channel (handled within filter_data)
+    filtered_data = filter_data(data_array)
     scaled_data = scale_data(filtered_data, scale_factor)
 
     result = scaled_data
@@ -413,7 +571,7 @@ def process_data(
         extras["band_powers"] = calculate_band_powers(result, sampling_rate)
 
     if calculate_metrics:
-        extras["metrics"] = eeg_metrics(result, sampling_rate)
+        extras["metrics"] = eeg_metrics(result, eeg_channels, sampling_rate)
 
     if extras:
         return response, extras
