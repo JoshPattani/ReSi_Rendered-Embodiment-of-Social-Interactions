@@ -8,5 +8,6 @@ OSC_ADDRESS = "/obci"  # OSC address to send data to
 DATA_SEND_INTERVAL = 0.01  # Interval in seconds for sending data
 SCALE_FACTOR = 1.0  # Scale factor for EEG data
 SAMPLE_RATE = 250  # Sampling rate of the data
+GAIN = 24  # Gain setting of the OpenBCI Cyton board
 DEBUG_MODE = False  # Set to False in production
 IGNORE_QUALITY_CHECKS = False  # Set to False in production

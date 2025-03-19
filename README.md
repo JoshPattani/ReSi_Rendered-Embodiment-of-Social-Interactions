@@ -83,20 +83,82 @@ graph TD;
 
 ```mermaid
 graph TD;
-    A[PPG] -->|Heart Rate (BPM)| B[Basic indicator of autonomic activity];
-    B -->|Lower Values [40-60] --> Deep Relaxation/Sleep;
-    B -->|Mid Values [60-80] --> Resting, Normal State;
-    B -->|Upper Mid Values [80-100] --> Mild Stress, Cognitive Effort;
-    B -->|High Values [100+] --> High Stress/Physical Exertion;
-    D -->|Heart Rate Variability| E[];
-    A -->|Spikes| F[Emotional Arousal];
-    A[EEG] -->|Bandpower| B[Alpha, Beta Power];
-    A -->|Coherence| C[Inter-Brain Sync];
-
-    G[Temp] -->|Skin Temp| H[Emotional Valence];
-    I[GSR] -->|Conductivity| J[Stress Levels];
-    I -->|Stress Levels| L[Emotional State];
-    I -->|Stress Levels| N[Emotional State Adjustment];
+    flowchart TD
+    A[PPG] -->B{Heart Rate} -->|BPM| C[Basic indicator of autonomic activity];
+    newLines("`Lower Values [40-60]
+    Deep Relaxation/Sleep
+    ---
+    Mid Values [60-80]
+    Resting, Normal State
+    ---
+    Upper Mid Values [80-100]
+    Mild Stress, Cognitive Effort
+    ---
+    High Values [100+]
+    High Stress/Physical Exertion`")
+    C --> newLines
+    A -->D{Heart Rate Variability}-->|RMSSD| E["`Root Mean Square of Successive Differences (RMSSD) reflects short-term parasympathetic activity.
+    ---
+    A great marker for relaxation, stress recvery, and overall autonomic balance`"]
+    nextLines["`Lower Values (< 20 ms):
+    chronic stress, fatigue
+    ---
+    Lower-mid Values (20-40 ms):
+    moderate stress, cognitive effort
+    ---
+    Mid Values (40-60 ms):
+    normal balance, healthy autonomic function
+    ---
+    Upper Mid Values (60-100 ms):
+    relaxed, parasympathetic dominance
+    ---
+    High Values (>100 ms):
+    Deep relaxation, sleep`"]
+    E --> nextLines
+    F[Cyton]-->G{Band Powers}
+    G --> I[Delta]
+    G --> J[Theta]
+    G --> K[Alpha]
+    G --> L[Beta]
+    F --> H{Metrics}
+    H --> N[Focused]
+    H --> O[Relaxed]
+    I --> P[0.5 - 4 Hz
+    ---
+    Linked to deep sleep, unconscious processing]
+    J --> Q[4-8 Hz
+    ---
+    Linked to relaxation, creativity, light sleep]
+    K --> R[8-12 Hz
+    ---
+    Linked to calm focus, meditation, wakeful relaxation]
+    L --> S[12-30 Hz
+    ---
+    Linked to active thinking, problem solving, and stress]
+    deltaLines["`Lower Values (< 10 uV^2):
+    Fully awake, alert.
+    ---
+    Lower-mid Values (10 to 50 uV^2):
+    Light relaxation, drowsiness.
+    ---
+    Mid Values (50 to 200 uV^2):
+    Deep sleep, unconscious processing.
+    ---
+    High Values (>200 uV^2):
+    Very deep sleep, pathological state`"]
+    P --> deltaLines
+    thetaLines["`Lower Values (< 5 uV^2):
+    HIgh Focus, external attention.
+    ---
+    Lower-mid Values (5 to 20 uV^2):
+    Relaxed alertness, creativity, daydreaming.
+    ---
+    Mid Values (20 to 50 uV^2):
+    Drowsiness, reduced attention, inward focus.
+    ---
+    High Values (>50 uV^2):
+    Deep meditation, early sleep stages`"]
+    Q --> thetaLines
 ```
 
 ### 🎨 **Audiovisual Effects Mapping**
