@@ -254,7 +254,7 @@ def bandPower(data, band, sampling_rate):
             nfft,
             overlap,
             sampling_rate,
-            WindowOperations.BLACKMAN_HARRIS.value,
+            window,
         )
 
         # print(f"PSD data: {psd_data}")
@@ -431,6 +431,12 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
         band_powers = calculate_band_powers(data_array, sampling_rate)
         metrics["avg_band_powers"] = band_powers
 
+        # Print band powers for debugging
+        print(
+            f"Band powers: delta={band_powers['delta']:.6f}, theta={band_powers['theta']:.6f}, "
+            + f"alpha={band_powers['alpha']:.6f}, beta={band_powers['beta']:.6f}, gamma={band_powers['gamma']:.6f}"
+        )
+
         # Create feature vector in format BrainFlow expects (5 values: delta, theta, alpha, beta, gamma)
         feature_vector = np.array(
             [
@@ -442,10 +448,16 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
             ]
         )
 
+        # Check if we have any significant signal
+        total_power = np.sum(feature_vector)
+        if total_power < 1e-7:
+            print(
+                "Warning: Very low signal power detected. EEG may not be recording properly."
+            )
+            return metrics
+
         # Normalize to sum to 1.0 (important for BrainFlow's models)
-        feature_sum = np.sum(feature_vector)
-        if feature_sum > 0:
-            feature_vector = feature_vector / feature_sum
+        feature_vector = feature_vector / total_power
 
         # Calculate mindfulness (focus)
         try:
@@ -488,6 +500,55 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
 
         except Exception as e:
             print(f"Error calculating restfulness: {e}")
+
+        # Print metrics with band power ratios for debugging
+        alpha_beta_ratio = (
+            band_powers["alpha"] / band_powers["beta"] if band_powers["beta"] > 0 else 0
+        )
+        theta_beta_ratio = (
+            band_powers["theta"] / band_powers["beta"] if band_powers["beta"] > 0 else 0
+        )
+
+        print(
+            f"Focus: {focus:.4f}, Relaxation: {relax:.4f}, "
+            + f"Alpha/Beta: {alpha_beta_ratio:.4f}, Theta/Beta: {theta_beta_ratio:.4f}"
+        )
+
+        # Calculate alternative metric based on well-known EEG correlates
+        # Higher alpha/beta ratio correlates with relaxation
+        if band_powers["beta"] > 0:
+            alt_relaxation = min(1.0, band_powers["alpha"] / band_powers["beta"] / 2)
+        else:
+            alt_relaxation = 0.5
+
+        # Lower beta and higher theta often correlates with focus/attention
+        if band_powers["beta"] > 0:
+            alt_focus = max(
+                0.0,
+                min(
+                    1.0,
+                    1.0
+                    - (
+                        band_powers["beta"]
+                        / (band_powers["theta"] + band_powers["alpha"] + 0.001)
+                    ),
+                ),
+            )
+        else:
+            alt_focus = 0.5
+
+        # Average with BrainFlow's metrics for more stability
+        metrics["mindfulness"] = (metrics["mindfulness"] + alt_focus) / 2
+        metrics["restfulness"] = (metrics["restfulness"] + alt_relaxation) / 2
+
+        print(
+            f"Final metrics - Focus: {metrics['mindfulness']:.4f}, Relaxation: {metrics['restfulness']:.4f}"
+        )
+
+        if metrics["mindfulness"] != focus:
+            focus = metrics["mindfulness"]
+        if metrics["restfulness"] != relax:
+            relax = metrics["restfulness"]
 
         if not calibrated:
             focusMin = focus

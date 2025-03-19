@@ -1,23 +1,30 @@
 import time
 import numpy as np
+from termcolor import cprint
 import threading
 from lsl_receiver import LSLReceiver
 from osc_sender import OSCSender
 import config
 from utils.data_processor import process_data, calculate_band_powers, check_eeg_quality
+import os
+
+os.system("color")
 
 # Enable BrainFlow logging for debugging
 from brainflow.board_shim import BoardShim, LogLevels
-from brainflow.data_filter import DataFilter
+from brainflow.data_filter import DataFilter, DetrendOperations
 
 BoardShim.enable_board_logger()
 DataFilter.enable_data_logger()
 DataFilter.set_log_level(LogLevels.LEVEL_INFO.value)
 
 # Also add more buffer accumulation
-buffer_size = 500  # Adjust based on your sampling rate - aim for 2+ seconds
+buffer_size = 675  # Adjust based on your sampling rate - aim for 2+ seconds
 samples_buffer = {"data": [], "count": 0}
 sample_buffer = {}
+last_focus = 0.5
+last_relax = 0.5
+smooth_factor = 0.85  # Higher = more smoothing
 
 
 def key_listener():
@@ -90,6 +97,16 @@ def main():
     if not lsl_receiver or not lsl_receiver.inlets:
         print("Failed to find any LSL streams after multiple attempts. Exiting.")
         return
+
+    cprint(
+        "Bridging faster than the air-speed velocity of an unladen swallow...",
+        "blue",
+        "on_white",
+    )
+    cprint(
+        "Press 'r' to reset the buffer, 'g' to check railed percentages, or 'q' to quit.",
+        "cyan",
+    )
 
     # Initialize OSC Sender
     osc_sender = OSCSender(config.OSC_IP, config.OSC_PORT)
@@ -171,10 +188,64 @@ def main():
                                     -retain_samples:
                                 ]
 
+                                # Perform Railed calculations for each active channels
                                 try:
-                                    # Process with the accumulated buffer
+                                    railed_percentages = {}
+                                    colors = [
+                                        "light_grey",
+                                        "magenta",
+                                        "blue",
+                                        "green",
+                                        "light_yellow",
+                                        "light_red",
+                                        "red",
+                                    ]
+                                    for ch in active_channels:
+                                        railed_percentage = (
+                                            DataFilter.get_railed_percentage(
+                                                active_data[:, ch], gain=config.GAIN
+                                            )
+                                        )
+                                        railed_percentages[ch] = railed_percentage
+                                        cprint(
+                                            f"Channel {ch} railed percentage: {railed_percentage}",
+                                            colors[ch % len(colors)],
+                                            attrs=["bold"],
+                                        )
+                                except Exception as e:
+                                    print(f"Error calculating railed percentages: {e}")
+
+                                try:
+                                    # Normalize the data before processing
+                                    # This helps ensure consistent results
+                                    data_norm = np.zeros_like(active_data)
+                                    for ch_idx in range(active_data.shape[1]):
+                                        # Get channel data
+                                        ch_data = active_data[:, ch_idx]
+
+                                        # Create a copy for detrending
+                                        ch_detrended = ch_data.copy()
+
+                                        # Apply detrend in-place (this modifies ch_detrended directly)
+                                        DataFilter.detrend(
+                                            ch_detrended, DetrendOperations.LINEAR.value
+                                        )
+
+                                        # Standardize to have zero mean, unit variance
+                                        ch_mean = np.mean(ch_detrended)
+                                        ch_std = np.std(ch_detrended)
+                                        if ch_std > 0:
+                                            data_norm[:, ch_idx] = (
+                                                ch_detrended - ch_mean
+                                            ) / ch_std
+                                        else:
+                                            data_norm[:, ch_idx] = (
+                                                ch_detrended - ch_mean
+                                            )
+
+                                    # Use the normalized data for processing
                                     processed_data, extras = process_data(
-                                        active_data,
+                                        data_norm,  # Use normalized data
                                         eeg_channels=active_channels,
                                         scale_factor=config.SCALE_FACTOR,
                                         calculate_bands=True,
@@ -189,6 +260,27 @@ def main():
                                     band_powers = extras.get(
                                         "band_powers", {}
                                     )  # Average band powers across all channels
+
+                                    global last_focus, last_relax
+                                    if "mindfulness" in metrics and isinstance(
+                                        metrics["mindfulness"], (int, float)
+                                    ):
+                                        metrics["mindfulness"] = (
+                                            smooth_factor * last_focus
+                                            + (1 - smooth_factor)
+                                            * metrics["mindfulness"]
+                                        )
+                                        last_focus = metrics["mindfulness"]
+
+                                    if "restfulness" in metrics and isinstance(
+                                        metrics["restfulness"], (int, float)
+                                    ):
+                                        metrics["restfulness"] = (
+                                            smooth_factor * last_relax
+                                            + (1 - smooth_factor)
+                                            * metrics["restfulness"]
+                                        )
+                                        last_relax = metrics["restfulness"]
 
                                     # Safety check before sending
                                     for key in ["mindfulness", "restfulness"]:

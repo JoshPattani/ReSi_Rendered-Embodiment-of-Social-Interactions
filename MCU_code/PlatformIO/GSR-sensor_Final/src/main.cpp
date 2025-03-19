@@ -240,7 +240,8 @@ void loop()
   }
 
   // Don't run too fast to avoid network issues
-  delay(200);
+  // (we will use this to control rate of OSC messages sent to Max/MSP)
+  delay(600);
 }
 
 // =============================== //

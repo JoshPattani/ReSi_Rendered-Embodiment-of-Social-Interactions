@@ -83,6 +83,8 @@ int hRUserMin;      // User-defined minimum heart rate
 // HRV metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
 float rmssd; // Root mean square of successive differences
+float rmssdMin;
+float rmssdMax;
 float sdann; // Standard deviation of the average NN intervals
 float sdnn;  // Standard deviation of NN intervals
 
@@ -187,8 +189,7 @@ void pulseISR()
 // "/sdnn" -> Standard deviation of NN intervals
 
 // Update intervals
-const unsigned long oscSendInterval = 500;     // 500ms = 2Hz send rate
-const unsigned long cloudSendInterval = 1000;  // 1000ms = 1Hz cloud update rate
+const unsigned long oscSendInterval = 600;     // 500ms = 2Hz send rate
 const unsigned long minMaxSendInterval = 1000; // 1000ms = 1Hz send rate
 
 // Timers
@@ -482,6 +483,32 @@ void loop()
       // Compute and output HRV metrics for the current window.
       computeHRVMetrics();
       // (The computeHRVMetrics() function resets the window start and clears the buffer.)
+
+      // Update Min/Max values for RMSSD
+      if (!calibrated)
+      {
+        rmssdMin = rmssd;
+        rmssdMax = rmssd;
+        String addressMin = "/User_" + String(USER) + "/hrv/rmssdMin";
+        sendOSCMessage(addressMin.c_str(), rmssdMin);
+        String addressMax = "/User_" + String(USER) + "/hrv/rmssdMax";
+        sendOSCMessage(addressMax.c_str(), rmssdMax);
+      }
+      else
+      {
+        if (rmssdMax < rmssd)
+        {
+          rmssdMax = rmssd;
+          String addressMax = "/User_" + String(USER) + "/hrv/rmssdMax";
+          sendOSCMessage(addressMax.c_str(), rmssdMax);
+        }
+        if (rmssdMin > rmssd)
+        {
+          rmssdMin = rmssd;
+          String addressMin = "/User_" + String(USER) + "/hrv/rmssdMin";
+          sendOSCMessage(addressMin.c_str(), rmssdMin);
+        }
+      }
 
       // Send the HRV metrics through OSC.
       String addressRMSSD = "/User_" + String(USER) + "/hrv/rmssd";
