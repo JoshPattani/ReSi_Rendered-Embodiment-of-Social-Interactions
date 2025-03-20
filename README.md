@@ -159,6 +159,31 @@ graph TD;
     High Values (>50 uV^2):
     Deep meditation, early sleep stages`"]
     Q --> thetaLines
+    alphaLines["`Lower Values (< 10 uV^2):
+    High stress, overactive mind
+    ---
+    Lower-mid Values (10-30 uV^2):
+    ---
+    Relaxed but alert, idle
+    Mid Values (30-50 uV^2):
+    Deep relaxation, mediation
+    ---
+    High Values (>50 uV^2):
+    Over-relaxation, drowsiness`"]
+    R --> alphaLines
+    betaLines["`Lower Values (< 5 uV^2):
+    Deep relaxation, disengagement
+    ---
+    Lower-mid Values (5 -15 uV^2):
+    Calm, focus, normal thinking
+    ---
+    Mid Values (15-30 uV^2):
+    Problem-solving, active mental effort
+    ---
+    High Values (>30 uV^2):
+    High stress, anxiety, cognitive overload`"]
+    S --> betaLines
+
 ```
 
 ### 🎨 **Audiovisual Effects Mapping**
