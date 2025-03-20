@@ -76,9 +76,10 @@ const int sensorPin = digitalPin;
 
 // HR metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
-int hRCurrentValue; // Current heart rate
-int hRUserMax;      // User-defined maximum heart rate
-int hRUserMin;      // User-defined minimum heart rate
+unsigned long hRcurrent_millis; // Current time in milliseconds
+int hRCurrentValue;             // Current heart rate
+int hRUserMax;                  // User-defined maximum heart rate
+int hRUserMin;                  // User-defined minimum heart rate
 
 // HRV metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
@@ -99,6 +100,7 @@ unsigned long lastBeatTime = 0;
 // Hrv reset function
 void resetHRV()
 {
+  hRcurrent_millis = 0;
   hRCurrentValue = 0;
   hRUserMax = -1000000;
   hRUserMin = 1000000;
@@ -125,7 +127,8 @@ volatile unsigned long lastPulseTime = 0;  // Stores the time of the last beat
 volatile unsigned long pulseIntervals[10]; // Stores last 10 pulse intervals
 volatile uint8_t pulseIndex = 0;           // Rolling index for interval storage
 volatile bool newPulse = false;            // Flag for pulse detection
-bool calibrated = false;                   // Flag for user calibration
+bool HR_calibrated = false;                // Flag for user heart rate calibration
+bool HRV_calibrated = false;               // Flag for HRV calibration
 
 // Calculate rolling average BPM
 int calculateBPM()
@@ -141,8 +144,10 @@ int calculateBPM()
   {
     return 60000 / avgInterval; // Convert ms to BPM
   }
-
-  return avgInterval;
+  else
+  {
+    return 0;
+  }
 }
 
 // Interrupt Service Routine (ISR) for detecting heartbeats
@@ -155,6 +160,7 @@ void pulseISR()
   { // Ignore noise (too fast/slow beats)
     pulseIntervals[pulseIndex] = interval;
     pulseIndex = (pulseIndex + 1) % 10; // Move to next slot in rolling average array
+    hRcurrent_millis = interval;
 
     // Store the interval in the NN_intervals buffer for HRV analysis
     // (For simplicity, if the buffer fills, we wrap around.)
@@ -250,7 +256,7 @@ void computeHRVMetrics()
     double diff = intervals_ms[i] - mean;
     sdnn_sum += diff * diff;
   }
-  double sdnn = sqrt(sdnn_sum / n);
+  sdnn = sqrt(sdnn_sum / n);
 
   // Compute RMSSD: square root of the mean squared differences of successive NN intervals.
   double rmssd_sum = 0;
@@ -261,7 +267,7 @@ void computeHRVMetrics()
     rmssd_sum += diff * diff;
     count_diff++;
   }
-  double rmssd = (count_diff > 0) ? sqrt(rmssd_sum / count_diff) : 0;
+  rmssd = (count_diff > 0) ? sqrt(rmssd_sum / count_diff) : 0;
 
   // Compute SDANN: approximate by dividing the window into 5 equal segments.
   int segments = 5;
@@ -294,7 +300,7 @@ void computeHRVMetrics()
     double diff = segMeans[s] - segMeanAvg;
     sdann_sum += diff * diff;
   }
-  double sdann = sqrt(sdann_sum / segments);
+  sdann = sqrt(sdann_sum / segments);
 
   if (DEBUG)
   {
@@ -485,7 +491,7 @@ void loop()
       // (The computeHRVMetrics() function resets the window start and clears the buffer.)
 
       // Update Min/Max values for RMSSD
-      if (!calibrated)
+      if (!HRV_calibrated)
       {
         rmssdMin = rmssd;
         rmssdMax = rmssd;
@@ -493,6 +499,8 @@ void loop()
         sendOSCMessage(addressMin.c_str(), rmssdMin);
         String addressMax = "/User_" + String(USER) + "/hrv/rmssdMax";
         sendOSCMessage(addressMax.c_str(), rmssdMax);
+
+        HRV_calibrated = true;
       }
       else
       {
@@ -528,8 +536,8 @@ void loop()
       String address = "/User_" + String(USER) + "/pulse";
       sendOSCMessage(address.c_str(), 1);
 
-      // Update the cloud variable with the latest BPM value.
-      hRCurrentValue = calculateBPM(); // Assuming calculateBPM() is a function that computes the latest BPM
+      // Update OSC variable with the latest BPM value.
+      hRCurrentValue = calculateBPM(); // computes the latest BPM
 
       if (hRCurrentValue > 0)
       {
@@ -551,13 +559,16 @@ void loop()
           lastOscSendTime = currentTime;
           String address = "/User_" + String(USER) + "/hr/value";
           sendOSCMessage(address.c_str(), hRCurrentValue);
+
+          String addressInterval = "/User_" + String(USER) + "/hr/interval";
+          sendOSCMessage(addressInterval.c_str(), hRcurrent_millis);
         }
 
-        if (!calibrated)
+        if (!HR_calibrated)
         {
           hRUserMin = hRCurrentValue;
           hRUserMax = hRCurrentValue;
-          calibrated = true;
+          HR_calibrated = true;
           String addressMin = "/User_" + String(USER) + "/hr/min";
           sendOSCMessage(addressMin.c_str(), hRUserMin);
           String addressMax = "/User_" + String(USER) + "/hr/max";
@@ -618,7 +629,8 @@ void sendOSCMessage(const char *address, float value)
   // Free space
   msg.empty();
 
-  if (DEBUG)
+  // Debug message but skip if address string contains "/pulse"
+  if (DEBUG && !strstr(address, "/pulse"))
   {
     Serial.print("Sent OSC message: ");
     Serial.print(address);

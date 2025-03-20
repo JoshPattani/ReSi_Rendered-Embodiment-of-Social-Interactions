@@ -2,7 +2,7 @@
 
 LSL_SOURCE_NAME = "obci_cyton"  # Name of the LSL stream to connect to
 LSL_DATA_TYPE = "eeg"  # Type of data to receive from the LSL stream
-OSC_IP = "192.168.0.8"  # "10.201.78.68"  # UCB # local: "127.0.0.1"
+OSC_IP = "10.201.6.0"  # "192.168.0.8"  # "10.201.78.68"  # UCB # local: "127.0.0.1"
 OSC_PORT = 42069
 OSC_ADDRESS = "/obci"  # OSC address to send data to
 DATA_SEND_INTERVAL = 0.01  # Interval in seconds for sending data
