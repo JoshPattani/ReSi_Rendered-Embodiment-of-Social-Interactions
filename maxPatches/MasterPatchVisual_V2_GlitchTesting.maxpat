@@ -14,6 +14,17 @@
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-604",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 1137.999999761581421, 1466.0, 335.0, 22.0 ],
+					"text" : "jit.gl.syphonserver atmoscontext @servername \"max syphon\""
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-600",
 					"linecount" : 2,
 					"maxclass" : "comment",
@@ -11774,7 +11785,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1139.333328247070312, 1472.0, 341.333343505859375, 67.0 ],
+					"patching_rect" : [ 1134.833328008651733, 1492.833378076553345, 341.333343505859375, 67.0 ],
 					"text" : "WORLD SETTINGS",
 					"textcolor" : [ 0.929411764705882, 0.36078431372549, 0.866666666666667, 1.0 ],
 					"textjustification" : 1
@@ -14290,7 +14301,7 @@
 					"mode" : 0,
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 0.666666686534882, 1085.0, 3992.666785836219788, 364.0 ],
+					"patching_rect" : [ 1171.333330035209656, 1437.0, 3992.666785836219788, 364.0 ],
 					"proportion" : 0.5
 				}
 
@@ -15832,6 +15843,7 @@
 					"color" : [ 0.831372549019608, 0.0, 1.0, 1.0 ],
 					"destination" : [ "obj-144", 0 ],
 					"midpoints" : [ 1581.499994814395905, 1863.666689038276672, 1248.500044107437134, 1863.666689038276672 ],
+					"order" : 0,
 					"source" : [ "obj-255", 0 ]
 				}
 
@@ -15873,6 +15885,14 @@
 					"midpoints" : [ 1746.0, 1856.50005692243576, 2606.355302572250366, 1856.50005692243576 ],
 					"order" : 0,
 					"source" : [ "obj-255", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-604", 0 ],
+					"order" : 1,
+					"source" : [ "obj-255", 0 ]
 				}
 
 			}
