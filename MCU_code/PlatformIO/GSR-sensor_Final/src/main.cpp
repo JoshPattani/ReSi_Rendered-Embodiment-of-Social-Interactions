@@ -1,9 +1,12 @@
 /*
- * WiFi Network Auto-Selection with OSC Messaging for GSR Sensor
- *
- * This version removes Arduino IoT Cloud connectivity while preserving
- * the ability to automatically detect and connect to different network
- * environments and send OSC messages.
+  GSR Sensor with OSC Output
+  This code reads a GSR sensor and sends the data to a computer over WiFi using OSC.
+  The code is designed to work with the Arduino Nano ESP32 microcontroller and PlatformIO.
+
+  The code is part of the RESI project at CU Boulder, developed by Josh Pattani.
+  For more information, visit: https://www.resiforevery.one
+
+  ✌️ Cheers!
  */
 #include <Arduino.h>
 #include "networkTypes.h"

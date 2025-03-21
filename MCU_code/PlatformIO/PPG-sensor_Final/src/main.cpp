@@ -59,8 +59,13 @@ const int sensorPin = digitalPin;
 // --- HRV data storage (digital mode) ---
 // We assume a 2.5‑minute window. At high heart rates, you might see up to 300 beats.
 // For simplicity, we use a fixed-size buffer. Modify as needed.
-#define HRV_BUFFER_SIZE 300
-#define HRV_WINDOW_MS 150000UL // 2.5 minutes in milliseconds
+#define HRV_BUFFER_SIZE 300         // Buffer size for NN intervals
+#define HRV_WINDOW_MS 150000UL      // 2.5 minutes in milliseconds
+#define HRV_UPDATE_INTERVAL 30000UL // Update every 30 seconds
+
+// Add these variables for sliding window management
+unsigned long lastHrvUpdateTime = 0;
+bool initialHrvWindowFilled = false;
 
 // HR metrics
 // Declared in arduino properties. Uncomment if not using IoT Cloud
@@ -206,21 +211,45 @@ void resetTimers()
 
 // --- HRV Computation ---
 // This function computes SDNN, RMSSD, and SDANN from the NN_intervals collected in the current window.
-void computeHRVMetrics()
+void computeHRVMetricsSliding()
 {
-  // First, disable interrupts while we copy the buffer.
+  // First, disable interrupts while we work with the buffer
   noInterrupts();
-  int n = NN_index;
-  // Create a local copy (in milliseconds) in an array.
+
+  // Determine how many intervals to use (up to the buffer size)
+  int n = min((int)NN_index, HRV_BUFFER_SIZE);
+
+  // Create a local copy of intervals for calculations
   double intervals_ms[HRV_BUFFER_SIZE];
-  for (int i = 0; i < n && i < HRV_BUFFER_SIZE; i++)
+  for (int i = 0; i < n; i++)
   {
     intervals_ms[i] = NN_intervals[i];
   }
-  // Reset the global buffer for the next window.
-  NN_index = 0;
-  // Reset the window start time.
-  hrvWindowStart = millis();
+
+  // If we have more intervals than the buffer size, we need to manage them
+  // This handles the case where NN_index > HRV_BUFFER_SIZE (cyclic buffer)
+  if (NN_index >= HRV_BUFFER_SIZE)
+  {
+    // Shift buffer to make room for new values but keep the window
+    // We don't reset NN_index in the sliding approach
+
+    // Only shift if we're at the update interval (not the first calculation)
+    if (initialHrvWindowFilled)
+    {
+      // Number of new elements since last update (approximately)
+      int newElements = HRV_UPDATE_INTERVAL / 800; // Rough estimate based on average HR
+
+      // Shift elements to remove oldest ones while keeping the window size
+      for (int i = 0; i < HRV_BUFFER_SIZE - newElements; i++)
+      {
+        NN_intervals[i] = NN_intervals[i + newElements];
+      }
+
+      // Adjust the index to account for the shift
+      NN_index = HRV_BUFFER_SIZE - newElements;
+    }
+  }
+
   interrupts();
 
   if (n < 2)
@@ -471,13 +500,32 @@ void loop()
 
     // Beat intervals are captured in the ISR.
     // Check if the current window (2.5 minutes) has elapsed.
-    unsigned long now = millis(); // Changed from mis() to millis() for consistency
-    if (!AnalogMode && (now - hrvWindowStart) >= HRV_WINDOW_MS)
+    unsigned long now = millis();
+    if (!AnalogMode &&
+        ((!initialHrvWindowFilled && (now - hrvWindowStart) >= HRV_WINDOW_MS) ||        // Initial window filled
+         (initialHrvWindowFilled && (now - lastHrvUpdateTime) >= HRV_UPDATE_INTERVAL))) // Update interval reached
     {
-      // Compute and output HRV metrics for the current window.
-      computeHRVMetrics();
-      // (The computeHRVMetrics() function resets the window start and clears the buffer.)
+      // Compute HRV metrics without clearing the entire buffer
+      computeHRVMetricsSliding();
 
+      // If this is the first calculation, mark the initial window as filled
+      if (!initialHrvWindowFilled)
+      {
+        initialHrvWindowFilled = true;
+      }
+
+      // Update last calculation time
+      lastHrvUpdateTime = now;
+
+      // Send HRV metrics via OSC
+      String addressRMSSD = "/User_" + String(USER) + "/hrv/rmssd";
+      sendOSCMessage(addressRMSSD.c_str(), rmssd);
+
+      String addressSDANN = "/User_" + String(USER) + "/hrv/sdann";
+      sendOSCMessage(addressSDANN.c_str(), sdann);
+
+      String addressSDNN = "/User_" + String(USER) + "/hrv/sdnn";
+      sendOSCMessage(addressSDNN.c_str(), sdnn);
       // Update Min/Max values for RMSSD
       if (!HRV_calibrated)
       {
@@ -505,16 +553,6 @@ void loop()
           sendOSCMessage(addressMin.c_str(), rmssdMin);
         }
       }
-
-      // Send the HRV metrics through OSC.
-      String addressRMSSD = "/User_" + String(USER) + "/hrv/rmssd";
-      sendOSCMessage(addressRMSSD.c_str(), rmssd);
-
-      String addressSDANN = "/User_" + String(USER) + "/hrv/sdann";
-      sendOSCMessage(addressSDANN.c_str(), sdann);
-
-      String addressSDNN = "/User_" + String(USER) + "/hrv/sdnn";
-      sendOSCMessage(addressSDNN.c_str(), sdnn);
     }
     if (newPulse)
     {
@@ -593,7 +631,7 @@ void connectLocalPort()
 {
   delay(1000);
   Serial.println("Connecting to UDP port...");
-  Udp.begin(outPort); // Local port to listen on (doesn't matter much for sending)
+  Udp.begin(outPortVisual); // Local port to listen on (doesn't matter much for sending)
   UDPConnected = true;
   Serial.println("UDP connection established!");
 }
