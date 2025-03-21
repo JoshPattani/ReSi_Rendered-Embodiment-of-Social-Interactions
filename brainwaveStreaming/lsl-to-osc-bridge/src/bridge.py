@@ -261,33 +261,35 @@ def main():
                                         "band_powers", {}
                                     )  # Average band powers across all channels
 
-                                    global last_focus, last_relax
-                                    if "mindfulness" in metrics and isinstance(
-                                        metrics["mindfulness"], (int, float)
-                                    ):
-                                        metrics["mindfulness"] = (
-                                            smooth_factor * last_focus
-                                            + (1 - smooth_factor)
-                                            * metrics["mindfulness"]
-                                        )
-                                        last_focus = metrics["mindfulness"]
+                                    # Anti-jitter filter commented out for tomorrow's test 3/21/2025, might need to adjust. Might be represented in the metrics meaningfully.
 
-                                    if "restfulness" in metrics and isinstance(
-                                        metrics["restfulness"], (int, float)
-                                    ):
-                                        metrics["restfulness"] = (
-                                            smooth_factor * last_relax
-                                            + (1 - smooth_factor)
-                                            * metrics["restfulness"]
-                                        )
-                                        last_relax = metrics["restfulness"]
+                                    # global last_focus, last_relax
+                                    # if "mindfulness" in metrics and isinstance(
+                                    #     metrics["mindfulness"], (int, float)
+                                    # ):
+                                    #     metrics["mindfulness"] = (
+                                    #         smooth_factor * last_focus
+                                    #         + (1 - smooth_factor)
+                                    #         * metrics["mindfulness"]
+                                    #     )
+                                    #     last_focus = metrics["mindfulness"]
 
-                                    # Safety check before sending
-                                    for key in ["mindfulness", "restfulness"]:
-                                        if key in metrics and not isinstance(
-                                            metrics[key], (int, float)
-                                        ):
-                                            metrics[key] = 0.0
+                                    # if "restfulness" in metrics and isinstance(
+                                    #     metrics["restfulness"], (int, float)
+                                    # ):
+                                    #     metrics["restfulness"] = (
+                                    #         smooth_factor * last_relax
+                                    #         + (1 - smooth_factor)
+                                    #         * metrics["restfulness"]
+                                    #     )
+                                    #     last_relax = metrics["restfulness"]
+
+                                    # # Safety check before sending
+                                    # for key in ["mindfulness", "restfulness"]:
+                                    #     if key in metrics and not isinstance(
+                                    #         metrics[key], (int, float)
+                                    #     ):
+                                    #         metrics[key] = 0.0
 
                                     # Send metrics data
                                     osc_message = {
