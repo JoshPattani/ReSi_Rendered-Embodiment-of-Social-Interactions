@@ -550,26 +550,47 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
         if metrics["restfulness"] != relax:
             relax = metrics["restfulness"]
 
+        # Track if min/max values change
+        focus_min_changed = False
+        focus_max_changed = False
+        relax_min_changed = False
+        relax_max_changed = False
+
+        # Initialize if not calibrated
         if not calibrated:
             focusMin = focus
             focusMax = focus
             relaxMin = relax
             relaxMax = relax
             calibrated = True
+            # All values are new during initialization
+            focus_min_changed = focus_max_changed = relax_min_changed = (
+                relax_max_changed
+            ) = True
 
+        # Update mins and maxes if needed
         if focus < focusMin:
             focusMin = focus
+            focus_min_changed = True
         if focus > focusMax:
             focusMax = focus
+            focus_max_changed = True
         if relax < relaxMin:
             relaxMin = relax
+            relax_min_changed = True
         if relax > relaxMax:
             relaxMax = relax
+            relax_max_changed = True
 
-        metrics["focusMin"] = focusMin
-        metrics["focusMax"] = focusMax
-        metrics["relaxMin"] = relaxMin
-        metrics["relaxMax"] = relaxMax
+        # Only add min/max values to metrics if they've changed
+        if focus_min_changed:
+            metrics["focusMin"] = focusMin
+        if focus_max_changed:
+            metrics["focusMax"] = focusMax
+        if relax_min_changed:
+            metrics["relaxMin"] = relaxMin
+        if relax_max_changed:
+            metrics["relaxMax"] = relaxMax
     except Exception as e:
         print(f"Error in eeg_metrics: {e}")
         import traceback
