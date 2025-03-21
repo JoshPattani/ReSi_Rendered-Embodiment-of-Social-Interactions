@@ -20,17 +20,18 @@ WiFiUDP Udp;                           // Create a UDP instance for OSC communic
 bool UDPConnected = false;             // Flag to check if UDP connection is established
 extern NetworkType currentNetworkType; // Reference the type from wifiHandler.h
 
-// IP and port for OSC communication
-const IPAddress outIp(SECRET_TARGET_IP); // Use the secret target IP defined in arduino_secrets.h
-// Alternatively: const IPAddress outIp;  // Declare first, initialize in setup()
-const unsigned int outPort = SECRET_TARGET_PORT; // Target port. Must match the port in your Max/MSP patch.
+// Multiple IP and port targets for OSC communication
+const IPAddress outIpAudio(SECRET_AUDIO_IP);           // Audio computer. Defined in arduino_secrets.h
+const unsigned int outPortAudio = SECRET_AUDIO_PORT;   // Target port. Must match the port in Max
+const IPAddress outIpVisual(SECRET_VISUAL_IP);         // Visual computer
+const unsigned int outPortVisual = SECRET_VISUAL_PORT; // Target port. Must match the port in Max
+
+// Function prototypes
+void sendOSCMessage(const char *address, float value);
+void connectLocalPort();
 
 // Debug flag
 const bool DEBUG = true;
-
-// Function prototypes
-void connectLocalPort();
-void sendOSCMessage(const char *address, float value);
 
 // GSR sensor variables
 int gSRCurrentValue;

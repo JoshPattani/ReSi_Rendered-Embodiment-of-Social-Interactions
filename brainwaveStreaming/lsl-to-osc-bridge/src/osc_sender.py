@@ -16,11 +16,16 @@ class OSCSender:
         Initialize OSC sender.
 
         Args:
-            ip: IP address to send OSC messages to (default: localhost)
+            ip: IP address(es) to send OSC messages to (default: localhost)
+               Can be a single IP or a list of IPs for multiple destinations
             ports: Dictionary mapping stream types to ports or single port for all streams
                    Example: {'EEG': 9000, 'Markers': 9001} or just 9000
         """
-        self.ip = ip
+        # Handle ip parameter as either a single IP or a list of IPs
+        if isinstance(ip, list):
+            self.ips = ip
+        else:
+            self.ips = [ip]  # Convert single IP to list
 
         # Setup ports - either a dict mapping stream types to ports or a single port for all
         if isinstance(ports, dict):
@@ -52,13 +57,18 @@ class OSCSender:
         """Create OSC clients for all predefined ports."""
         if isinstance(self.ports, dict):
             for stream_type, port in self.ports.items():
-                if port not in self.clients:
-                    self.clients[port] = udp_client.SimpleUDPClient(self.ip, port)
+                for ip in self.ips:
+                    client_key = f"{ip}:{port}"
+                    if client_key not in self.clients:
+                        self.clients[client_key] = udp_client.SimpleUDPClient(ip, port)
         else:
             # Just create a client for the default port
-            self.clients[self.default_port] = udp_client.SimpleUDPClient(
-                self.ip, self.default_port
-            )
+            for ip in self.ips:
+                client_key = f"{ip}:{self.default_port}"
+                if client_key not in self.clients:
+                    self.clients[client_key] = udp_client.SimpleUDPClient(
+                        ip, self.default_port
+                    )
 
     def _get_port_for_stream(self, stream_type):
         """Determine which port to use for a given stream type."""
@@ -68,13 +78,19 @@ class OSCSender:
 
     def _ensure_client_exists(self, port):
         """Make sure a client exists for the given port."""
-        if port not in self.clients:
-            self.clients[port] = udp_client.SimpleUDPClient(self.ip, port)
+        for ip in self.ips:
+            client_key = f"{ip}:{port}"
+            if client_key not in self.clients:
+                self.clients[client_key] = udp_client.SimpleUDPClient(ip, port)
 
     def start(self):
         """Initialize the OSC sender."""
-        print(f"OSC sender initialized. Ready to send data to {self.ip}")
-        for port in self.clients:
+        print(f"OSC sender initialized. Ready to send data to {', '.join(self.ips)}")
+        for port in (
+            set([self._get_port_for_stream(k) for k in self.ports.keys()])
+            if isinstance(self.ports, dict)
+            else [self.default_port]
+        ):
             print(f"- OSC port {port} configured")
 
     def _send_value(self, address, value, port):
@@ -97,23 +113,29 @@ class OSCSender:
                     value = float(value)
                 elif value is None:
                     value = 0.0
-                self.clients[port].send_message(address, value)
+                # Send to all clients for this port
+                for ip in self.ips:
+                    client_key = f"{ip}:{port}"
+                    if client_key in self.clients:
+                        self.clients[client_key].send_message(address, value)
             except Exception as e:
                 print(
                     f"Error sending OSC message to {address}: {e} (value: {value}, type: {type(value)})"
                 )
                 # Fallback to string representation if conversion fails
-                self.clients[port].send_message(address, str(value))
+                for ip in self.ips:
+                    client_key = f"{ip}:{port}"
+                    if client_key in self.clients:
+                        self.clients[client_key].send_message(address, str(value))
 
     def send_message(self, data):
         """
-        Send data via OSC.
+        Send data via OSC to all configured IP addresses.
 
         Args:
             data: Dictionary containing data from LSLReceiver.get_data()
         """
         if not data:
-            # Debug print
             print("No data to send.")
             return
 
@@ -127,32 +149,13 @@ class OSCSender:
             if data["type"] == "EEG_Metrics":
                 stream_name = data["name"]
 
-                # # Send band powers if present
-                # if "bands" in data and isinstance(data["bands"], dict):
-                #     for band_name, power in data["bands"].items():
-                #         address = f"/{stream_name}/band/{band_name}"
-                #         # Convert numpy types to Python native types
-                #         if hasattr(power, "item"):
-                #             power = float(power.item())
-                #         self.clients[port].send_message(address, float(power))
-
-                # # Send metrics if present
-                # if "metrics" in data and isinstance(data["metrics"], dict):
-                #     for metric_name, value in data["metrics"].items():
-                #         address = f"/{stream_name}/metric/{metric_name}"
-                #         # Convert numpy types to Python native types
-                #         if hasattr(value, "item"):
-                #             value = float(value.item())
-                #         self.clients[port].send_message(address, float(value))
-
                 # Use the helper method to handle any type of value
                 for key in ["bands", "metrics"]:
                     if key in data and data[key]:
                         base_address = f"/{stream_name}/{key}"
                         self._send_value(base_address, data[key], port)
 
-                print(f"Sent metrics data for {stream_name} to port {port}")
-
+                print(f"Sent metrics data for {stream_name} to all IPs on port {port}")
             else:
                 # Generic custom message handler
                 for key, value in data.items():
@@ -160,13 +163,13 @@ class OSCSender:
                         # Handle nested dictionary
                         for subkey, subval in value.items():
                             address = f"/{data['name']}/{key}/{subkey}"
-                            self.clients[port].send_message(address, subval)
+                            self._send_value(address, subval, port)
                     else:
                         # Handle simple values
                         address = f"/{data['name']}/{key}"
-                        self.clients[port].send_message(address, value)
+                        self._send_value(address, value, port)
 
-            # Update stats and return
+            # Update stats
             self.messages_sent += 1
             self.last_sent_time = time.time()
             return

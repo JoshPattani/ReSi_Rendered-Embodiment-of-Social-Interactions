@@ -1,25 +1,12 @@
 /*
-This file contains the main code for the Atlas project, which is responsible for connecting an Arduino Nano esp32 to the appropriate WiFi network based on the environment, initializing the Arduino IoT Cloud, and sending OSC messages over UDP. It also includes functions for handling network stability and reconnection, as well as callbacks for cloud connection events.
+📡 RESI: Remote Environmental Sensing - PPG sensor
 
-The code begins by including the necessary libraries and header files, such as "networkTypes.h" for defining network types, "customConnectionHandler.h" for custom connection handling, and "thingProperties.h" for defining properties for the Arduino IoT Cloud. It also includes the WiFi and UDP libraries for network communication.
-
-The setup function initializes the serial communication, detects the network type, and connects to the appropriate network based on the type. It then initializes the Arduino IoT Cloud connection and properties, and sets up the UDP connection for local communication. The loop function allows the system to stabilize and periodically checks for network changes.
-
-The main code also includes functions for sending OSC messages, connecting to local ports, and handling cloud connection events. It uses the WiFiStabilityManager library to configure the device for stability and handle network reconnection. The code also includes debug flags and variables for monitoring network status and sensor readings.
-
-Overall, the main code for the Atlas project is well-organized and structured, with clear comments and modular functions for handling network connections, cloud initialization, and communication with external devices.
+This code snippet is part of the RESI project, which aims to provide a platform for remote environmental sensing using physiological sensors. This snippet is for the PPG sensor, which measures heart rate and heart rate variability (HRV) using a photoplethysmography sensor.
 
 The current system is supported on the ESP32 platform but can be adapted to other platforms with minimal changes to the network configuration and connection handling functions.
 
 ✌️ Cheers!
 */
-/*
- * WiFi Network Auto-Selection with OSC Messaging for GSR Sensor
- *
- * This version removes Arduino IoT Cloud connectivity while preserving
- * the ability to automatically detect and connect to different network
- * environments and send OSC messages.
- */
 #include <Arduino.h>
 #include "networkTypes.h"
 #include <WiFi.h>
@@ -35,12 +22,13 @@ WiFiUDP Udp;                           // Create a UDP instance for OSC communic
 bool UDPConnected = false;             // Flag to check if UDP connection is established
 extern NetworkType currentNetworkType; // Reference the type from wifiHandler.h
 
-// IP and port for OSC communication
-const IPAddress outIp(SECRET_TARGET_IP); // Use the secret target IP defined in arduino_secrets.h
-// Alternatively: const IPAddress outIp;  // Declare first, initialize in setup()
-const unsigned int outPort = SECRET_TARGET_PORT; // Target port. Must match the port in your Max/MSP patch.
+// Multiple IP and port targets for OSC communication
+const IPAddress outIpAudio(SECRET_AUDIO_IP);           // Audio computer. Defined in arduino_secrets.h
+const unsigned int outPortAudio = SECRET_AUDIO_PORT;   // Target port. Must match the port in Max
+const IPAddress outIpVisual(SECRET_VISUAL_IP);         // Visual computer
+const unsigned int outPortVisual = SECRET_VISUAL_PORT; // Target port. Must match the port in Max
 
-// Declarations
+// Function prototypes
 void sendOSCMessage(const char *address, float value);
 void connectLocalPort();
 
@@ -617,13 +605,14 @@ void sendOSCMessage(const char *address, float value)
   OSCMessage msg(address);
   msg.add(value);
 
-  // Begin UDP packet
-  Udp.beginPacket(outIp, outPort);
-
-  // Write OSC message to UDP
+  // Send to audio computer
+  Udp.beginPacket(outIpAudio, outPortAudio);
   msg.send(Udp);
+  Udp.endPacket();
 
-  // End packet and send
+  // Send to visual computer
+  Udp.beginPacket(outIpVisual, outPortVisual);
+  msg.send(Udp);
   Udp.endPacket();
 
   // Free space
@@ -636,9 +625,10 @@ void sendOSCMessage(const char *address, float value)
     Serial.print(address);
     Serial.print(" ");
     Serial.println(value);
-    Serial.print("...to IP address: ");
-    Serial.print(outIp);
-    Serial.print(" on port: ");
-    Serial.println(outPort);
+    Serial.print("...to both IP addresses: ");
+    Serial.print(outIpAudio);
+    Serial.print("(audio) and ");
+    Serial.print(outIpVisual);
+    Serial.println("(visual)");
   }
 }
