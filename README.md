@@ -31,15 +31,15 @@ RESI is designed to encourage participants to engage in a meaningful and authent
 
 2️⃣ **Processing & Analysis**
 
-- Data is streamed in real-time using LabstreamingLayer (LSL), processed for **bandpower, coherence, HRV, and emotional states**.
+- Data is streamed in real-time using LabstreamingLayer (LSL) and Open Sound Control (OSC), processed for **bandpower, coherence, HRV, and emotional states**.
 
 3️⃣ **Mapping to OSC/MIDI**
 
-- Biometric data is transformed into control signals for generative audiovisual systems in **Max/MSP, Unity, or custom shaders**.
+- Biometric data is transformed into control signals for generative audiovisual systems in **Max/MSP, or similar visual programming environments**.
 
 4️⃣ **Real-Time Audiovisual Synthesis**
 
-- Brainwaves shape particles, heart rate drives bass pulses, and skin conductivity sparks light bursts.
+- Brainwaves influence movement of particles, heart rate drives light and sound pulses, and skin conductivity effects color of the particle systems.
 
 ---
 
@@ -47,20 +47,20 @@ RESI is designed to encourage participants to engage in a meaningful and authent
 
 ### 💾 **Hardware**
 
-- OpenBCI Cyton (8-16 channel EEG)
+- OpenBCI Cyton bio-sensing boards (8-16 channel EEG)
 - PPG sensors
 - GSR sensors
-- ~Temperature sensors~
 - High-fidelity speakers (at least 2 channels, 5.1 surround recommended)
 - Projector (minimum 1080p resolution, 4K recommended), short-throw lens may be required depending on space
 
 ### 🖥 **Software**
 
-- **Arduino IoT Cloud**: Sensor data aggregation
+- **PlatformIO**: Sensor data aggregation for Arduino
+- **Python 3.12**: Data processing & streaming
 - **OpenSoundControl (OSC)**: Control signal transmission
 - **LabstreamingLayer (LSL)**: Real-time biosignal streaming
 - **Max/MSP / Ableton Live**: Sound synthesis & modulation
-- **Unity / TouchDesigner**: Generative visuals & interaction
+- **Max/MSP 9 / TouchDesigner**: Generative visuals & interaction
 - **OpenBCI GUI**: EEG signal processing & visualization
 
 ---
@@ -210,7 +210,49 @@ graph TD;
 
 ---
 
-## 🏗️ Installation & Setup
+## 📘 System Overview
+
+The complete system consists of:
+
+1. **Brainwave Streaming** - Collects EEG data from two OpenBCI Cyton boards simultaneously
+2. **LSL to OSC Bridge** - Converts Lab Streaming Layer (LSL) data to Open Sound Control (OSC) messages
+3. **Biometric Sensors** - Arduino/ESP32-based PPG and GSR sensors for additional physiological measurements
+
+## 🔌 Installation
+
+Each component has its own installation instructions. See the README files in each subdirectory:
+
+- [Dual OpenBCI Streaming](./brainwaveStreaming/brainflow-duo-lsl/README.md)
+- [LSL to OSC Bridge](./brainwaveStreaming/lsl-to-osc-bridge/README.md)
+- [PPG Sensor](./MCU_code/PlatformIO/PPG-sensor_Final/README.md)
+- [GSR Sensor](./MCU_code/PlatformIO/GSR-sensor_Final/README.md)
+
+## Quick Start
+
+1. Set up and connect your OpenBCI boards with the Cyton dongle
+2. Configure your YAML settings files for each board
+3. Start the dual streaming script
+4. Start the LSL-to-OSC bridge
+5. Connect the PPG and GSR sensors to participants
+6. Launch your visualization or data collection software
+
+For detailed step-by-step instructions, see the README files in each component folder.
+
+## Project Structure
+
+ReSi_Rendered-Embodiment-of-Social-Interactions/
+├── brainwaveStreaming/
+│ ├── brainflow-duo-lsl/ # Dual OpenBCI streaming
+│ ├── lsl-to-osc-bridge/ # Converts LSL to OSC
+│ └── openbci-brainflow-lsl-master/ # Single board reference
+└── MCU_code/
+└── PlatformIO/
+├── GSR-sensor_Final/ # Galvanic Skin Response sensor
+└── PPG-sensor_Final/ # Photoplethysmography (pulse) sensor
+
+---
+
+## 🏗️ Physical Environment & Setup
 
 🚀 Setting up your own RESI experience? Follow the guide in Installation_Environment_Setup.md for:
 
@@ -275,18 +317,20 @@ Open Max/MSP, Unity, or Ableton Live and connect to OSC signals.
 
 ### 🚀 Developed by: Cass Bliss, Josh Pattani, and Jazlin Rodriguez
 
-### 🎨 Artistic Direction: Cass Bliss
+### 🎥 Visual Design & Artistic Direction: Cass Bliss
 
-### 🧠 Neurofeedback Design: Josh Pattani
+### 🧠 Bio-sensing System Design & Development: Josh Pattani
 
-### 🎥 Visuals & Interaction: Jazlin Rodriguez
+### 🎹 Audio Design & Interaction: Jazlin Rodriguez
 
 ---
 
 ## 📚 References & Resources
 
-- 📖 [OpenBCI Cyton User Manual](https://docs.openbci.com/docs/02Cyton/CytonDataFormat)
+- 📖 [OpenBCI Cyton User Manual](https://docs.openbci.com/Cyton/CytonLanding/)
 - 📖 [LabstreamingLayer (LSL) Documentation](https://labstreaminglayer.readthedocs.io/)
+- 📖 [Brainflow Documentation](https://brainflow.readthedocs.io/en/stable/index.html)
+- 📖 [MNE-LSL Documentation](https://mne.tools/mne-lsl/stable/index.html)
 - 📖 [Max/MSP Documentation](https://docs.cycling74.com/max8)
 
 ---
