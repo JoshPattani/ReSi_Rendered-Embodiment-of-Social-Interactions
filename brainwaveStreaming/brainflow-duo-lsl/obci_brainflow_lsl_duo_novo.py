@@ -36,6 +36,8 @@ CRED = "\033[91m"
 CGREEN = "\33[32m"
 CYELLOW = "\33[33m"
 CEND = "\033[0m"
+CBOARD1 = "\033[96m"  # Cyan for board 1
+CBOARD2 = "\033[94m"  # Blue for board 2
 # default openbci channel commands (to avoid reflushing the board)
 OBCI_COMMANDS = (
     "x1060110X",
@@ -414,9 +416,8 @@ def main(argv):
         channel_names_OBCI_1[type] = args_OBCI_1["channel_names"][type].split(",")
         n_channels_OBCI_1[type] = len(channel_names_OBCI_1[type])
         srate_OBCI_1[type] = board_OBCI_1.get_sampling_rate(args_OBCI_1["board_id"])
-        name_OBCI_1 = (
-            args_OBCI_1["name"] + "_" + type + "_" + args_OBCI_1["serial_port"]
-        )
+        # Create more descriptive stream names with participant identifiers
+        name_OBCI_1 = f"userA_{args_OBCI_1['name']}_{type}"
         uid = args_OBCI_1["uid"] + "_" + type + "_" + args_OBCI_1["serial_port"]
         info_OBCI_1[type] = StreamInfo(
             name_OBCI_1,
@@ -455,9 +456,8 @@ def main(argv):
         channel_names_OBCI_2[type] = args_OBCI_2["channel_names"][type].split(",")
         n_channels_OBCI_2[type] = len(channel_names_OBCI_2[type])
         srate_OBCI_2[type] = board_OBCI_2.get_sampling_rate(args_OBCI_2["board_id"])
-        name_OBCI_2 = (
-            args_OBCI_2["name"] + "_" + type + "_" + args_OBCI_2["serial_port"]
-        )
+        # Create more descriptive stream names with participant identifiers
+        name_OBCI_2 = f"userB_{args_OBCI_2['name']}_{type}"
         uid = args_OBCI_2["uid"] + "_" + type + "_" + args_OBCI_2["serial_port"]
         info_OBCI_2[type] = StreamInfo(
             name_OBCI_2,
@@ -601,6 +601,9 @@ def main(argv):
             boards=[board_OBCI_1, board_OBCI_2],
             thread_initiated=True,
         )
+
+    print(f"{CBOARD1}Processing data from User A...{CEND}")
+    print(f"{CBOARD2}Processing data from User B...{CEND}")
 
 
 # ==== start the program ====

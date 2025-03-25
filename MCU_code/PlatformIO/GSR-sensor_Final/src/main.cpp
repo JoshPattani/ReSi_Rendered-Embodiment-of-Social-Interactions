@@ -257,7 +257,7 @@ void connectLocalPort()
 {
   delay(1000);
   Serial.println("Connecting to UDP port...");
-  Udp.begin(outPort); // Local port to listen on (doesn't matter much for sending)
+  Udp.begin(outPortVisual); // Local port to listen on (doesn't matter much for sending)
   UDPConnected = true;
   Serial.println("UDP connection established!");
 }
@@ -269,27 +269,30 @@ void sendOSCMessage(const char *address, float value)
   OSCMessage msg(address);
   msg.add(value);
 
-  // Begin UDP packet
-  Udp.beginPacket(outIp, outPort);
-
-  // Write OSC message to UDP
+  // Send to audio computer
+  Udp.beginPacket(outIpAudio, outPortAudio);
   msg.send(Udp);
+  Udp.endPacket();
 
-  // End packet and send
+  // Send to visual computer
+  Udp.beginPacket(outIpVisual, outPortVisual);
+  msg.send(Udp);
   Udp.endPacket();
 
   // Free space
   msg.empty();
 
-  if (DEBUG)
+  // Debug message but skip if address string contains "/pulse"
+  if (DEBUG && !strstr(address, "/pulse"))
   {
     Serial.print("Sent OSC message: ");
     Serial.print(address);
     Serial.print(" ");
     Serial.println(value);
-    Serial.print("...to IP address: ");
-    Serial.print(outIp);
-    Serial.print(" on port: ");
-    Serial.println(outPort);
+    Serial.print("...to both IP addresses: ");
+    Serial.print(outIpAudio);
+    Serial.print("(audio) and ");
+    Serial.print(outIpVisual);
+    Serial.println("(visual)");
   }
 }

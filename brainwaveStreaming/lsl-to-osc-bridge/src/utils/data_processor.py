@@ -78,8 +78,8 @@ def filter_data(
     data,
     sampling_rate=250,
     filter_type="bandpass",
-    low_cutoff=2.0,
-    high_cutoff=50.0,
+    low_cutoff=1.0,
+    high_cutoff=100.0,
     order=4,
     notch=True,
 ):
@@ -270,6 +270,7 @@ def bandPower(data, band, sampling_rate):
 
         # Extract band power for the specified frequency range
         band_power = DataFilter.get_band_power(psd_data, low_freq, high_freq)
+        # print(f"Band power in [{low_freq}, {high_freq}] Hz: {band_power:.6f}")
         return band_power if band_power > 0 else 0.0
     except Exception as e:
         print(f"Error calculating band power: {e}")
@@ -334,6 +335,7 @@ def calculate_band_powers(data, sampling_rate):
         # Calculate powers for each channel
         for ch in range(channels_count):
             channel_data = data_array[:, ch]
+            # print(f"Processing channel {ch + 1}/{channels_count}")
             channel_powers = _calculate_single_channel_powers(
                 channel_data, bands, sampling_rate
             )
@@ -346,13 +348,9 @@ def calculate_band_powers(data, sampling_rate):
                 [ch_power[band_name] for ch_power in all_channel_powers]
             )
 
-        # Calculate ratios from averages
-        # if avg_powers["beta"] != 0:
-        #     avg_powers["alpha/beta"] = avg_powers["alpha"] / avg_powers["beta"]
-        #     avg_powers["theta/beta"] = avg_powers["theta"] / avg_powers["beta"]
-        # else:
-        #     avg_powers["alpha/beta"] = 0
-        #     avg_powers["theta/beta"] = 0
+        # Convert values to uV^2
+        for band_name, band_power in avg_powers.items():
+            avg_powers[band_name] = band_power * 1e5  # Convert to uV^2
 
         return avg_powers
     else:
@@ -364,14 +362,6 @@ def _calculate_single_channel_powers(channel_data, bands, sampling_rate):
     powers = {}
     for band_name, band_range in bands.items():
         powers[band_name] = bandPower(channel_data, band_range, sampling_rate)
-
-    # Calculate useful ratios
-    # if powers["beta"] != 0:
-    #     powers["alpha/beta"] = powers["alpha"] / powers["beta"]
-    #     powers["theta/beta"] = powers["theta"] / powers["beta"]
-    # else:
-    #     powers["alpha/beta"] = 0
-    #     powers["theta/beta"] = 0
 
     return powers
 
@@ -419,7 +409,7 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
         "relaxMin": relaxMin,
         "relaxMax": relaxMax,
         "timestamp": timestamp,
-        "avg_band_powers": {},
+        # "avg_band_powers": {},
     }
 
     try:
@@ -429,7 +419,7 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
 
         # Calculate band powers manually since that's working
         band_powers = calculate_band_powers(data_array, sampling_rate)
-        metrics["avg_band_powers"] = band_powers
+        # metrics["avg_band_powers"] = band_powers
 
         # Print band powers for debugging
         print(
@@ -514,41 +504,44 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
             + f"Alpha/Beta: {alpha_beta_ratio:.4f}, Theta/Beta: {theta_beta_ratio:.4f}"
         )
 
+        metrics["alpha_beta_ratio"] = alpha_beta_ratio
+        metrics["theta_beta_ratio"] = theta_beta_ratio
+
         # Calculate alternative metric based on well-known EEG correlates
         # Higher alpha/beta ratio correlates with relaxation
-        if band_powers["beta"] > 0:
-            alt_relaxation = min(1.0, band_powers["alpha"] / band_powers["beta"] / 2)
-        else:
-            alt_relaxation = 0.5
+        # if band_powers["beta"] > 0:
+        #     alt_relaxation = min(1.0, band_powers["alpha"] / band_powers["beta"] / 2)
+        # else:
+        #     alt_relaxation = 0.5
 
-        # Lower beta and higher theta often correlates with focus/attention
-        if band_powers["beta"] > 0:
-            alt_focus = max(
-                0.0,
-                min(
-                    1.0,
-                    1.0
-                    - (
-                        band_powers["beta"]
-                        / (band_powers["theta"] + band_powers["alpha"] + 0.001)
-                    ),
-                ),
-            )
-        else:
-            alt_focus = 0.5
+        # # Lower beta and higher theta often correlates with focus/attention
+        # if band_powers["beta"] > 0:
+        #     alt_focus = max(
+        #         0.0,
+        #         min(
+        #             1.0,
+        #             1.0
+        #             - (
+        #                 band_powers["beta"]
+        #                 / (band_powers["theta"] + band_powers["alpha"] + 0.001)
+        #             ),
+        #         ),
+        #     )
+        # else:
+        #     alt_focus = 0.5
 
-        # Average with BrainFlow's metrics for more stability
-        metrics["mindfulness"] = (metrics["mindfulness"] + alt_focus) / 2
-        metrics["restfulness"] = (metrics["restfulness"] + alt_relaxation) / 2
+        # # Average with BrainFlow's metrics for more stability
+        # metrics["mindfulness"] = (metrics["mindfulness"] + alt_focus) / 2
+        # metrics["restfulness"] = (metrics["restfulness"] + alt_relaxation) / 2
 
-        print(
-            f"Final metrics - Focus: {metrics['mindfulness']:.4f}, Relaxation: {metrics['restfulness']:.4f}"
-        )
+        # print(
+        #     f"Final metrics - Focus: {metrics['mindfulness']:.4f}, Relaxation: {metrics['restfulness']:.4f}"
+        # )
 
-        if metrics["mindfulness"] != focus:
-            focus = metrics["mindfulness"]
-        if metrics["restfulness"] != relax:
-            relax = metrics["restfulness"]
+        # if metrics["mindfulness"] != focus:
+        #     focus = metrics["mindfulness"]
+        # if metrics["restfulness"] != relax:
+        #     relax = metrics["restfulness"]
 
         # Track if min/max values change
         focus_min_changed = False

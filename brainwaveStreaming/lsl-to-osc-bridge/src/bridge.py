@@ -179,6 +179,25 @@ def main():
                                 # Extract only active channels
                                 active_data = buffered_samples[:, active_channels]
 
+                                # Send raw EEG data via OSC
+                                if len(active_channels) > 0:
+                                    # Get the latest sample (last row of the buffer)
+                                    latest_sample = active_data[-1]
+
+                                    # Create OSC message with raw EEG data
+                                    raw_osc_message = {
+                                        "type": "EEG_Raw",
+                                        "name": stream_data["name"],
+                                        "channels": latest_sample.tolist(),
+                                        "timestamp": current_time,
+                                    }
+
+                                    # Send raw EEG data via OSC
+                                    osc_sender.send_message(raw_osc_message)
+                                    print(
+                                        f"Sent raw EEG data for {len(active_channels)} channels"
+                                    )
+
                                 # Force buffer reset (sliding window approach)
                                 # Keep only the most recent 20% of samples to force updates
                                 retain_samples = int(
@@ -320,7 +339,7 @@ def main():
                     f"Success: Sent OSC Message to {config.OSC_IP} on port {config.OSC_PORT}"
                 )
 
-            time.sleep(config.DATA_SEND_INTERVAL)
+            # time.sleep(config.DATA_SEND_INTERVAL)
     except KeyboardInterrupt:
         print("Stopping the bridge...")
     finally:

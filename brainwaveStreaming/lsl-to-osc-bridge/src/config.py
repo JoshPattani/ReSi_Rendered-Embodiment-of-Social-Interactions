@@ -27,17 +27,18 @@ UCB Wireless network:
 BBX network:
 - Audio computer:
     - "192.168.1.105"
+    - "192.168.1.154"
 - Visual computer:
     - "192.168.1.170"
 """
 
 # Multiple destination IP addresses for audio and visual computers
-OSC_IP = ["192.168.1.105", "192.168.1.170"]  # [Audio Computer, Visual Computer]
+OSC_IP = ["192.168.0.8", "192.168.1.170"]  # [Audio Computer, Visual Computer]
 OSC_PORT = 42069  # Same port for both destinations
 OSC_ADDRESS = "/obci"  # OSC address to send data to
 
-DATA_SEND_INTERVAL = 0.01  # Interval in seconds for sending data
-SCALE_FACTOR = 1.0  # Scale factor for EEG data
+DATA_SEND_INTERVAL = 0.001  # Interval in seconds for sending data
+SCALE_FACTOR = 1  # Scaling factor for the data
 SAMPLE_RATE = 250  # Sampling rate of the data
 GAIN = 24  # Gain setting of the OpenBCI Cyton board
 DEBUG_MODE = False  # Set to False in production

@@ -128,6 +128,7 @@ class OSCSender:
                     if client_key in self.clients:
                         self.clients[client_key].send_message(address, str(value))
 
+    # Update the send_message method to format OSC messages correctly for Max
     def send_message(self, data):
         """
         Send data via OSC to all configured IP addresses.
@@ -145,17 +146,111 @@ class OSCSender:
             port = self._get_port_for_stream(data["type"])
             self._ensure_client_exists(port)
 
-            # Handle EEG_Metrics formatted message
+            # Handle EEG_Metrics formatted message for Max compatibility
             if data["type"] == "EEG_Metrics":
                 stream_name = data["name"]
+                if not stream_name.endswith("_EXG"):
+                    stream_name = (
+                        f"{stream_name}_EXG"  # Ensure name matches what Max expects
+                    )
 
-                # Use the helper method to handle any type of value
-                for key in ["bands", "metrics"]:
-                    if key in data and data[key]:
-                        base_address = f"/{stream_name}/{key}"
-                        self._send_value(base_address, data[key], port)
+                # Format band powers in a Max-friendly way
+                if "bands" in data and data["bands"]:
+                    for band_name, band_value in data["bands"].items():
+                        # Format: /stream_name/bands/band_name value
+                        address = f"/{stream_name}/bands/{band_name}"
+                        for ip in self.ips:
+                            client_key = f"{ip}:{port}"
+                            if client_key in self.clients:
+                                try:
+                                    self.clients[client_key].send_message(
+                                        address, float(band_value)
+                                    )
+                                    print(f"Sent band: {band_name}={band_value}")
+                                except (TypeError, ValueError) as e:
+                                    print(
+                                        f"Error sending band {band_name}: {e} - Value type: {type(band_value)}"
+                                    )
+                                    # If it's a complex type, try sending a representative value
+                                    if isinstance(band_value, dict) and band_value:
+                                        # Send first value from the dictionary
+                                        first_value = next(iter(band_value.values()))
+                                        self.clients[client_key].send_message(
+                                            address, float(first_value)
+                                        )
+                                    elif (
+                                        isinstance(band_value, (list, tuple))
+                                        and band_value
+                                    ):
+                                        # Send first value from list/tuple
+                                        self.clients[client_key].send_message(
+                                            address, float(band_value[0])
+                                        )
+                                    else:
+                                        # Send 0 as fallback
+                                        self.clients[client_key].send_message(
+                                            address, 0.0
+                                        )
 
-                print(f"Sent metrics data for {stream_name} to all IPs on port {port}")
+                # Format metrics in a Max-friendly way
+                if "metrics" in data and data["metrics"]:
+                    for metric_name, metric_value in data["metrics"].items():
+                        # Format: /stream_name/metrics/metric_name value
+                        address = f"/{stream_name}/metrics/{metric_name}"
+                        for ip in self.ips:
+                            client_key = f"{ip}:{port}"
+                            if client_key in self.clients:
+                                try:
+                                    # Handle complex types
+                                    if isinstance(metric_value, dict):
+                                        # For dictionaries, send first value or 0
+                                        if metric_value:
+                                            first_value = next(
+                                                iter(metric_value.values())
+                                            )
+                                            self.clients[client_key].send_message(
+                                                address, float(first_value)
+                                            )
+                                        else:
+                                            self.clients[client_key].send_message(
+                                                address, 0.0
+                                            )
+                                    elif (
+                                        isinstance(metric_value, (list, tuple))
+                                        and metric_value
+                                    ):
+                                        # For lists/tuples, send first value
+                                        self.clients[client_key].send_message(
+                                            address, float(metric_value[0])
+                                        )
+                                    else:
+                                        # Try direct conversion
+                                        self.clients[client_key].send_message(
+                                            address, float(metric_value)
+                                        )
+                                    print(f"Sent metric: {metric_name}={metric_value}")
+                                except (TypeError, ValueError) as e:
+                                    print(f"Error sending metric {metric_name}: {e}")
+                                    # Send 0 as fallback
+                                    self.clients[client_key].send_message(address, 0.0)
+            elif data["type"] == "EEG_Raw":
+                stream_name = data["name"]
+
+                # Format: /stream_name/eeg/channels [ch1, ch2, ch3, ...]
+                address = f"/{stream_name}/eeg/channels"
+                for ip in self.ips:
+                    client_key = f"{ip}:{port}"
+                    if client_key in self.clients:
+                        try:
+                            # Send all channels in a single message
+                            self.clients[client_key].send_message(
+                                address, data["channels"]
+                            )
+                            print(
+                                f"Sent raw EEG data with {len(data['channels'])} channels"
+                            )
+                        except Exception as e:
+                            print(f"Error sending raw EEG data: {e}")
             else:
                 # Generic custom message handler
                 for key, value in data.items():

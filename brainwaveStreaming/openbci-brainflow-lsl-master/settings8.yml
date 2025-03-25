@@ -5,7 +5,7 @@ args:
  timeout: 0
  ip_address:
  board_id: 0 # required!
- serial_port: COM12 # Mac: /dev/cu.usbserial-DM00D7TW
+ serial_port: COM19 # Mac: /dev/cu.usbserial-DM00D7TW
  streamer_params:
  name: obci_cyton # required!
  data_type: # required!
