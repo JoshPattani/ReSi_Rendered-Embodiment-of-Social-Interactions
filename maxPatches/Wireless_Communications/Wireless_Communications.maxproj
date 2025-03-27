@@ -2,8 +2,8 @@
 	"name" : "Wireless_Communications",
 	"version" : 1,
 	"creationdate" : 3822593212,
-	"modificationdate" : 3822593212,
-	"viewrect" : [ 0.0, 0.0, 300.0, 500.0 ],
+	"modificationdate" : 3825453706,
+	"viewrect" : [ 25.0, 107.0, 300.0, 500.0 ],
 	"autoorganize" : 1,
 	"hideprojectwindow" : 0,
 	"showdependencies" : 1,
@@ -18,7 +18,7 @@
 
 		}
 ,
-		"code" : 		{
+		"externals" : 		{
 
 		}
 
