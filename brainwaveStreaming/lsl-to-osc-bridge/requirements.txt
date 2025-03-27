@@ -6,4 +6,5 @@ yaml
 matplotlib
 pandas
 mne-lsl
-```
+termcolor_dg
+pyfiglet

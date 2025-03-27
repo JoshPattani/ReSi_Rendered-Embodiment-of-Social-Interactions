@@ -3,6 +3,7 @@ from pythonosc.osc_message_builder import OscMessageBuilder
 import numpy as np
 import json
 import time
+from rich import print as rprint
 
 
 class OSCSender:
@@ -91,7 +92,7 @@ class OSCSender:
             if isinstance(self.ports, dict)
             else [self.default_port]
         ):
-            print(f"- OSC port {port} configured")
+            rprint(f"[green3]- OSC port {port} configured[/green3]")
 
     def _send_value(self, address, value, port):
         """Helper method to send different types of values"""
@@ -166,10 +167,12 @@ class OSCSender:
                                     self.clients[client_key].send_message(
                                         address, float(band_value)
                                     )
-                                    print(f"Sent band: {band_name}={band_value}")
+                                    rprint(
+                                        f"[medium_purple4]Sent band: {band_name}={band_value}[/medium_purple4]"
+                                    )
                                 except (TypeError, ValueError) as e:
-                                    print(
-                                        f"Error sending band {band_name}: {e} - Value type: {type(band_value)}"
+                                    rprint(
+                                        f"[red]Error sending band {band_name}: {e} - Value type: {type(band_value)}[/red]"
                                     )
                                     # If it's a complex type, try sending a representative value
                                     if isinstance(band_value, dict) and band_value:
@@ -228,9 +231,13 @@ class OSCSender:
                                         self.clients[client_key].send_message(
                                             address, float(metric_value)
                                         )
-                                    print(f"Sent metric: {metric_name}={metric_value}")
+                                    rprint(
+                                        f"[hot_pink2]Sent metric: {metric_name}={metric_value}[/hot_pink2]"
+                                    )
                                 except (TypeError, ValueError) as e:
-                                    print(f"Error sending metric {metric_name}: {e}")
+                                    rprint(
+                                        f"[red]Error sending metric {metric_name}: {e}[/red]"
+                                    )
                                     # Send 0 as fallback
                                     self.clients[client_key].send_message(address, 0.0)
             elif data["type"] == "EEG_Raw":
@@ -246,11 +253,11 @@ class OSCSender:
                             self.clients[client_key].send_message(
                                 address, data["channels"]
                             )
-                            print(
-                                f"Sent raw EEG data with {len(data['channels'])} channels"
+                            rprint(
+                                f"[sky_blue2]Sent raw EEG data with {len(data['channels'])} channels[/sky_blue2]"
                             )
                         except Exception as e:
-                            print(f"Error sending raw EEG data: {e}")
+                            rprint(f"[red]Error sending raw EEG data: {e}[/red]")
             else:
                 # Generic custom message handler
                 for key, value in data.items():

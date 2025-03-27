@@ -1,6 +1,21 @@
+"""
+LSL to OSC Bridge
+=================
+
+Author: Josh Pattani https://github.com/JoshPattani
+Date: 2025-03-25
+
+This script bridges data from an LSL stream to an OSC server. It receives EEG data from an LSL stream, processes the data, and sends the results via OSC to a specified IP address and port. The script was designed to work with OpenBCI Cyton boards and the Brainflow-LSL streaming program by Marcin Lesniak @marles77
+"""
+
 import time
 import numpy as np
-from termcolor import cprint
+
+# from termcolor_dg import colored, cprint
+from rich import print as rprint
+from rich import inspect  # Switched to rich for beautiful console output
+from rich.console import Console
+from pyfiglet import Figlet
 import threading
 from lsl_receiver import LSLReceiver
 from osc_sender import OSCSender
@@ -25,6 +40,7 @@ sample_buffer = {}
 last_focus = 0.5
 last_relax = 0.5
 smooth_factor = 0.85  # Higher = more smoothing
+INITIALIZED = False
 
 
 def key_listener():
@@ -47,7 +63,21 @@ key_thread.daemon = True
 key_thread.start()
 
 
+def hello_world():
+    s = Figlet(font="isometric1")
+    f = Figlet(font="smslant", width=200)
+    rprint(f"[magenta]{s.renderText(' RESI')}[/magenta]")
+    rprint(f"[cyan]{f.renderText('LSL-to-OSC')}[/cyan]")
+    rprint(f"[cyan]{s.renderText(' Bridger!')}[/cyan]")
+    print("\n")
+
+
 def main():
+    global INITIALIZED
+    if not INITIALIZED:
+        hello_world()
+        INITIALIZED = True
+
     # Set LSL source name and data type to None for this session to find any streams
     # This overrides config.py settings to ensure we can find OpenBCI streams
     lsl_source_name = config.LSL_SOURCE_NAME
@@ -82,7 +112,7 @@ def main():
 
         # If we found streams, break out of the loop
         if lsl_receiver.inlets:
-            print(f"Found {len(lsl_receiver.inlets)} LSL streams!")
+            rprint(f"[green]Found {len(lsl_receiver.inlets)} LSL streams![/green]")
             break
 
         # Clean up and try again
@@ -91,21 +121,20 @@ def main():
         attempt += 1
 
         # Wait before next attempt
-        print("Waiting before next attempt...")
+        rprint("[yellow]Waiting before next attempt...[/yellow]")
         time.sleep(2)
 
     if not lsl_receiver or not lsl_receiver.inlets:
-        print("Failed to find any LSL streams after multiple attempts. Exiting.")
+        rprint(
+            "[red]Failed to find any LSL streams after multiple attempts. Exiting.[/red]"
+        )
         return
 
-    cprint(
-        "Bridging faster than the air-speed velocity of an unladen swallow...",
-        "blue",
-        "on_white",
+    rprint(
+        "[blue]Bridging faster than the air-speed velocity of an unladen swallow...[/blue]",
     )
-    cprint(
-        "Press 'r' to reset the buffer, 'g' to check railed percentages, or 'q' to quit.",
-        "cyan",
+    rprint(
+        "[yellow]Press 'r' to reset the buffer, 'g' to check railed percentages, or 'q' to quit.[/yellow]",
     )
 
     # Initialize OSC Sender
@@ -211,13 +240,13 @@ def main():
                                 try:
                                     railed_percentages = {}
                                     colors = [
-                                        "light_grey",
-                                        "magenta",
-                                        "blue",
-                                        "green",
-                                        "light_yellow",
-                                        "light_red",
-                                        "red",
+                                        "bright_black",
+                                        "purple3",
+                                        "navy_blue",
+                                        "dark_green",
+                                        "gold3",
+                                        "dark_orange",
+                                        "red3",
                                     ]
                                     for ch in active_channels:
                                         railed_percentage = (
@@ -226,13 +255,14 @@ def main():
                                             )
                                         )
                                         railed_percentages[ch] = railed_percentage
-                                        cprint(
-                                            f"Channel {ch} railed percentage: {railed_percentage}",
-                                            colors[ch % len(colors)],
-                                            attrs=["bold"],
+                                        color = colors[ch % len(colors)]
+                                        rprint(
+                                            f"[{color}]Channel {ch} railed percentage: {railed_percentage}[/{color}]"
                                         )
                                 except Exception as e:
-                                    print(f"Error calculating railed percentages: {e}")
+                                    rprint(
+                                        f"[bright_red]Error calculating railed percentages: {e}[/bright_red]"
+                                    )
 
                                 try:
                                     # Normalize the data before processing
@@ -319,18 +349,20 @@ def main():
                                     }
 
                                     osc_sender.send_message(osc_message)
-                                    print(
-                                        f"Focus: {metrics.get('mindfulness', 0)}, Relaxation: {metrics.get('restfulness', 0)}"
+                                    rprint(
+                                        f"[chartreuse3]Focus: {metrics.get('mindfulness', 0)}[/chartreuse3], [light_slate_blue]Relaxation: {metrics.get('restfulness', 0)}[/light_slate_blue]"
                                     )
 
                                 except Exception as e:
-                                    print(f"Error processing EEG data: {e}")
+                                    rprint(
+                                        f"[bright_red]Error processing EEG data: {e}[/bright_red]"
+                                    )
                                     import traceback
 
                                     traceback.print_exc()
 
-                                print(
-                                    f"Processed {len(active_channels)} active channels: {active_channels}"
+                                rprint(
+                                    f"[dark_cyan]Processed {len(active_channels)} active channels: {active_channels}[/dark_cyan]"
                                 )
 
                 # Send raw data as well if needed
@@ -341,18 +373,18 @@ def main():
 
             # time.sleep(config.DATA_SEND_INTERVAL)
     except KeyboardInterrupt:
-        print("Stopping the bridge...")
+        rprint("[orange3]Stopping the bridge...[/orange3]")
     finally:
         lsl_receiver.stop_streams()
 
-    print("Bridge has been stopped.")
+    rprint("[dark_cyan]Bridge has been stopped.[/dark_cyan]")
 
 
 def reset_buffer():
     """Force a reset of the data buffer"""
     global sample_buffer
     sample_buffer = {}
-    print("Buffer reset!")
+    rprint("[yellow]Buffer reset![/yellow]")
 
 
 if __name__ == "__main__":

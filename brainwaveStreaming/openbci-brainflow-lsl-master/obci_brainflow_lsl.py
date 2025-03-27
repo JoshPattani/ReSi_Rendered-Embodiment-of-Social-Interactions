@@ -21,6 +21,12 @@ import os
 import time
 import serial
 import numpy as np
+
+# from termcolor_dg import colored, cprint
+from rich import print as rprint
+from rich import inspect  # Switching to rich for beautiful console output
+from rich.console import Console
+from pyfiglet import Figlet
 import threading
 import subprocess
 import brainflow
@@ -60,6 +66,7 @@ MARKER = {
     "1": 11,
     "2": 22,
 }  # mapping of external markers; can add more but avoid '0' and '7'
+INITIALIZED = False
 
 # ==== auxiliary functions ====
 
@@ -421,11 +428,25 @@ def start_bridge():
         return False
 
 
+def hello_world():
+    s = Figlet(font="isometric1")
+    f = Figlet(font="smslant", width=200)
+
+    # Rich print for beautiful console output
+    rprint(f"[cyan]{s.renderText(' RESI')}[/cyan]")
+    rprint(f"[green]{f.renderText('LSL Stream Initiated!')}[/green]")
+
+
 # ==== main function ====
 
 
 def main(argv):
     """Takes args and initiates streaming"""
+    global INITIALIZED
+
+    if not INITIALIZED:
+        hello_world()
+        INITIALIZED = True
 
     if argv:
         # manage settings read form a yaml file

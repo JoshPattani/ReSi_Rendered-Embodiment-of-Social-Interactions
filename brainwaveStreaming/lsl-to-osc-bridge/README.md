@@ -141,6 +141,14 @@ You can receive these OSC messages in software like:
 - Increase the processing buffer size in the bridge
 - Limit the number of processed channels
 
+## Future Features
+
+- Implement EEG signal cleaning to remove motion artifacts
+- Add support for additional EEG feature extraction
+- Enhance hyperscanning capabilities for multiple participants (e.g., synchronization and coherence)
+- Implement a GUI for configuration and monitoring
+- Improve error handling and logging mechanisms
+
 ## Contributing
 
 Contributions are welcome! Please submit a pull request or open an issue for any enhancements or bug fixes.

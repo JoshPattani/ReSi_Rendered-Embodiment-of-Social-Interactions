@@ -19,6 +19,11 @@ import yaml
 import os
 import sys
 import time
+
+# from termcolor_dg import colored, cprint
+from rich import print as rprint
+from rich import inspect  # Switching to rich for beautiful console output
+from pyfiglet import Figlet
 import numpy as np
 import pandas as pd
 import threading
@@ -65,6 +70,9 @@ MARKER = {
     "1": 11,
     "2": 22,
 }  # mapping of external markers; can add more but avoid '0' and '7'
+INITIALIZED = False
+# global variable to store the bridge process
+bridge_process = None
 
 # ==== auxiliary functions ====
 
@@ -278,10 +286,6 @@ def collect_cont(board, args, srate, outlet, fw_delay):
     # print("Stopped collecting data")
 
 
-# Add a global variable to store the bridge process
-bridge_process = None
-
-
 def kill_existing_bridges():
     """Find and kill any existing bridge processes."""
     try:
@@ -361,11 +365,27 @@ def start_bridge():
         return False
 
 
+def hello_world():
+    s = Figlet(font="isometric1")
+    f = Figlet(font="smslant", width=200)
+    b = Figlet(font="smslant", justify="center")
+
+    # Rich print for beautiful console output
+    rprint(f"[cyan]{s.renderText(' RESI')}[/cyan]")
+    rprint(f"[green]{f.renderText('LSL Stream Initiated!')}[/green]")
+    rprint(f"[gold3]{b.renderText('DUO Mode!')}[/gold3]")
+
+
 # ==== main function ====
 
 
 def main(argv):
     """Takes args and initiates streaming"""
+    global INITIALIZED
+
+    if not INITIALIZED:
+        hello_world()
+        INITIALIZED = True
 
     if argv:
         # manage settings read form a yaml file
