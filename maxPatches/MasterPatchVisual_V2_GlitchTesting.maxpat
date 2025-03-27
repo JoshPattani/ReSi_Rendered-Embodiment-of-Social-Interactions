@@ -31,7 +31,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 3093.333429455757141, 228.0, 195.0, 34.0 ],
-					"presentation_linecount" : 2,
 					"text" : "manual bang current vals into system - after crash or reset"
 				}
 
@@ -1696,7 +1695,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"patching_rect" : [ 678.313278079032898, 2597.333410739898682, 69.0, 22.0 ],
-					"text" : "metro 3000"
+					"text" : "metro 3500"
 				}
 
 			}
@@ -14024,7 +14023,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 399.019134879112244, 2048.365162372589111, 117.0, 22.0 ],
-					"text" : "scale 0 128 0.01 0.4"
+					"text" : "scale 0 128 0.01 0.1"
 				}
 
 			}
