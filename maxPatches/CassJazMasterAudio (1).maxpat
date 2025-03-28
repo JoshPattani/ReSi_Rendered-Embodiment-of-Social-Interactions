@@ -4129,7 +4129,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 1374.666706323623657, 2285.333400726318359, 186.666672229766846, 171.0 ],
+					"patching_rect" : [ -0.333333253860474, 1761.666723608970642, 186.666672229766846, 171.0 ],
 					"text" : "Note Control & Output to Ableton",
 					"textcolor" : [ 1.0, 0.941176470588235, 0.0, 1.0 ]
 				}
@@ -5321,7 +5321,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 3378.0, 599.0, 60.0, 22.0 ]
+					"patching_rect" : [ 3378.0, 599.0, 60.0, 22.0 ],
+					"text" : "0."
 				}
 
 			}
@@ -5429,7 +5430,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3018.0, 433.0, 50.0, 22.0 ],
-					"text" : "2296."
+					"text" : "372."
 				}
 
 			}
@@ -5477,7 +5478,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3018.0, 495.0, 50.0, 22.0 ],
-					"text" : "2296."
+					"text" : "1842."
 				}
 
 			}
@@ -5513,7 +5514,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3316.0, 505.0, 60.0, 22.0 ],
-					"text" : "0."
+					"text" : "96."
 				}
 
 			}
@@ -5537,7 +5538,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3318.0, 465.0, 57.0, 22.0 ],
-					"text" : "83."
+					"text" : "110."
 				}
 
 			}
@@ -5561,7 +5562,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3018.0, 553.0, 50.0, 22.0 ],
-					"text" : "1109."
+					"text" : "896."
 				}
 
 			}
@@ -9033,7 +9034,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 3316.0, 421.0, 60.0, 22.0 ],
-					"text" : "61."
+					"text" : "57."
 				}
 
 			}
@@ -9587,7 +9588,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 947.0, 155.0, 171.951223611831665, 22.0 ],
-					"text" : "/User_A/pulse 0."
+					"text" : "/User_B/gsr/value 896."
 				}
 
 			}
