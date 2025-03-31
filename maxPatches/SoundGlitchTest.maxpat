@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 9,
 			"minor" : 0,
-			"revision" : 4,
+			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 305.0, 171.0, 987.0, 640.0 ],
+		"rect" : [ 419.0, 561.0, 987.0, 640.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
 				"box" : 				{
@@ -79,8 +79,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 400.0, 378.0, 24.0, 24.0 ],
-					"svg" : ""
+					"patching_rect" : [ 400.0, 378.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -98,104 +97,13 @@
 			}
 , 			{
 				"box" : 				{
-					"id" : "obj-4",
-					"maxclass" : "gain~",
-					"multichannelvariant" : 0,
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "signal", "" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 657.0, 246.0, 22.0, 140.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-3",
-					"maxclass" : "ezdac~",
-					"numinlets" : 2,
-					"numoutlets" : 0,
-					"patching_rect" : [ 695.0, 395.0, 45.0, 45.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"basictuning" : 440,
-					"data" : 					{
-						"clips" : [ 							{
-								"absolutepath" : "C:/Users/bliss/OneDrive/Documents/GitHub/ReSi_Rendered-Embodiment-of-Social-Interactions/maxPatches/250305__jacksonmiller0__extreme-glitch-mess.wav",
-								"filename" : "250305__jacksonmiller0__extreme-glitch-mess.wav",
-								"filekind" : "audiofile",
-								"id" : "u470001575",
-								"selection" : [ 0.0, 1.0 ],
-								"loop" : 0,
-								"content_state" : 								{
-
-								}
-
-							}
- ]
-					}
-,
-					"followglobaltempo" : 0,
-					"formantcorrection" : 0,
-					"id" : "obj-2",
-					"maxclass" : "playlist~",
-					"mode" : "basic",
-					"numinlets" : 1,
-					"numoutlets" : 5,
-					"originallength" : [ 0.0, "ticks" ],
-					"originaltempo" : 120.0,
-					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 625.0, 78.0, 150.0, 30.0 ],
-					"pitchcorrection" : 0,
-					"quality" : "basic",
-					"saved_attribute_attributes" : 					{
-						"candicane2" : 						{
-							"expression" : ""
-						}
-,
-						"candicane3" : 						{
-							"expression" : ""
-						}
-,
-						"candicane4" : 						{
-							"expression" : ""
-						}
-,
-						"candicane5" : 						{
-							"expression" : ""
-						}
-,
-						"candicane6" : 						{
-							"expression" : ""
-						}
-,
-						"candicane7" : 						{
-							"expression" : ""
-						}
-,
-						"candicane8" : 						{
-							"expression" : ""
-						}
-
-					}
-,
-					"timestretch" : [ 0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"bubble" : 1,
 					"id" : "obj-50",
 					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 231.0, 182.0, 75.0, 38.0 ],
+					"patching_rect" : [ 231.0, 182.0, 75.0, 37.0 ],
 					"text" : "set threshold",
 					"textcolor" : [ 0.996078431372549, 1.0, 0.0, 1.0 ]
 				}
@@ -210,7 +118,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 63.0, 230.0, 60.66666853427887, 52.0 ],
+					"patching_rect" : [ 63.0, 230.0, 60.66666853427887, 51.0 ],
 					"text" : "Real Time Data",
 					"textcolor" : [ 0.956862745098039, 1.0, 0.0, 1.0 ]
 				}
@@ -237,7 +145,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 153.0, 392.0, 70.666668772697449, 48.0 ],
+					"patching_rect" : [ 153.0, 392.0, 70.666668772697449, 47.0 ],
 					"text" : "Unfocused Mode Activated",
 					"textcolor" : [ 0.956862745098039, 1.0, 0.0, 1.0 ]
 				}
@@ -277,7 +185,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 176.0, 188.0, 55.0, 27.0 ]
+					"patching_rect" : [ 176.0, 188.0, 55.0, 26.0 ]
 				}
 
 			}
@@ -289,7 +197,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 219.0, 230.0, 87.0, 38.0 ],
+					"patching_rect" : [ 219.0, 230.0, 87.0, 37.0 ],
 					"text" : "Threshold for glitch",
 					"textcolor" : [ 0.996078431372549, 1.0, 0.0, 1.0 ]
 				}
@@ -305,7 +213,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 108.0, 188.0, 60.0, 27.0 ]
+					"patching_rect" : [ 108.0, 188.0, 60.0, 26.0 ]
 				}
 
 			}
@@ -343,8 +251,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 108.0, 394.0, 44.666666567325592, 44.666666567325592 ],
-					"svg" : ""
+					"patching_rect" : [ 108.0, 394.0, 44.666666567325592, 44.666666567325592 ]
 				}
 
 			}
@@ -367,34 +274,6 @@
 				"patchline" : 				{
 					"destination" : [ "obj-13", 0 ],
 					"source" : [ "obj-17", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-4", 0 ],
-					"source" : [ "obj-2", 1 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-4", 0 ],
-					"source" : [ "obj-2", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-3", 1 ],
-					"source" : [ "obj-4", 1 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-3", 0 ],
-					"source" : [ "obj-4", 0 ]
 				}
 
 			}
@@ -468,15 +347,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-17", 0 ],
-					"order" : 2,
-					"source" : [ "obj-7", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-2", 0 ],
-					"order" : 0,
+					"order" : 1,
 					"source" : [ "obj-7", 0 ]
 				}
 
@@ -484,21 +355,14 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-9", 0 ],
-					"order" : 1,
+					"order" : 0,
 					"source" : [ "obj-7", 0 ]
 				}
 
 			}
  ],
-		"originid" : "pat-63",
-		"dependency_cache" : [ 			{
-				"name" : "250305__jacksonmiller0__extreme-glitch-mess.wav",
-				"bootpath" : "~/OneDrive/Documents/GitHub/ReSi_Rendered-Embodiment-of-Social-Interactions/maxPatches",
-				"patcherrelativepath" : ".",
-				"type" : "WAVE",
-				"implicit" : 1
-			}
- ],
+		"originid" : "pat-270",
+		"dependency_cache" : [  ],
 		"autosave" : 0
 	}
 
