@@ -57,11 +57,11 @@ const int sensorPin = digitalPin;
 // =============================== //
 
 // --- HRV data storage (digital mode) ---
-// We assume a 2.5‑minute window. At high heart rates, you might see up to 300 beats.
+// We assume a 2‑minute window. At high heart rates, you might see up to 240 beats.
 // For simplicity, we use a fixed-size buffer. Modify as needed.
-#define HRV_BUFFER_SIZE 300         // Buffer size for NN intervals
-#define HRV_WINDOW_MS 150000UL      // 2.5 minutes in milliseconds
-#define HRV_UPDATE_INTERVAL 30000UL // Update every 30 seconds
+#define HRV_BUFFER_SIZE 500         // Buffer size for NN intervals
+#define HRV_WINDOW_MS 120000UL      // 2 minutes in milliseconds
+#define HRV_UPDATE_INTERVAL 10000UL // Update every 10 seconds
 
 // Add these variables for sliding window management
 unsigned long lastHrvUpdateTime = 0;

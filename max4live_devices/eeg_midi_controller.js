@@ -36,6 +36,9 @@ var currentTrainingState = "";
 var currentTrainingClass = 0;
 var oscDebug = false;
 var lastProcessedTime = 0;
+var activeUser = "both"; // Default to both users
+var lastUserAData = {};
+var lastUserBData = {};
 
 // Initialize for channel data
 var eegBuffer = [];
@@ -126,6 +129,22 @@ function loadbang() {
 // **************************
 // ** Data Reception **
 // **************************
+
+// Add this function to handle user selection messages
+function userAOnly() {
+ activeUser = "userA";
+ post("Switched to User A control mode\n");
+}
+
+function userBOnly() {
+ activeUser = "userB";
+ post("Switched to User B control mode\n");
+}
+
+function bothUsers() {
+ activeUser = "both";
+ post("Processing both users' data\n");
+}
 
 // Function to enable/disable multi-channel processing
 function setProcessAllChannels(enable) {
@@ -244,78 +263,104 @@ function processRawData(data) {
 function processBandsData(address, value) {
  post("Processing band data: " + address + " = " + value + "\n");
 
- if (processAllChannels) {
-  // In multi-channel mode, update all channels with the same value
-  // (since the bridge sends the average across all channels)
-  for (var i = 0; i < numChannels; i++) {
-   if (address.indexOf("delta") !== -1) {
-    bandPower.delta[i] = smoothValue(bandPower.delta[i], value);
-   } else if (address.indexOf("theta") !== -1) {
-    bandPower.theta[i] = smoothValue(bandPower.theta[i], value);
-   } else if (address.indexOf("alpha") !== -1) {
-    bandPower.alpha[i] = smoothValue(bandPower.alpha[i], value);
-   } else if (address.indexOf("beta") !== -1) {
-    bandPower.beta[i] = smoothValue(bandPower.beta[i], value);
-   } else if (address.indexOf("gamma") !== -1) {
-    bandPower.gamma[i] = smoothValue(bandPower.gamma[i], value);
+ // Determine which user this data belongs to
+ var isUserA = address.toLowerCase().indexOf("usera") !== -1;
+ var isUserB = address.toLowerCase().indexOf("userb") !== -1;
+
+ // Store the latest data for each user
+ if (isUserA) {
+  if (address.indexOf("delta") !== -1) lastUserAData.delta = value;
+  else if (address.indexOf("theta") !== -1) lastUserAData.theta = value;
+  else if (address.indexOf("alpha") !== -1) lastUserAData.alpha = value;
+  else if (address.indexOf("beta") !== -1) lastUserAData.beta = value;
+  else if (address.indexOf("gamma") !== -1) lastUserAData.gamma = value;
+ } else if (isUserB) {
+  if (address.indexOf("delta") !== -1) lastUserBData.delta = value;
+  else if (address.indexOf("theta") !== -1) lastUserBData.theta = value;
+  else if (address.indexOf("alpha") !== -1) lastUserBData.alpha = value;
+  else if (address.indexOf("beta") !== -1) lastUserBData.beta = value;
+  else if (address.indexOf("gamma") !== -1) lastUserBData.gamma = value;
+ }
+
+ // Only process data from the active user(s)
+ if (
+  (activeUser === "userA" && isUserA) ||
+  (activeUser === "userB" && isUserB) ||
+  activeUser === "both"
+ ) {
+  if (processAllChannels) {
+   // In multi-channel mode, update all channels
+   for (var i = 0; i < numChannels; i++) {
+    if (address.indexOf("delta") !== -1)
+     bandPower.delta[i] = smoothValue(bandPower.delta[i], value);
+    else if (address.indexOf("theta") !== -1)
+     bandPower.theta[i] = smoothValue(bandPower.theta[i], value);
+    else if (address.indexOf("alpha") !== -1)
+     bandPower.alpha[i] = smoothValue(bandPower.alpha[i], value);
+    else if (address.indexOf("beta") !== -1)
+     bandPower.beta[i] = smoothValue(bandPower.beta[i], value);
+    else if (address.indexOf("gamma") !== -1)
+     bandPower.gamma[i] = smoothValue(bandPower.gamma[i], value);
    }
-  }
 
-  // Send MIDI for all channels
-  for (var i = 0; i < numChannels; i++) {
-   sendBandPowerMidi(i);
-  }
+   // Send MIDI for all channels
+   for (var i = 0; i < numChannels; i++) {
+    sendBandPowerMidi(i);
+   }
 
-  // Output band power data for the displayed channel
-  outlet(2, [
-   "bandpower",
-   activeChannel,
-   bandPower.delta[activeChannel],
-   bandPower.theta[activeChannel],
-   bandPower.alpha[activeChannel],
-   bandPower.beta[activeChannel],
-   bandPower.gamma[activeChannel],
-  ]);
- } else {
-  // Original single-channel mode
-  if (address.indexOf("delta") !== -1) {
-   bandPower.delta[activeChannel] = smoothValue(
+   // Output band power data for the displayed channel
+   outlet(2, [
+    "bandpower",
+    activeChannel,
     bandPower.delta[activeChannel],
-    value
-   );
-  } else if (address.indexOf("theta") !== -1) {
-   bandPower.theta[activeChannel] = smoothValue(
     bandPower.theta[activeChannel],
-    value
-   );
-  } else if (address.indexOf("alpha") !== -1) {
-   bandPower.alpha[activeChannel] = smoothValue(
     bandPower.alpha[activeChannel],
-    value
-   );
-  } else if (address.indexOf("beta") !== -1) {
-   bandPower.beta[activeChannel] = smoothValue(
     bandPower.beta[activeChannel],
-    value
-   );
-  } else if (address.indexOf("gamma") !== -1) {
-   bandPower.gamma[activeChannel] = smoothValue(
     bandPower.gamma[activeChannel],
-    value
-   );
+   ]);
+  } else {
+   // Original single-channel mode
+   if (address.indexOf("delta") !== -1) {
+    bandPower.delta[activeChannel] = smoothValue(
+     bandPower.delta[activeChannel],
+     value
+    );
+   } else if (address.indexOf("theta") !== -1) {
+    bandPower.theta[activeChannel] = smoothValue(
+     bandPower.theta[activeChannel],
+     value
+    );
+   } else if (address.indexOf("alpha") !== -1) {
+    bandPower.alpha[activeChannel] = smoothValue(
+     bandPower.alpha[activeChannel],
+     value
+    );
+   } else if (address.indexOf("beta") !== -1) {
+    bandPower.beta[activeChannel] = smoothValue(
+     bandPower.beta[activeChannel],
+     value
+    );
+   } else if (address.indexOf("gamma") !== -1) {
+    bandPower.gamma[activeChannel] = smoothValue(
+     bandPower.gamma[activeChannel],
+     value
+    );
+   }
+
+   // Update MIDI and output data
+   sendBandPowerMidi(activeChannel);
+   outlet(2, [
+    "bandpower",
+    activeChannel,
+    bandPower.delta[activeChannel],
+    bandPower.theta[activeChannel],
+    bandPower.alpha[activeChannel],
+    bandPower.beta[activeChannel],
+    bandPower.gamma[activeChannel],
+   ]);
   }
 
-  // Update MIDI and output data
-  sendBandPowerMidi(activeChannel);
-  outlet(2, [
-   "bandpower",
-   activeChannel,
-   bandPower.delta[activeChannel],
-   bandPower.theta[activeChannel],
-   bandPower.alpha[activeChannel],
-   bandPower.beta[activeChannel],
-   bandPower.gamma[activeChannel],
-  ]);
+  post("Processed band data for " + activeUser + "\n");
  }
 }
 
@@ -445,34 +490,58 @@ function bandpower(args) {
 }
 
 function mindfulness(v) {
- post("Direct mindfulness: " + v + "\n");
+ // Get the source address from the OSC path
+ var args = arrayfromargs(arguments);
+ var source = "unknown";
 
- // Map focus/mindfulness to a state
- if (v > 0.7) currentState = "focused";
- else if (v > 0.4) currentState = "neutral";
+ if (args.length > 1 && typeof args[0] === "string") {
+  if (args[0].indexOf("userA") !== -1) source = "userA";
+  else if (args[0].indexOf("userB") !== -1) source = "userB";
+ }
 
- // Output to state classification
- outlet(3, ["state", currentState]);
+ // Only process if this is the active user
+ if (activeUser === "both" || activeUser === source) {
+  post("Direct mindfulness: " + v + "\n");
 
- // Map to MIDI CC
- var midiVal = mapValue(v, 0, 1, 0, 127);
- outlet(0, [
-  "control",
-  midiMappings.mentalState.channel,
-  midiMappings.mentalState.cc,
-  midiVal,
- ]);
+  // Map focus/mindfulness to a state
+  if (v > 0.7) currentState = "focused";
+  else if (v > 0.4) currentState = "neutral";
+
+  // Output to state classification
+  outlet(3, ["state", currentState]);
+
+  // Map to MIDI CC
+  var midiVal = mapValue(v, 0, 1, 0, 127);
+  outlet(0, [
+   "control",
+   midiMappings.mentalState.channel,
+   midiMappings.mentalState.cc,
+   midiVal,
+  ]);
+ }
 }
 
 function restfulness(v) {
- post("Direct restfulness: " + v + "\n");
+ // Apply similar user filtering logic as with mindfulness function
+ var args = arrayfromargs(arguments);
+ var source = "unknown";
 
- // Map restfulness to states
- if (v > 0.7) currentState = "relaxed";
- else if (v > 0.5) currentState = "meditative";
+ if (args.length > 1 && typeof args[0] === "string") {
+  if (args[0].indexOf("userA") !== -1) source = "userA";
+  else if (args[0].indexOf("userB") !== -1) source = "userB";
+ }
 
- // Output state
- outlet(3, ["state", currentState]);
+ // Only process if this is the active user
+ if (activeUser === "both" || activeUser === source) {
+  post("Direct restfulness: " + v + " from " + source + "\n");
+
+  // Map restfulness to states
+  if (v > 0.7) currentState = "relaxed";
+  else if (v > 0.5) currentState = "meditative";
+
+  // Output state
+  outlet(3, ["state", currentState]);
+ }
 }
 
 function focusMin(v) {
@@ -510,6 +579,32 @@ function eeg_channels() {
 
  // Update connection status
  outlet(3, ["status", "connected"]);
+}
+
+function blendUserData() {
+ // This is called when in "bothUsers" mode to intelligently combine data
+ // Use this if you want more sophisticated blending than just taking latest values
+
+ // Example: average the values between users
+ for (var i = 0; i < numChannels; i++) {
+  bandPower.delta[i] = (lastUserAData.delta + lastUserBData.delta) / 2;
+  bandPower.theta[i] = (lastUserAData.theta + lastUserBData.theta) / 2;
+  bandPower.alpha[i] = (lastUserAData.alpha + lastUserBData.alpha) / 2;
+  bandPower.beta[i] = (lastUserAData.beta + lastUserBData.beta) / 2;
+  bandPower.gamma[i] = (lastUserAData.gamma + lastUserBData.gamma) / 2;
+ }
+
+ // Update MIDI and displays
+ sendBandPowerMidi(activeChannel);
+ outlet(2, [
+  "bandpower",
+  activeChannel,
+  bandPower.delta[activeChannel],
+  bandPower.theta[activeChannel],
+  bandPower.alpha[activeChannel],
+  bandPower.beta[activeChannel],
+  bandPower.gamma[activeChannel],
+ ]);
 }
 
 // function list() {

@@ -167,9 +167,9 @@ class OSCSender:
                                     self.clients[client_key].send_message(
                                         address, float(band_value)
                                     )
-                                    rprint(
-                                        f"[medium_purple4]Sent band: {band_name}={band_value}[/medium_purple4]"
-                                    )
+                                    # rprint(
+                                    #     f"[medium_purple4]Sent band: {band_name}={band_value}[/medium_purple4]"
+                                    # )
                                 except (TypeError, ValueError) as e:
                                     rprint(
                                         f"[red]Error sending band {band_name}: {e} - Value type: {type(band_value)}[/red]"
@@ -231,9 +231,9 @@ class OSCSender:
                                         self.clients[client_key].send_message(
                                             address, float(metric_value)
                                         )
-                                    rprint(
-                                        f"[hot_pink2]Sent metric: {metric_name}={metric_value}[/hot_pink2]"
-                                    )
+                                    # rprint(
+                                    #     f"[hot_pink2]Sent metric: {metric_name}={metric_value}[/hot_pink2]"
+                                    # )
                                 except (TypeError, ValueError) as e:
                                     rprint(
                                         f"[red]Error sending metric {metric_name}: {e}[/red]"

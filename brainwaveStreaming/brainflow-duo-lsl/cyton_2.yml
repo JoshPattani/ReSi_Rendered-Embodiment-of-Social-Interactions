@@ -5,7 +5,7 @@ args:
  ip_port: 6678
  board_id: 2 # required!
  master_board: 0
- serial_port: COM11 # Mac: /dev/cu.usbserial-DM00D7TW
+ serial_port: COM12 # Mac: /dev/cu.usbserial-DM00D7TW
  streamer_params:
  name: my_obci # required!
  data_type: # required!

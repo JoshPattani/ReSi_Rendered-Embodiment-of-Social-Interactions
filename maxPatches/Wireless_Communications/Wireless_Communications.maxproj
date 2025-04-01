@@ -2,7 +2,7 @@
 	"name" : "Wireless_Communications",
 	"version" : 1,
 	"creationdate" : 3822593212,
-	"modificationdate" : 3825453706,
+	"modificationdate" : 3826152450,
 	"viewrect" : [ 25.0, 107.0, 300.0, 500.0 ],
 	"autoorganize" : 1,
 	"hideprojectwindow" : 0,
@@ -14,6 +14,11 @@
 				"kind" : "patcher",
 				"local" : 1,
 				"toplevel" : 1
+			}
+,
+			"basic_band_powers.maxpat" : 			{
+				"kind" : "patcher",
+				"local" : 1
 			}
 
 		}

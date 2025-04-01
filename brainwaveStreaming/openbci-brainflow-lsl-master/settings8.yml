@@ -7,7 +7,7 @@ args:
  board_id: 0 # required!
  serial_port: COM19 # Mac: /dev/cu.usbserial-DM00D7TW
  streamer_params:
- name: obci_cyton # required!
+ name: userA_my_obci # required!
  data_type: # required!
   - EXG
   #- AUX

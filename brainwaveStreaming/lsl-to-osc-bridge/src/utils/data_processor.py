@@ -349,8 +349,13 @@ def calculate_band_powers(data, sampling_rate):
             )
 
         # Convert values to uV^2
-        for band_name, band_power in avg_powers.items():
-            avg_powers[band_name] = band_power * 1e5  # Convert to uV^2
+        # for band_name, band_power in avg_powers.items():
+        #     avg_powers[band_name] = band_power * 1e5  # Convert to uV^2
+
+        total_power = sum(avg_powers.values())
+        if total_power > 0:
+            for band_name in avg_powers:
+                avg_powers[band_name] = avg_powers[band_name] / total_power
 
         return avg_powers
     else:
@@ -447,7 +452,7 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
             return metrics
 
         # Normalize to sum to 1.0 (important for BrainFlow's models)
-        feature_vector = feature_vector / total_power
+        # feature_vector = feature_vector / total_power
 
         # Calculate mindfulness (focus)
         try:
@@ -509,39 +514,39 @@ def eeg_metrics(data, eeg_channels, sampling_rate):
 
         # Calculate alternative metric based on well-known EEG correlates
         # Higher alpha/beta ratio correlates with relaxation
-        # if band_powers["beta"] > 0:
-        #     alt_relaxation = min(1.0, band_powers["alpha"] / band_powers["beta"] / 2)
-        # else:
-        #     alt_relaxation = 0.5
+        if band_powers["beta"] > 0:
+            alt_relaxation = min(1.0, band_powers["alpha"] / band_powers["beta"] / 2)
+        else:
+            alt_relaxation = 0.5
 
-        # # Lower beta and higher theta often correlates with focus/attention
-        # if band_powers["beta"] > 0:
-        #     alt_focus = max(
-        #         0.0,
-        #         min(
-        #             1.0,
-        #             1.0
-        #             - (
-        #                 band_powers["beta"]
-        #                 / (band_powers["theta"] + band_powers["alpha"] + 0.001)
-        #             ),
-        #         ),
-        #     )
-        # else:
-        #     alt_focus = 0.5
+        # Lower beta and higher theta often correlates with focus/attention
+        if band_powers["beta"] > 0:
+            alt_focus = max(
+                0.0,
+                min(
+                    1.0,
+                    1.0
+                    - (
+                        band_powers["beta"]
+                        / (band_powers["theta"] + band_powers["alpha"] + 0.001)
+                    ),
+                ),
+            )
+        else:
+            alt_focus = 0.5
 
-        # # Average with BrainFlow's metrics for more stability
-        # metrics["mindfulness"] = (metrics["mindfulness"] + alt_focus) / 2
-        # metrics["restfulness"] = (metrics["restfulness"] + alt_relaxation) / 2
+        # Average with BrainFlow's metrics for more stability
+        metrics["mindfulness"] = (metrics["mindfulness"] + alt_focus) / 2
+        metrics["restfulness"] = (metrics["restfulness"] + alt_relaxation) / 2
 
-        # print(
-        #     f"Final metrics - Focus: {metrics['mindfulness']:.4f}, Relaxation: {metrics['restfulness']:.4f}"
-        # )
+        print(
+            f"Final metrics - Focus: {metrics['mindfulness']:.4f}, Relaxation: {metrics['restfulness']:.4f}"
+        )
 
-        # if metrics["mindfulness"] != focus:
-        #     focus = metrics["mindfulness"]
-        # if metrics["restfulness"] != relax:
-        #     relax = metrics["restfulness"]
+        if metrics["mindfulness"] != focus:
+            focus = metrics["mindfulness"]
+        if metrics["restfulness"] != relax:
+            relax = metrics["restfulness"]
 
         # Track if min/max values change
         focus_min_changed = False

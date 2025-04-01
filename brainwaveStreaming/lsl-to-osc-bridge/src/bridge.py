@@ -65,11 +65,26 @@ key_thread.start()
 
 def hello_world():
     s = Figlet(font="isometric1")
-    f = Figlet(font="smslant", width=200)
+    f = Figlet(font="smslant", width=240)
     rprint(f"[magenta]{s.renderText(' RESI')}[/magenta]")
     rprint(f"[cyan]{f.renderText('LSL-to-OSC')}[/cyan]")
-    rprint(f"[cyan]{s.renderText(' Bridger!')}[/cyan]")
+    rprint(f"[cyan]{f.renderText(' Bridger!')}[/cyan]")
     print("\n")
+
+
+# Add this function after hello_world() function
+def get_user_info(stream_name):
+    """Extract user information and determine color scheme from stream name"""
+    if "userA" in stream_name:
+        return "User A", "blue3"
+    elif "userB" in stream_name:
+        return "User B", "green3"
+    elif "user1" in stream_name:
+        return "User 1", "purple3"
+    elif "user2" in stream_name:
+        return "User 2", "gold3"
+    else:
+        return "Unknown", "white"
 
 
 def main():
@@ -213,6 +228,11 @@ def main():
                                     # Get the latest sample (last row of the buffer)
                                     latest_sample = active_data[-1]
 
+                                    # Get user info for better console output
+                                    user_label, user_color = get_user_info(
+                                        stream_data["name"]
+                                    )
+
                                     # Create OSC message with raw EEG data
                                     raw_osc_message = {
                                         "type": "EEG_Raw",
@@ -223,8 +243,8 @@ def main():
 
                                     # Send raw EEG data via OSC
                                     osc_sender.send_message(raw_osc_message)
-                                    print(
-                                        f"Sent raw EEG data for {len(active_channels)} channels"
+                                    rprint(
+                                        f"[{user_color}]【{user_label}】 Sent raw EEG data for {len(active_channels)} channels[/{user_color}]"
                                     )
 
                                 # Force buffer reset (sliding window approach)
@@ -242,12 +262,18 @@ def main():
                                     colors = [
                                         "bright_black",
                                         "purple3",
-                                        "navy_blue",
+                                        "blue",
                                         "dark_green",
                                         "gold3",
                                         "dark_orange",
                                         "red3",
                                     ]
+                                    user_label, user_color = get_user_info(
+                                        stream_data["name"]
+                                    )
+                                    rprint(
+                                        f"[{user_color}]━━━━ {user_label} Channel Quality ━━━━[/{user_color}]"
+                                    )
                                     for ch in active_channels:
                                         railed_percentage = (
                                             DataFilter.get_railed_percentage(
@@ -257,7 +283,7 @@ def main():
                                         railed_percentages[ch] = railed_percentage
                                         color = colors[ch % len(colors)]
                                         rprint(
-                                            f"[{color}]Channel {ch} railed percentage: {railed_percentage}[/{color}]"
+                                            f"[{user_color}][{color}]Channel {ch} railed percentage: {railed_percentage}[/{color}][/{user_color}]"
                                         )
                                 except Exception as e:
                                     rprint(
@@ -350,7 +376,7 @@ def main():
 
                                     osc_sender.send_message(osc_message)
                                     rprint(
-                                        f"[chartreuse3]Focus: {metrics.get('mindfulness', 0)}[/chartreuse3], [light_slate_blue]Relaxation: {metrics.get('restfulness', 0)}[/light_slate_blue]"
+                                        f"[{user_color}][{user_label}] [chartreuse3]Focus: {metrics.get('mindfulness', 0)}[/chartreuse3], [light_slate_blue]Relaxation: {metrics.get('restfulness', 0)}[/light_slate_blue]"
                                     )
 
                                 except Exception as e:

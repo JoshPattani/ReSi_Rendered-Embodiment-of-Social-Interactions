@@ -56,7 +56,7 @@ void setup()
   Serial.begin(9600);
   delay(4000); // Give more time for serial to initialize
 
-  Serial.println("Starting RESI WiFi detection and connection (No Cloud Version)...");
+  Serial.println("Starting RESI WiFi detection and connection...");
 
   // Configure device for stability
   WiFiStabilityManager::configureDevice();
@@ -121,8 +121,8 @@ void setup()
   Serial.println("Initializing GSR sensor with OSC output...");
 
   gSRCurrentValue = 0;
-  gSRUserMin = 0;
-  gSRUserMax = 1023;
+  gSRUserMin = 256; // Set a reasonable default min value
+  gSRUserMax = 512; // Set a reasonable default max value
 
   // Initialize GSR sensor readings
   for (int i = 0; i < sampleSize; i++)
@@ -203,6 +203,17 @@ void loop()
     // Calculate the average of the readings
     average = total / sampleSize;
 
+    // Map the average and update min and max for OSC messages
+    average = map(average, 0, 2048, 0, 1023);
+
+    if (average < 256 && !calibrated)
+    {
+      delay(5000); // Wait for a second to stabilize the sensor
+      // skip the first reading if not calibrated
+      Serial.println("Skipping first reading for calibration...");
+      return;
+    }
+
     if (!calibrated)
     {
       // Calibrate the sensor
@@ -227,9 +238,8 @@ void loop()
       String address = "/User_" + String(USER) + "/gsr/max";
       sendOSCMessage(address.c_str(), gSRUserMax);
     }
-
-    // Update variables and send OSC messages
-    gSRCurrentValue = map(average, 0, 1023, 0, 500);
+    // Send the current GSR value to Max/MSP
+    gSRCurrentValue = average;
 
     // Send OSC messages only if connected
     String address = "/User_" + String(USER) + "/gsr/value";

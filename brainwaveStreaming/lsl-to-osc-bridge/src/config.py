@@ -10,6 +10,11 @@ Home network:
 - My computer:
     - "192.168.0.8"
 
+- Cass's Home WiFI network:
+    - 10.0.0.197 - Cass's IP Address (Visual computer)
+    - 10.0.0.7 - Jaz's IP Address (Audio computer)
+    - 10.0.0.155 - My IP Address 
+
 UCB network:
 - My computer:
     - "10.201.78.68"
@@ -33,7 +38,11 @@ BBX network:
 """
 
 # Multiple destination IP addresses for audio and visual computers
-OSC_IP = ["192.168.0.8", "192.168.1.170"]  # [Audio Computer, Visual Computer]
+OSC_IP = [
+    "10.0.0.197",
+    "10.0.0.7",
+    "192.168.0.8",
+]  # [Audio Computer, Visual Computer, my comp]
 OSC_PORT = 42069  # Same port for both destinations
 OSC_ADDRESS = "/obci"  # OSC address to send data to
 
