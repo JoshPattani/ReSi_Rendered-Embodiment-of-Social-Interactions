@@ -99,7 +99,7 @@ graph TD;
     C --> newLines
     A -->D{Heart Rate Variability}-->|RMSSD| E["`Root Mean Square of Successive Differences (RMSSD) reflects short-term parasympathetic activity.
     ---
-    A great marker for relaxation, stress recvery, and overall autonomic balance`"]
+    A great marker for relaxation, stress recovery, and overall autonomic balance`"]
     nextLines["`Lower Values (< 20 ms):
     chronic stress, fatigue
     ---
@@ -217,6 +217,56 @@ The complete system consists of:
 1. **Brainwave Streaming** - Collects EEG data from two OpenBCI Cyton boards simultaneously
 2. **LSL to OSC Bridge** - Converts Lab Streaming Layer (LSL) data to Open Sound Control (OSC) messages
 3. **Biometric Sensors** - Arduino/ESP32-based PPG and GSR sensors for additional physiological measurements
+
+```mermaid
+flowchart TD;
+    %% Physical Layer
+    subgraph "Physical Layer"
+    A["Sensors & Hardware"]:::hardware
+    B["MCU / Firmware"]:::hardware
+    end
+
+    %% Data Processing Layer
+    subgraph "Data Processing Layer"
+        C["Brainwave Streaming"]:::processing
+        D["Signal Processing & Metrics Calculation"]:::processing
+        E["LSL-to-OSC Bridge"]:::processing
+    end
+
+    %% Audiovisual Engine
+    subgraph "Audiovisual Engine"
+        F["Visual Engine"]:::creative
+        G["Audio Engine"]:::creative
+        H["Installation Environment"]:::creative
+    end
+
+    %% Data Flow Connections
+    A -->|"raw_signals"| B
+    B -->|"sensor_data"| C
+    C -->|"biometric_data"| D
+    D -->|"processed_metrics"| E
+    E -->|"OSC_messages"| F
+    E -->|"OSC_messages"| G
+    F -->|"visual_output"| H
+    G -->|"audio_output"| H
+
+    %% Click Events
+    click A "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/3D Models"
+    click B "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/MCU_code"
+    click C "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/brainwaveStreaming/brainflow-duo-lsl"
+    click E "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/brainwaveStreaming/lsl-to-osc-bridge"
+    click D "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/src"
+    click D "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/RESI_proto_v1"
+    click F "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/Max Patches"
+    click F "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/maxPatches"
+    click G "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/B2RESILiveSET Project"
+    click G "https://github.com/joshpattani/resi_rendered-embodiment-of-social-interactions/tree/main/Wireless Communications"
+
+    %% Styles
+    classDef hardware fill:#aadaff,stroke:#333,stroke-width:2px;
+    classDef processing fill:#b5e7a0,stroke:#333,stroke-width:2px;
+    classDef creative fill:#ffdd94,stroke:#333,stroke-width:2px;
+```
 
 ## 🔌 Installation
 
