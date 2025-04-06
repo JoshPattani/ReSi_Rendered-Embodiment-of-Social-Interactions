@@ -23,7 +23,14 @@ WiFiUDP Udp;                           // Create a UDP instance for OSC communic
 bool UDPConnected = false;             // Flag to check if UDP connection is established
 extern NetworkType currentNetworkType; // Reference the type from wifiHandler.h
 
+// IP address variables
+IPAddress discoveredAudioIP;  // Will store dynamically discovered audio computer IP
+IPAddress discoveredVisualIP; // Will store dynamically discovered visual computer IP
+bool audioIPDiscovered = false;
+bool visualIPDiscovered = false;
+
 // Multiple IP and port targets for OSC communication
+const unsigned int inPort = SECRET_LOCAL_PORT;         // Port to listen for OSC messages
 const IPAddress outIpAudio(SECRET_AUDIO_IP);           // Audio computer. Defined in arduino_secrets.h
 const unsigned int outPortAudio = SECRET_AUDIO_PORT;   // Target port. Must match the port in Max
 const IPAddress outIpVisual(SECRET_VISUAL_IP);         // Visual computer
@@ -32,9 +39,13 @@ const unsigned int outPortVisual = SECRET_VISUAL_PORT; // Target port. Must matc
 // Function prototypes
 void sendOSCMessage(const char *address, float value);
 void connectLocalPort();
+void sendAcknowledgment(IPAddress targetIP, unsigned int targetPort, const char *type, const char *user);
+void listenForDiscovery();
 
 // Debug flag
 const bool DEBUG = true;
+
+String user = "/User_" + String(USER); // User identifier (A or B)
 
 // GSR sensor variables
 int gSRCurrentValue;
@@ -49,6 +60,99 @@ int readings[sampleSize]; // Array to hold sensor readings for moving average
 int readIndex = 0;        // Current index for the moving average
 int total = 0;            // Running total for the moving average
 int average = 0;          // Average value
+
+// Send acknowledgment back to the discovered computer
+void sendAcknowledgment(IPAddress targetIP, unsigned int targetPort, const char *type, const char *user)
+{
+  // small delay to ensure the packet is sent correctly
+  delay(10);
+
+  OSCMessage msg("/arduino/acknowledgment");
+  msg.add(type);
+  msg.add(user);
+
+  Udp.beginPacket(targetIP, targetPort);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+
+  // Add a second acknowledgment for redundancy
+  delay(100);
+  Udp.beginPacket(targetIP, targetPort);
+  msg.send(Udp);
+  Udp.endPacket();
+  msg.empty();
+
+  if (DEBUG)
+  {
+    Serial.print("Sent acknowledgment to ");
+    Serial.print(type);
+    Serial.print(" computer at IP: ");
+    Serial.println(targetIP);
+  }
+}
+
+void listenForDiscovery()
+{
+  // Check if discovery messages are available
+  int packetSize = Udp.parsePacket();
+
+  if (packetSize)
+  {
+    // If we already have this IP discovered, ignore the packet
+    if ((audioIPDiscovered && Udp.remoteIP() == discoveredAudioIP) ||
+        (visualIPDiscovered && Udp.remoteIP() == discoveredVisualIP))
+    {
+      // Clear buffer but don't process
+      char packetBuffer[255];
+      Udp.read(packetBuffer, packetSize);
+      return;
+    }
+
+    // Read the packet into a buffer
+    char packetBuffer[255];
+    Udp.read(packetBuffer, packetSize);
+    packetBuffer[packetSize] = 0; // Null-terminate the string
+
+    // Process the OSC message
+    OSCMessage msg;
+    for (int i = 0; i < packetSize; i++)
+    {
+      msg.fill(packetBuffer[i]);
+    }
+
+    if (msg.fullMatch("/audioComputer/discover"))
+    {
+      // Extract sender's IP address
+      discoveredAudioIP = Udp.remoteIP();
+      audioIPDiscovered = true;
+
+      // Send acknowledgment
+      sendAcknowledgment(discoveredAudioIP, outPortAudio, "audio", user.c_str());
+
+      if (DEBUG)
+      {
+        Serial.print("Received discovery message from audio computer at IP: ");
+        Serial.println(discoveredAudioIP);
+      }
+    }
+    else if (msg.fullMatch("/visualComputer/discover"))
+    {
+      // Extract sender's IP address
+      discoveredVisualIP = Udp.remoteIP();
+      visualIPDiscovered = true;
+
+      // Send acknowledgment
+      sendAcknowledgment(discoveredVisualIP, outPortVisual, "visual", user.c_str());
+
+      if (DEBUG)
+      {
+        Serial.print("Received discovery message from visual computer at IP: ");
+        Serial.println(discoveredVisualIP);
+      }
+    }
+  }
+}
 
 void setup()
 {
@@ -142,6 +246,8 @@ void setup()
 
 void loop()
 {
+  // Listen for discovery messages from Max
+  listenForDiscovery();
   // Allow system to stabilize and prevent watchdog resets
   esp_task_wdt_reset();
 
@@ -204,9 +310,10 @@ void loop()
     average = total / sampleSize;
 
     // Map the average and update min and max for OSC messages
-    average = map(average, 0, 2048, 0, 1023);
+    // Disabling for testing (04/02) - might be causing sensitivity issues with data fluctuations
+    // average = map(average, 0, 2048, 0, 1023);
 
-    if (average < 256 && !calibrated)
+    if (average < 512 && !calibrated)
     {
       delay(5000); // Wait for a second to stabilize the sensor
       // skip the first reading if not calibrated
@@ -267,7 +374,7 @@ void connectLocalPort()
 {
   delay(1000);
   Serial.println("Connecting to UDP port...");
-  Udp.begin(outPortVisual); // Local port to listen on (doesn't matter much for sending)
+  Udp.begin(inPort); // Local port to listen on (doesn't matter much for sending)
   UDPConnected = true;
   Serial.println("UDP connection established!");
 }
@@ -280,12 +387,26 @@ void sendOSCMessage(const char *address, float value)
   msg.add(value);
 
   // Send to audio computer
-  Udp.beginPacket(outIpAudio, outPortAudio);
+  if (audioIPDiscovered)
+  {
+    Udp.beginPacket(discoveredAudioIP, outPortAudio);
+  }
+  else
+  {
+    Udp.beginPacket(outIpAudio, outPortAudio);
+  }
   msg.send(Udp);
   Udp.endPacket();
 
-  // Send to visual computer
-  Udp.beginPacket(outIpVisual, outPortVisual);
+  // Send to visual computer (use discovered IP if available)
+  if (visualIPDiscovered)
+  {
+    Udp.beginPacket(discoveredVisualIP, outPortVisual);
+  }
+  else
+  {
+    Udp.beginPacket(outIpVisual, outPortVisual);
+  }
   msg.send(Udp);
   Udp.endPacket();
 
@@ -300,9 +421,23 @@ void sendOSCMessage(const char *address, float value)
     Serial.print(" ");
     Serial.println(value);
     Serial.print("...to both IP addresses: ");
-    Serial.print(outIpAudio);
+    if (audioIPDiscovered)
+    {
+      Serial.print(discoveredAudioIP);
+    }
+    else
+    {
+      Serial.print(outIpAudio);
+    }
     Serial.print("(audio) and ");
-    Serial.print(outIpVisual);
+    if (visualIPDiscovered)
+    {
+      Serial.print(discoveredVisualIP);
+    }
+    else
+    {
+      Serial.print(outIpVisual);
+    }
     Serial.println("(visual)");
   }
 }
