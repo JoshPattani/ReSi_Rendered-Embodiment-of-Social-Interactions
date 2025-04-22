@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@arduino/arduino-iot-client": "^3.0.0",
-    "@types/request-promise": "^4.1.51",
-    "arduino-iot-js": "^0.13.0",
-    "node-fetch": "^2.7.0"
-  }
-}

@@ -9,6 +9,7 @@ Max Patches/
 RESI_proto_v1/
 Wireless Communications/
 node_modules/
+.vscode/
 
 # Ignore all .json files
 *.json
