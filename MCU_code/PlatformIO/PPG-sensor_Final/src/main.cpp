@@ -97,6 +97,10 @@ unsigned long lastHrvUpdateTime = 0;
 bool initialHrvWindowFilled = false;
 bool HRV_calibrated = false; // Flag for HRV calibration
 
+// Gaussian filter parameters
+const int kernelSize = 3;
+const double sigma = 0.7;
+
 // HRV metrics
 float rmssd; // Root mean square of successive differences
 float rmssdMin;
@@ -556,7 +560,7 @@ void computeHRVMetricsSliding()
   esp_task_wdt_reset();
 
   // 2. Apply Gaussian smoothing (using global arrays)
-  gaussianFilterIntervals(g_cleaned_intervals, cleaned_size, g_filtered_intervals, 5, 1.0);
+  gaussianFilterIntervals(g_cleaned_intervals, cleaned_size, g_filtered_intervals, kernelSize, sigma);
 
   // Use filtered data for calculations
   // Compute the mean of the filtered NN intervals
@@ -587,7 +591,8 @@ void computeHRVMetricsSliding()
   int count_diff = 0;
   for (int i = 0; i < cleaned_size - 1; i++)
   {
-    double diff = g_filtered_intervals[i + 1] - g_filtered_intervals[i];
+    double diff = g_cleaned_intervals[i + 1] - g_cleaned_intervals[i]; // Use cleaned intervals for RMSSD
+    // double diff = g_filtered_intervals[i + 1] - g_filtered_intervals[i]; // Use filtered intervals for RMSSD
     rmssd_sum += diff * diff;
     count_diff++;
   }

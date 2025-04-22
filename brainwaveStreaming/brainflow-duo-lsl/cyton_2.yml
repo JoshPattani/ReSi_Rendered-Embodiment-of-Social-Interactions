@@ -27,7 +27,7 @@ args:
 # commands sent to board; if you use Daisy, uncomment channels 9-16
 commands:
  # defaultMode: d
- chan1: x1060110Xx2060110Xx3060110Xx4060110Xx5060110Xx6060110Xx7060110Xx8060110X # +
+ chan1: x1060110Xx2060110Xx3060110Xx4060110Xx5060110Xx6060110Xx7060110Xx8161000X # +
  # chan2: x2060110X    # +
  # chan3: x3060110X    # +
  # chan4: x4060110X    # +

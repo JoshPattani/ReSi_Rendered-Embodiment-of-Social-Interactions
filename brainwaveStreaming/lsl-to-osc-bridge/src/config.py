@@ -20,6 +20,8 @@ UCB network:
     - "10.201.78.68"
 - Cass's computer:
     - "10.201.6.0"
+- Jaz's computer:
+    - "10.201.65.186"
   
 BLACKBOX PERFORMANCE STUDIO
 
@@ -39,9 +41,9 @@ BBX network:
 
 # Multiple destination IP addresses for audio and visual computers
 OSC_IP = [
-    "10.0.0.197",
-    "10.0.0.7",
-    "192.168.0.8",
+    "192.168.1.170",
+    "192.168.1.154",
+    "192.168.1.32",
 ]  # [Audio Computer, Visual Computer, my comp]
 OSC_PORT = 42069  # Same port for both destinations
 OSC_ADDRESS = "/obci"  # OSC address to send data to
@@ -52,3 +54,7 @@ SAMPLE_RATE = 250  # Sampling rate of the data
 GAIN = 24  # Gain setting of the OpenBCI Cyton board
 DEBUG_MODE = False  # Set to False in production
 IGNORE_QUALITY_CHECKS = False  # Set to False in production
+
+# OSC Discovery Configuration
+ENABLE_DISCOVERY = True  # Set to False to disable discovery
+OSC_DISCOVERY_PORT = 8080  # Port for discovery messages (same as OSC_PORT)

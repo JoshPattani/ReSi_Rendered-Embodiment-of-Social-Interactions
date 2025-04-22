@@ -152,8 +152,11 @@ def main():
         "[yellow]Press 'r' to reset the buffer, 'g' to check railed percentages, or 'q' to quit.[/yellow]",
     )
 
-    # Initialize OSC Sender
-    osc_sender = OSCSender(config.OSC_IP, config.OSC_PORT)
+    # Initialize OSC Sender with discovery port
+    osc_sender = OSCSender(
+        config.OSC_IP, config.OSC_PORT, discovery_port=config.OSC_PORT
+    )
+    rprint("[blue]OSC discovery server started. Waiting for connections...[/blue]")
 
     try:
         while True:
