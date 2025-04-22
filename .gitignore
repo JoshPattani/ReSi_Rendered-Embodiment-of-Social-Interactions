@@ -5,3 +5,10 @@
 secret*
 
 # Add any other files or directories to ignore below
+Max Patches/
+RESI_proto_v1/
+Wireless Communications/
+node_modules/
+
+# Ignore all .json files
+*.json
