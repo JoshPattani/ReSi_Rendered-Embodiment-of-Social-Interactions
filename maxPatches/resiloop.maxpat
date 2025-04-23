@@ -10,9 +10,171 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 59.0, 106.0, 1000.0, 647.0 ],
+		"rect" : [ 34.0, 87.0, 1119.0, 707.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-137",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 881.944486498832703, 1708.333414793014526, 62.0, 22.0 ],
+					"saved_object_attributes" : 					{
+						"_persistence" : 1
+					}
+,
+					"text" : "live.object"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-136",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 768.460000000000036, 1622.222299575805664, 29.5, 22.0 ],
+					"text" : "id 0"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-134",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "signal" ],
+					"patching_rect" : [ 713.460000000000036, 1651.388967633247375, 43.0, 22.0 ],
+					"text" : "cycle~"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-131",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 804.166705012321472, 1543.055629134178162, 241.0, 22.0 ],
+					"text" : "goto live_set tracks 0 mixer_device panning"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-125",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 3,
+					"outlettype" : [ "", "", "" ],
+					"patching_rect" : [ 804.166705012321472, 1622.222299575805664, 53.0, 22.0 ],
+					"text" : "live.path"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-124",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 713.460000000000036, 1712.240000000000009, 74.0, 22.0 ],
+					"saved_object_attributes" : 					{
+						"_persistence" : 1,
+						"normalized" : 0,
+						"smoothing" : 1.0
+					}
+,
+					"text" : "live.remote~"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-119",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "float", "bang" ],
+					"patching_rect" : [ 981.027804315090179, 1322.222285270690918, 140.277784466743469, 22.0 ],
+					"text" : "buffer~"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"basictuning" : 440,
+					"clipheight" : 131.307704925537109,
+					"data" : 					{
+						"clips" : [ 							{
+								"absolutepath" : "Macintosh HD:/Users/jazlinrodriguez/Documents/GitHub/ReSi_Rendered-Embodiment-of-Social-Interactions/resiloop.mp3",
+								"filename" : "resiloop.mp3",
+								"filekind" : "audiofile",
+								"id" : "u149001359",
+								"loop" : 1,
+								"content_state" : 								{
+									"loop" : 1
+								}
+
+							}
+ ]
+					}
+,
+					"followglobaltempo" : 0,
+					"formantcorrection" : 0,
+					"id" : "obj-8",
+					"maxclass" : "playlist~",
+					"mode" : "basic",
+					"numinlets" : 1,
+					"numoutlets" : 5,
+					"originallength" : [ 0.0, "ticks" ],
+					"originaltempo" : 120.0,
+					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 379.000000476837158, 1272.30781364440918, 530.769281387329102, 132.307704925537109 ],
+					"pitchcorrection" : 0,
+					"quality" : "basic",
+					"saved_attribute_attributes" : 					{
+						"candicane2" : 						{
+							"expression" : ""
+						}
+,
+						"candicane3" : 						{
+							"expression" : ""
+						}
+,
+						"candicane4" : 						{
+							"expression" : ""
+						}
+,
+						"candicane5" : 						{
+							"expression" : ""
+						}
+,
+						"candicane6" : 						{
+							"expression" : ""
+						}
+,
+						"candicane7" : 						{
+							"expression" : ""
+						}
+,
+						"candicane8" : 						{
+							"expression" : ""
+						}
+
+					}
+,
+					"timestretch" : [ 0 ]
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-301",
 					"maxclass" : "number",
@@ -2702,7 +2864,7 @@
 
 											}
  ],
-										"originid" : "pat-158"
+										"originid" : "pat-8"
 									}
 ,
 									"patching_rect" : [ 742.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -2934,7 +3096,7 @@
 
 											}
  ],
-										"originid" : "pat-160"
+										"originid" : "pat-10"
 									}
 ,
 									"patching_rect" : [ 634.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -3273,7 +3435,7 @@
 
 											}
  ],
-										"originid" : "pat-162"
+										"originid" : "pat-12"
 									}
 ,
 									"patching_rect" : [ 527.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -3505,7 +3667,7 @@
 
 											}
  ],
-										"originid" : "pat-164"
+										"originid" : "pat-14"
 									}
 ,
 									"patching_rect" : [ 417.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -3737,7 +3899,7 @@
 
 											}
  ],
-										"originid" : "pat-166"
+										"originid" : "pat-16"
 									}
 ,
 									"patching_rect" : [ 310.0, 309.000030999999979, 100.0, 25.0 ],
@@ -4386,7 +4548,7 @@
 
 							}
  ],
-						"originid" : "pat-156",
+						"originid" : "pat-6",
 						"styles" : [ 							{
 								"name" : "AudioStatus_Menu",
 								"default" : 								{
@@ -4662,7 +4824,7 @@
 
 							}
  ],
-						"originid" : "pat-168"
+						"originid" : "pat-18"
 					}
 ,
 					"patching_rect" : [ 2486.0, 846.0, 61.0, 22.0 ],
@@ -4848,7 +5010,7 @@
 
 							}
  ],
-						"originid" : "pat-170"
+						"originid" : "pat-20"
 					}
 ,
 					"patching_rect" : [ 2380.0, 846.0, 61.0, 22.0 ],
@@ -5034,7 +5196,7 @@
 
 							}
  ],
-						"originid" : "pat-172"
+						"originid" : "pat-22"
 					}
 ,
 					"patching_rect" : [ 2266.0, 846.0, 61.0, 22.0 ],
@@ -5220,7 +5382,7 @@
 
 							}
  ],
-						"originid" : "pat-174"
+						"originid" : "pat-24"
 					}
 ,
 					"patching_rect" : [ 2162.0, 846.0, 61.0, 22.0 ],
@@ -5436,7 +5598,7 @@
 
 							}
  ],
-						"originid" : "pat-176"
+						"originid" : "pat-26"
 					}
 ,
 					"patching_rect" : [ 2056.0, 846.0, 61.0, 22.0 ],
@@ -6754,7 +6916,7 @@
 
 											}
  ],
-										"originid" : "pat-182"
+										"originid" : "pat-32"
 									}
 ,
 									"patching_rect" : [ 742.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -6986,7 +7148,7 @@
 
 											}
  ],
-										"originid" : "pat-184"
+										"originid" : "pat-34"
 									}
 ,
 									"patching_rect" : [ 634.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -7325,7 +7487,7 @@
 
 											}
  ],
-										"originid" : "pat-186"
+										"originid" : "pat-36"
 									}
 ,
 									"patching_rect" : [ 527.395752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -7557,7 +7719,7 @@
 
 											}
  ],
-										"originid" : "pat-188"
+										"originid" : "pat-38"
 									}
 ,
 									"patching_rect" : [ 417.895752000000016, 309.000030999999979, 100.0, 25.0 ],
@@ -7789,7 +7951,7 @@
 
 											}
  ],
-										"originid" : "pat-190"
+										"originid" : "pat-40"
 									}
 ,
 									"patching_rect" : [ 310.0, 309.000030999999979, 100.0, 25.0 ],
@@ -8438,7 +8600,7 @@
 
 							}
  ],
-						"originid" : "pat-180",
+						"originid" : "pat-30",
 						"styles" : [ 							{
 								"name" : "AudioStatus_Menu",
 								"default" : 								{
@@ -8714,7 +8876,7 @@
 
 							}
  ],
-						"originid" : "pat-192"
+						"originid" : "pat-42"
 					}
 ,
 					"patching_rect" : [ 603.000000476837158, 840.0, 61.0, 22.0 ],
@@ -8900,7 +9062,7 @@
 
 							}
  ],
-						"originid" : "pat-194"
+						"originid" : "pat-44"
 					}
 ,
 					"patching_rect" : [ 497.000000476837158, 840.0, 61.0, 22.0 ],
@@ -9086,7 +9248,7 @@
 
 							}
  ],
-						"originid" : "pat-196"
+						"originid" : "pat-46"
 					}
 ,
 					"patching_rect" : [ 383.000000476837158, 840.0, 61.0, 22.0 ],
@@ -9272,7 +9434,7 @@
 
 							}
  ],
-						"originid" : "pat-198"
+						"originid" : "pat-48"
 					}
 ,
 					"patching_rect" : [ 279.000000476837158, 840.0, 61.0, 22.0 ],
@@ -9488,7 +9650,7 @@
 
 							}
  ],
-						"originid" : "pat-200"
+						"originid" : "pat-50"
 					}
 ,
 					"patching_rect" : [ 173.000000476837158, 840.0, 61.0, 22.0 ],
@@ -9862,7 +10024,7 @@
 					"numoutlets" : 5,
 					"outlettype" : [ "signal", "signal", "", "float", "list" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 418.0, 1506.0, 128.0, 162.0 ],
+					"patching_rect" : [ 379.000000476837158, 1507.692451477050781, 128.0, 162.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
 							"parameter_longname" : "live.gain~",
@@ -9887,7 +10049,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
-					"patching_rect" : [ 1014.0, 1838.0, 430.999999523162842, 22.0 ],
+					"patching_rect" : [ 981.027804315090179, 1361.111176013946533, 430.999999523162842, 22.0 ],
 					"text" : "sfplay~"
 				}
 
@@ -9899,74 +10061,6 @@
 					"numinlets" : 2,
 					"numoutlets" : 0,
 					"patching_rect" : [ 379.000000476837158, 1784.0, 152.0, 152.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"basictuning" : 440,
-					"clipheight" : 121.0,
-					"data" : 					{
-						"clips" : [ 							{
-								"absolutepath" : "Macintosh HD:/Users/jazlinrodriguez/Downloads/resiloop.aif",
-								"filename" : "resiloop.aif",
-								"filekind" : "audiofile",
-								"id" : "u954000652",
-								"loop" : 0,
-								"content_state" : 								{
-
-								}
-
-							}
- ]
-					}
-,
-					"followglobaltempo" : 0,
-					"formantcorrection" : 0,
-					"id" : "obj-2",
-					"maxclass" : "playlist~",
-					"mode" : "basic",
-					"numinlets" : 1,
-					"numoutlets" : 5,
-					"originallength" : [ 0.0, "ticks" ],
-					"originaltempo" : 120.0,
-					"outlettype" : [ "signal", "signal", "signal", "", "dictionary" ],
-					"parameter_enable" : 0,
-					"patching_rect" : [ 404.0, 1310.0, 532.999999523162842, 122.0 ],
-					"pitchcorrection" : 0,
-					"quality" : "basic",
-					"saved_attribute_attributes" : 					{
-						"candicane2" : 						{
-							"expression" : ""
-						}
-,
-						"candicane3" : 						{
-							"expression" : ""
-						}
-,
-						"candicane4" : 						{
-							"expression" : ""
-						}
-,
-						"candicane5" : 						{
-							"expression" : ""
-						}
-,
-						"candicane6" : 						{
-							"expression" : ""
-						}
-,
-						"candicane7" : 						{
-							"expression" : ""
-						}
-,
-						"candicane8" : 						{
-							"expression" : ""
-						}
-
-					}
-,
-					"timestretch" : [ 0 ]
 				}
 
 			}
@@ -10415,6 +10509,22 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-124", 1 ],
+					"order" : 1,
+					"source" : [ "obj-125", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-137", 1 ],
+					"order" : 0,
+					"source" : [ "obj-125", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"color" : [ 0.384313725490196, 0.831372549019608, 0.282352941176471, 1.0 ],
 					"destination" : [ "obj-12", 1 ],
 					"midpoints" : [ 3413.5, 491.000016570091248, 3388.408555507659912, 491.000016570091248, 3388.408555507659912, 461.000016570091248, 3365.5, 461.000016570091248 ],
@@ -10430,6 +10540,13 @@
 					"midpoints" : [ 3413.5, 993.333347380161285, 3383.5, 993.333347380161285 ],
 					"order" : 0,
 					"source" : [ "obj-128", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-125", 0 ],
+					"source" : [ "obj-131", 0 ]
 				}
 
 			}
@@ -10460,6 +10577,20 @@
 					"midpoints" : [ 3129.5, 984.000013291835785, 2901.833417057991028, 984.000013291835785 ],
 					"order" : 2,
 					"source" : [ "obj-133", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-124", 0 ],
+					"source" : [ "obj-134", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-124", 1 ],
+					"source" : [ "obj-136", 0 ]
 				}
 
 			}
@@ -10802,20 +10933,6 @@
 					"midpoints" : [ 1791.5, 760.276442527770996, 1765.414598703384399, 760.276442527770996, 1765.414598703384399, 718.276442527770996, 1746.5, 718.276442527770996 ],
 					"order" : 0,
 					"source" : [ "obj-192", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-7", 1 ],
-					"source" : [ "obj-2", 1 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-7", 0 ],
-					"source" : [ "obj-2", 0 ]
 				}
 
 			}
@@ -12576,6 +12693,20 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-7", 1 ],
+					"source" : [ "obj-8", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-7", 0 ],
+					"source" : [ "obj-8", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"color" : [ 0.384313725490196, 0.831372549019608, 0.282352941176471, 1.0 ],
 					"destination" : [ "obj-80", 1 ],
 					"midpoints" : [ 1553.500046014785767, 851.674825549125671, 1529.575265169143677, 851.674825549125671, 1529.575265169143677, 821.674825549125671, 1509.166710138320923, 821.674825549125671 ],
@@ -12805,7 +12936,7 @@
 
 			}
  ],
-		"originid" : "pat-6",
+		"originid" : "pat-4",
 		"parameters" : 		{
 			"obj-7" : [ "live.gain~", "live.gain~", 0 ],
 			"parameterbanks" : 			{
@@ -12825,10 +12956,10 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "resiloop.aif",
-				"bootpath" : "~/Downloads",
-				"patcherrelativepath" : ".",
-				"type" : "AIFF",
+				"name" : "resiloop.mp3",
+				"bootpath" : "~/Documents/GitHub/ReSi_Rendered-Embodiment-of-Social-Interactions",
+				"patcherrelativepath" : "..",
+				"type" : "Mp3",
 				"implicit" : 1
 			}
 , 			{
