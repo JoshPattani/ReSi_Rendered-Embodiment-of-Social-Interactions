@@ -5,9 +5,9 @@
 secret*
 
 # Add any other files or directories to ignore below
-Max Patches/
+Max-Patches/
 RESI_proto_v1/
-Wireless Communications/
+Wireless-Communications/
 node_modules/
 .vscode/
 
