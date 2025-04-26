@@ -1,6 +1,8 @@
-#include <Arduino.h>
-#include <stdint.h>
-#include <math.h> // For sqrt()
+/*
+ * Basic Captive Portal WiFi connection with OSC Sender for Arduino Nano ESP32
+
+  * This sketch connects to a WiFi network, handles captive portal authentication, and sends OSC messages.
+ */
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
@@ -13,36 +15,25 @@
 // ================================ //
 
 // Secrets for OSC communication
-#define SECRET_IP IPAddress(192, 168, 0, 8) // Target IP address (where your Max/MSP is running)
-#define SECRET_PORT 42069                   // Target port. Must match the port in your Max/MSP patch.
+#define SECRET_IP IPAddress(192, 168, 0, 8) // Target IP address
+#define SECRET_PORT 12345                   // Target port. Must match the port in your OSC application.
+#define SECRET_LOCAL_PORT 12346             // Local port to listen for OSC messages
+#define SECRET_LOCAL_PORT_DISCOVERY 12347   // Local port for OSC discovery messages
 
 // WiFi credentials
 const char *ssid = "UCB Wireless"; // Your WiFi SSID
 
 // Your university login credentials
-const char *identikey = SECRET_IDENTIKEY; // Your university identikey
-const char *password = SECRET_PASS;       // Your university password
+const char *identikey = SECRET_IDENTIKEY; // Your identikey
+const char *password = SECRET_PASS;       // Your login password
 
 // Variables to store portal information
 String captivePortalURL = "";
 String authURL = "";
 String authToken = "";
 
-// Mode selection flags:
-// User identifier (for multi-participant synchronization) Used for tagging data from different users in multi-user scenarios.
-const String USER_A = "A";  // Participant A
-const String USER_B = "B";  // Participant B
-const String USER = USER_A; // Current participant identifier
-
-// Serial communication parameters
-const int BAUDRATE = 115200;
-
 // Debug flag
 const bool DEBUG = true;
-
-//   AnalogMode = true -> analog (oscilloscope) mode; false -> digital interval mode.
-//   CHANNEL: false selects channel A; true selects channel B.
-bool AnalogMode = false; // set to false for digital interval mode (required for HRV)
 
 // --------------------------------------------- //
 
@@ -50,148 +41,26 @@ bool AnalogMode = false; // set to false for digital interval mode (required for
 // ****** MCU Configuration ****** //
 // =============================== //
 
-// Analog pin for PPG sensor input:
-const int analogPin = A0; // Analog input pin for heart rate sensor
-const int digitalPin = 2; // Digital input pin for heart rate sensor
+// Pin configuration
+const int analogPin = A0; // Analog input pin
+const int digitalPin = 2; // Digital input pin
 const int sensorPin = digitalPin;
 
-// --------------------------------------------- //
+// Serial communication parameters
+const int BAUDRATE = 115200;
 
-// =============================== //
-// ****** HRV Data Storage ******* //
-// =============================== //
-
-// --- HRV data storage (digital mode) ---
-// We assume a 2.5‑minute window. At high heart rates, you might see up to 300 beats.
-// For simplicity, we use a fixed-size buffer. Modify as needed.
-#define HRV_BUFFER_SIZE 300
-#define HRV_WINDOW_US 150000000UL // 2.5 minutes in microseconds
-
-// HR metrics
-// Declared in arduino properties. Uncomment if not using IoT Cloud
-float hRCurrentValue; // Current heart rate
-float hRUserMax;      // User-defined maximum heart rate
-float hRUserMin;      // User-defined minimum heart rate
-
-// HRV metrics
-// Declared in arduino properties. Uncomment if not using IoT Cloud
-float rmssd; // Root mean square of successive differences
-float sdann; // Standard deviation of the average NN intervals
-float sdnn;  // Standard deviation of NN intervals
-
-// HRV buffer and index
-unsigned long NN_intervals[HRV_BUFFER_SIZE]; // Buffer to store NN intervals
-volatile unsigned long NN_index = 0;
-volatile unsigned long hrvWindowStart = 0;
-
-// --- Heart Rate Variables ---
-unsigned long lastBeatTime = 0;
-
-// Hrv reset function
-void resetHRV()
-{
-  hRCurrentValue = 0;
-  hRUserMax = -1000000;
-  hRUserMin = 1000000;
-
-  // Reset HRV metrics
-  rmssd = 0;
-  sdann = 0;
-  sdnn = 0;
-
-  for (unsigned long i = 0; i < HRV_BUFFER_SIZE; i++)
-  {
-    NN_intervals[i] = 0;
-  }
-  NN_index = 0;
-  hrvWindowStart = micros();
-}
-
-// --------------------------------------------- //
-
-// =============================== //
-// ****** Heart Rate ****** //
-// =============================== //
-volatile unsigned long lastPulseTime = 0;  // Stores the time of the last beat
-volatile unsigned long pulseIntervals[10]; // Stores last 10 pulse intervals
-volatile uint8_t pulseIndex = 0;           // Rolling index for interval storage
-volatile bool newPulse = false;            // Flag for pulse detection
-bool calibrated = false;                   // Flag for user calibration
-
-// Calculate rolling average BPM
-int calculateBPM()
-{
-  unsigned long sum = 0;
-  for (int i = 0; i < 10; i++)
-  {
-    sum += pulseIntervals[i];
-  }
-  unsigned long avgInterval = sum / 10;
-
-  if (avgInterval > 0)
-  {
-    return 60000 / avgInterval; // Convert ms to BPM
-  }
-
-  return avgInterval;
-}
-
-// Interrupt Service Routine (ISR) for detecting heartbeats
-void pulseISR()
-{
-  unsigned long currentTime = millis();
-  unsigned long interval = currentTime - lastPulseTime;
-
-  if (interval > 300 && interval < 2000)
-  { // Ignore noise (too fast/slow beats)
-    pulseIntervals[pulseIndex] = interval;
-    pulseIndex = (pulseIndex + 1) % 10; // Move to next slot in rolling average array
-
-    // Store the interval in the NN_intervals buffer for HRV analysis
-    // (For simplicity, if the buffer fills, we wrap around.)
-    if (NN_index < HRV_BUFFER_SIZE)
-    {
-      NN_intervals[NN_index++] = interval;
-    }
-    else
-    {
-      // Overwrite oldest data (circular buffer)
-      NN_intervals[NN_index % HRV_BUFFER_SIZE] = interval;
-      NN_index++;
-    }
-
-    newPulse = true; // Notify main loop
-  }
-
-  lastPulseTime = currentTime;
-}
-
+bool newEvent = false; // Flag to indicate a new event (e.g., pulse detected)
 // --------------------------------------------- //
 
 // =============================== //
 // ****** OSC Communication ****** //
 // =============================== //
 
-// OSC message addressing
-// "/pulse" -> Pulse detection message
-// "/hearRate" -> Heart rate message
-// "/rmssd" -> Root mean square of successive differences
-// "/sdann" -> Standard deviation of the average NN intervals
-// "/sdnn" -> Standard deviation of NN intervals
-
-// UDP connection
-WiFiUDP udp;
-bool UDPConnected = false;
-
 // Update intervals
-const unsigned long oscSendInterval = 50;      // 50ms = 20Hz send rate
-const unsigned long cloudSendInterval = 1000;  // 1000ms = 1Hz cloud update rate
-const unsigned long minMaxSendInterval = 1000; // 1000ms = 1Hz send rate
+const unsigned long oscSendInterval = 50; // 50ms = 20Hz send rate
 
 // Timers
 unsigned long lastOscSendTime = 0;
-unsigned long lastCloudSendTime = 0;
-unsigned long lastMinMaxSendTime = 0; // timer for min/max updates
 
 // Send an OSC message
 void sendOSCMessage(const char *address, float value)
@@ -223,16 +92,20 @@ void sendOSCMessage(const char *address, float value)
 
 // --------------------------------------------- //
 
-// =============================== //
-// ****** UDP Connection ****** //
-// =============================== //
+// ================================ //
+// ******** UDP Connection ******** //
+// ================================ //
+
+// UDP connection
+WiFiUDP udp;
+bool UDPConnected = false;
 
 // Udp Client handling
 void connectLocalPort()
 {
   delay(1000);
   Serial.println("Connecting to UDP port...");
-  udp.begin(SECRET_PORT); // Local port to listen on (doesn't matter much for sending)
+  udp.begin(SECRET_LOCAL_PORT_DISCOVERY); // Local port to listen on (only matters for IP discovery, not much for sending)
   UDPConnected = true;
   Serial.println("UDP connection established!");
 }
@@ -601,111 +474,6 @@ void connectToWiFi()
   }
 }
 
-// ============================== //
-// ****** HRV Computation ******* //
-// ============================== //
-
-// --- HRV Computation ---
-// This function computes SDNN, RMSSD, and SDANN from the NN_intervals collected in the current window.
-void computeHRVMetrics()
-{
-  // First, disable interrupts while we copy the buffer.
-  noInterrupts();
-  int n = NN_index;
-  // Create a local copy (in milliseconds) in an array.
-  double intervals_ms[HRV_BUFFER_SIZE];
-  for (int i = 0; i < n && i < HRV_BUFFER_SIZE; i++)
-  {
-    intervals_ms[i] = NN_intervals[i] * 0.001; // convert µs to ms
-  }
-  // Reset the global buffer for the next window.
-  NN_index = 0;
-  // Reset the window start time.
-  hrvWindowStart = micros();
-  interrupts();
-
-  if (n < 2)
-  {
-    Serial.println("Not enough data for HRV computation.");
-    return;
-  }
-
-  // Compute the mean of the NN intervals.
-  double sum = 0;
-  for (int i = 0; i < n; i++)
-  {
-    sum += intervals_ms[i];
-  }
-  double mean = sum / n;
-
-  // Compute SDNN: standard deviation of all NN intervals.
-  double sdnn_sum = 0;
-  for (int i = 0; i < n; i++)
-  {
-    double diff = intervals_ms[i] - mean;
-    sdnn_sum += diff * diff;
-  }
-  double sdnn = sqrt(sdnn_sum / n);
-
-  // Compute RMSSD: square root of the mean squared differences of successive NN intervals.
-  double rmssd_sum = 0;
-  int count_diff = 0;
-  for (int i = 0; i < n - 1; i++)
-  {
-    double diff = intervals_ms[i + 1] - intervals_ms[i];
-    rmssd_sum += diff * diff;
-    count_diff++;
-  }
-  double rmssd = (count_diff > 0) ? sqrt(rmssd_sum / count_diff) : 0;
-
-  // Compute SDANN: approximate by dividing the window into 5 equal segments.
-  int segments = 5;
-  if (n < segments)
-  {
-    Serial.println("Not enough data for SDANN computation.");
-    return;
-  }
-  int segSize = n / segments;
-  double segMeans[5];
-  for (int s = 0; s < segments; s++)
-  {
-    double segSum = 0;
-    for (int i = s * segSize; i < (s + 1) * segSize; i++)
-    {
-      segSum += intervals_ms[i];
-    }
-    segMeans[s] = segSum / segSize;
-  }
-  // Compute standard deviation of the segment means.
-  double segMeanSum = 0;
-  for (int s = 0; s < segments; s++)
-  {
-    segMeanSum += segMeans[s];
-  }
-  double segMeanAvg = segMeanSum / segments;
-  double sdann_sum = 0;
-  for (int s = 0; s < segments; s++)
-  {
-    double diff = segMeans[s] - segMeanAvg;
-    sdann_sum += diff * diff;
-  }
-  double sdann = sqrt(sdann_sum / segments);
-
-  if (DEBUG)
-  {
-    // Print the computed HRV metrics.
-    Serial.print("HRV Metrics: SDNN = ");
-    Serial.print(sdnn);
-    Serial.print(" ms, RMSSD = ");
-    Serial.print(rmssd);
-    Serial.print(" ms, SDANN = ");
-    Serial.print(sdann);
-    Serial.println(" ms");
-  }
-}
-
-// --------------------------------------------- //
-
 // =============================== //
 // ****** Setup and Loop ******* //
 // =============================== //
@@ -715,31 +483,9 @@ void setup()
   Serial.begin(BAUDRATE);
   delay(1500);
 
-  // Initialize PPG sensor
-  // For HRV, we use the digital pin for interval measurement.
-  if (!AnalogMode)
-  {
-    pinMode(sensorPin, INPUT);
-    attachInterrupt(digitalPinToInterrupt(sensorPin), pulseISR, RISING);
-    // Initialize the last beat time.
-    lastBeatTime = micros();
-    // Set the HRV window start time.
-    hrvWindowStart = micros();
+  pinMode(sensorPin, INPUT);
 
-    // Initialize HRV metrics.
-    resetHRV();
-
-    // Initialize array with reasonable values (assume ~60 BPM at start)
-    for (int i = 0; i < 10; i++)
-    {
-      pulseIntervals[i] = 1000;
-    }
-  }
-  else
-  {
-    // Analog mode: set up analog pin
-    pinMode(analogPin, INPUT);
-  }
+  // Your setup code here
 
   connectToWiFi();
 }
@@ -754,60 +500,16 @@ void loop()
 
     return;
   }
-  // Beat intervals are captured in the ISR.
-  // Check if the current window (2.5 minutes) has elapsed.
-  unsigned long now = micros();
-  if (!AnalogMode && (now - hrvWindowStart) >= HRV_WINDOW_US)
+
+  // Your main loop code here
+  // For example, read sensor data and send it via OSC
+
+  if (newEvent)
   {
-    // Compute and output HRV metrics for the current window.
-    computeHRVMetrics();
-    // (The computeHRVMetrics() function resets the window start and clears the buffer.)
+    newEvent = false;
 
-    // Send the HRV metrics through OSC.
-    sendOSCMessage("/rmssd", rmssd);
-    sendOSCMessage("/sdann", sdann);
-    sendOSCMessage("/sdnn", sdnn);
-  }
-  if (newPulse)
-  {
-    newPulse = false;
-
-    // Sending pulse message with static value indicating pulse detection
-    sendOSCMessage("/pulse", 1);
-
-    // Update the cloud variable with the latest BPM value.
-    hRCurrentValue = calculateBPM(); // Assuming calculateBPM() is a function that computes the latest BPM
-
-    if (hRCurrentValue > 0)
-    {
-      Serial.print("Heart Rate: ");
-      Serial.println(hRCurrentValue);
-
-      if (!calibrated)
-      {
-        hRUserMin = hRCurrentValue;
-        hRUserMax = hRCurrentValue;
-        calibrated = true;
-      }
-      else
-      {
-        if (hRUserMax < hRCurrentValue)
-          hRUserMax = hRCurrentValue;
-        if (hRUserMin > hRCurrentValue)
-          hRUserMin = hRCurrentValue;
-      }
-    }
-  }
-
-  // Dynamic min/max updates bases on change in values
-  if (millis() - lastMinMaxSendTime >= minMaxSendInterval)
-  {
-    lastMinMaxSendTime = millis();
-    if (hRCurrentValue > 0)
-    {
-      sendOSCMessage("/minHeartRate", hRUserMin);
-      sendOSCMessage("/maxHeartRate", hRUserMax);
-    }
+    // Sending event message with static value indicating event detection
+    sendOSCMessage("/event", 1);
   }
 
   unsigned long currentTime = millis();
@@ -816,6 +518,6 @@ void loop()
   if (currentTime - lastOscSendTime >= oscSendInterval)
   {
     lastOscSendTime = currentTime;
-    sendOSCMessage("/heartRate", hRCurrentValue);
+    sendOSCMessage("/time", currentTime / 1000.0); // Send time in seconds
   }
 }

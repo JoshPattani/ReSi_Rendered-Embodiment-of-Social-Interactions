@@ -10,6 +10,14 @@ RESI_proto_v1/
 Wireless-Communications/
 node_modules/
 .vscode/
+brainwaveStreaming/mne-lsl/
+MCU_code/Sensors/ArduinoCloud/
+MCU_code/Communication/Captive_Portal_WiFi_Connect/
+MCU_code/Communication/arduinoCloud_API_tester/
+MCU_code/Communication/masterAccess_WiFi_Selector/
+MCU_code/Communication/captive-portal-wifi-connect/
+ref/EEG_MIDI_Ableton_M4L.txt
+src/
 
 # Ignore all .json files
 *.json

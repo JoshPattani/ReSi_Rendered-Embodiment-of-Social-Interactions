@@ -17,7 +17,7 @@
  * 3. Upload to your ESP32
  *
  * Created for RESI (Rendered Embodiment of Social Interactions) 2025
- * Author: Josh P
+ * Author: Josh Pattani
  */
 
 #include <Arduino.h>
@@ -57,7 +57,7 @@ void setup()
   Serial.begin(9600);
   delay(2000); // Give more time for serial to initialize
 
-  Serial.println("Starting RESI WiFi detection and connection (No Cloud Version)...");
+  Serial.println("Starting WiFi detection and connection...");
 
   // Configure device for stability
   WiFiStabilityManager::configureDevice();

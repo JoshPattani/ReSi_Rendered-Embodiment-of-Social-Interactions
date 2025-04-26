@@ -17,7 +17,7 @@
  * 3. Upload to your ESP32
  *
  * Created for RESI (Rendered Embodiment of Social Interactions) 2025
- * Author: Josh P
+ * Author: Josh Pattani
  */
 
 #include <WiFi.h>

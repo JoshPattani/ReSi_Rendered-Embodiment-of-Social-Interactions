@@ -1,7 +1,7 @@
 /*
 📡 RESI: Remote Environmental Sensing - PPG sensor
 
-This script is part of the RESI project, which aims to provide a platform for remote environmental sensing using physiological sensors. This snippet is for the PPG sensor, which measures heart rate and heart rate variability (HRV) using a photoplethysmography sensor.
+This script is part of the RESI project, which aims to provide a platform for remote environmental sensing using physiological sensors. This snippet is for the PPG sensor, which measures heart rate and heart rate variability (HRV) using a photoplethysmography (PPG) sensor.
 
 The current system is supported on the ESP32 platform but can be adapted to other platforms with minimal changes to the network configuration and connection handling functions.
 
@@ -27,7 +27,7 @@ Author: Josh Pattani, 2025
 
 // Debug flag
 // Set to false for production mode (no serial, sends OSC debug messages instead)
-const bool DEBUG = true; // set to true for debugging messages in the serial monitor
+const bool DEBUG = false; // set to true for debugging messages in the serial monitor
 
 // AnalogMode = true -> analog (oscilloscope) mode; false -> digital interval mode.
 bool AnalogMode = false; // set to false for digital interval mode (required for HRV)
@@ -98,8 +98,8 @@ bool initialHrvWindowFilled = false;
 bool HRV_calibrated = false; // Flag for HRV calibration
 
 // Gaussian filter parameters
-const int kernelSize = 3;
-const double sigma = 0.7;
+const int kernelSize = 5; // Size of the Gaussian kernel
+const double sigma = 1;   // Standard deviation for Gaussian filter
 
 // HRV metrics
 float rmssd; // Root mean square of successive differences
@@ -306,13 +306,11 @@ const unsigned long minMaxSendInterval = 1000; // 1000ms = 1Hz send rate
 
 // Timers
 unsigned long lastOscSendTime = 0;
-unsigned long lastCloudSendTime = 0;
 unsigned long lastMinMaxSendTime = 0; // timer for min/max updates
 
 void resetTimers()
 {
   lastOscSendTime = 0;
-  lastCloudSendTime = 0;
   lastMinMaxSendTime = 0;
 }
 // --------------------------------------------- //
@@ -591,8 +589,8 @@ void computeHRVMetricsSliding()
   int count_diff = 0;
   for (int i = 0; i < cleaned_size - 1; i++)
   {
-    double diff = g_cleaned_intervals[i + 1] - g_cleaned_intervals[i]; // Use cleaned intervals for RMSSD
-    // double diff = g_filtered_intervals[i + 1] - g_filtered_intervals[i]; // Use filtered intervals for RMSSD
+    // double diff = g_cleaned_intervals[i + 1] - g_cleaned_intervals[i]; // Use cleaned intervals for RMSSD
+    double diff = g_filtered_intervals[i + 1] - g_filtered_intervals[i]; // Use filtered intervals for RMSSD
     rmssd_sum += diff * diff;
     count_diff++;
   }
