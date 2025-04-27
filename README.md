@@ -82,108 +82,46 @@ graph TD;
 ### 🧬 **Biometric Data Processing**
 
 ```mermaid
-graph TD;
-    flowchart TD
-    A[PPG] -->B{Heart Rate} -->|BPM| C[Basic indicator of autonomic activity];
-    newLines("`Lower Values [40-60]
-    Deep Relaxation/Sleep
-    ---
-    Mid Values [60-80]
-    Resting, Normal State
-    ---
-    Upper Mid Values [80-100]
-    Mild Stress, Cognitive Effort
-    ---
-    High Values [100+]
-    High Stress/Physical Exertion`")
-    C --> newLines
-    A -->D{Heart Rate Variability}-->|RMSSD| E["`Root Mean Square of Successive Differences (RMSSD) reflects short-term parasympathetic activity.
-    ---
-    A great marker for relaxation, stress recovery, and overall autonomic balance`"]
-    nextLines["`Lower Values (< 20 ms):
-    chronic stress, fatigue
-    ---
-    Lower-mid Values (20-40 ms):
-    moderate stress, cognitive effort
-    ---
-    Mid Values (40-60 ms):
-    normal balance, healthy autonomic function
-    ---
-    Upper Mid Values (60-100 ms):
-    relaxed, parasympathetic dominance
-    ---
-    High Values (>100 ms):
-    Deep relaxation, sleep`"]
-    E --> nextLines
-    F[Cyton]-->G{Band Powers}
-    G --> I[Delta]
-    G --> J[Theta]
-    G --> K[Alpha]
-    G --> L[Beta]
-    F --> H{Metrics}
-    H --> N[Focused]
-    H --> O[Relaxed]
-    I --> P[0.5 - 4 Hz
-    ---
-    Linked to deep sleep, unconscious processing]
-    J --> Q[4-8 Hz
-    ---
-    Linked to relaxation, creativity, light sleep]
-    K --> R[8-12 Hz
-    ---
-    Linked to calm focus, meditation, wakeful relaxation]
-    L --> S[12-30 Hz
-    ---
-    Linked to active thinking, problem solving, and stress]
-    deltaLines["`Lower Values (< 10 uV^2):
-    Fully awake, alert.
-    ---
-    Lower-mid Values (10 to 50 uV^2):
-    Light relaxation, drowsiness.
-    ---
-    Mid Values (50 to 200 uV^2):
-    Deep sleep, unconscious processing.
-    ---
-    High Values (>200 uV^2):
-    Very deep sleep, pathological state`"]
-    P --> deltaLines
-    thetaLines["`Lower Values (< 5 uV^2):
-    HIgh Focus, external attention.
-    ---
-    Lower-mid Values (5 to 20 uV^2):
-    Relaxed alertness, creativity, daydreaming.
-    ---
-    Mid Values (20 to 50 uV^2):
-    Drowsiness, reduced attention, inward focus.
-    ---
-    High Values (>50 uV^2):
-    Deep meditation, early sleep stages`"]
-    Q --> thetaLines
-    alphaLines["`Lower Values (< 10 uV^2):
-    High stress, overactive mind
-    ---
-    Lower-mid Values (10-30 uV^2):
-    ---
-    Relaxed but alert, idle
-    Mid Values (30-50 uV^2):
-    Deep relaxation, mediation
-    ---
-    High Values (>50 uV^2):
-    Over-relaxation, drowsiness`"]
-    R --> alphaLines
-    betaLines["`Lower Values (< 5 uV^2):
-    Deep relaxation, disengagement
-    ---
-    Lower-mid Values (5 -15 uV^2):
-    Calm, focus, normal thinking
-    ---
-    Mid Values (15-30 uV^2):
-    Problem-solving, active mental effort
-    ---
-    High Values (>30 uV^2):
-    High stress, anxiety, cognitive overload`"]
-    S --> betaLines
+flowchart TD
+    %% PPG Pathway
+    PPG[PPG Sensor] --> HR[Heart Rate (BPM)]
+    PPG --> HRV[Heart Rate Variability (RMSSD)]
+    HR -->|Low: 40-60| HRNote1[Deep Relaxation/Sleep]
+    HR -->|Mid: 60-80| HRNote2[Resting, Normal State]
+    HR -->|Upper Mid: 80-100| HRNote3[Mild Stress, Cognitive Effort]
+    HR -->|High: 100+| HRNote4[High Stress/Physical Exertion]
+    HRV -->|Low: <20ms| HRVNote1[Chronic Stress, Fatigue]
+    HRV -->|20-40ms| HRVNote2[Moderate Stress, Cognitive Effort]
+    HRV -->|40-60ms| HRVNote3[Normal Balance, Healthy]
+    HRV -->|60-100ms| HRVNote4[Relaxed, Parasympathetic]
+    HRV -->|>100ms| HRVNote5[Deep Relaxation, Sleep]
 
+    %% EEG Pathway
+    EEG[EEG (Cyton)] --> BandPowers[Band Powers]
+    BandPowers --> Delta[Delta (0.5-4Hz)]
+    BandPowers --> Theta[Theta (4-8Hz)]
+    BandPowers --> Alpha[Alpha (8-12Hz)]
+    BandPowers --> Beta[Beta (12-30Hz)]
+
+    Delta -->|Low: <10| DeltaNote1[Fully Awake, Alert]
+    Delta -->|10-50| DeltaNote2[Light Relaxation, Drowsy]
+    Delta -->|50-200| DeltaNote3[Deep Sleep, Unconscious]
+    Delta -->|>200| DeltaNote4[Very Deep Sleep, Pathological]
+
+    Theta -->|Low: <5| ThetaNote1[High Focus, External Attention]
+    Theta -->|5-20| ThetaNote2[Relaxed Alertness, Creativity]
+    Theta -->|20-50| ThetaNote3[Drowsiness, Inward Focus]
+    Theta -->|>50| ThetaNote4[Deep Meditation, Early Sleep]
+
+    Alpha -->|Low: <10| AlphaNote1[High Stress, Overactive Mind]
+    Alpha -->|10-30| AlphaNote2[Relaxed but Alert, Idle]
+    Alpha -->|30-50| AlphaNote3[Deep Relaxation, Meditation]
+    Alpha -->|>50| AlphaNote4[Over-relaxation, Drowsiness]
+
+    Beta -->|Low: <5| BetaNote1[Deep Relaxation, Disengagement]
+    Beta -->|5-15| BetaNote2[Calm, Focus, Normal Thinking]
+    Beta -->|15-30| BetaNote3[Problem-solving, Active Effort]
+    Beta -->|>30| BetaNote4[High Stress, Anxiety, Overload]
 ```
 
 ### 🎨 **Audiovisual Effects Mapping**
