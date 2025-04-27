@@ -1,7 +1,7 @@
 #ifndef WIFI_STABILITY_H
 #define WIFI_STABILITY_H
 
-#include <Arduino.h>
+// #include <Arduino.h> // Include Arduino header if using PlatformIO in VSCode or similar IDEs
 #include <WiFi.h>
 #include <esp_wifi.h>
 #include <esp_task_wdt.h>

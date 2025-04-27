@@ -20,7 +20,7 @@
  * Author: Josh Pattani
  */
 
-#include <Arduino.h>
+// #include <Arduino.h> // Include Arduino header for PlatformIO in VSCode or similar IDEs
 #include "networkTypes.h"
 #include <WiFi.h>
 #include <WiFiUdp.h>
