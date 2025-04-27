@@ -86,10 +86,12 @@ flowchart TD
     %% PPG Pathway
     PPG[PPG Sensor] --> HR[Heart Rate (BPM)]
     PPG --> HRV[Heart Rate Variability (RMSSD)]
+
     HR -->|Low: 40-60| HRNote1[Deep Relaxation/Sleep]
     HR -->|Mid: 60-80| HRNote2[Resting, Normal State]
     HR -->|Upper Mid: 80-100| HRNote3[Mild Stress, Cognitive Effort]
     HR -->|High: 100+| HRNote4[High Stress/Physical Exertion]
+
     HRV -->|Low: <20ms| HRVNote1[Chronic Stress, Fatigue]
     HRV -->|20-40ms| HRVNote2[Moderate Stress, Cognitive Effort]
     HRV -->|40-60ms| HRVNote3[Normal Balance, Healthy]
