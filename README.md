@@ -83,47 +83,89 @@ graph TD;
 
 ```mermaid
 flowchart TD
-    %% PPG Pathway
-    PPG[PPG Sensor] --> HR[Heart Rate (BPM)]
-    PPG --> HRV[Heart Rate Variability (RMSSD)]
+    PPGS(PPG Sensor) --> HR(Heart Rate BPM)
+    PPGS --> HRV(Heart Rate Variability RMSSD)
 
-    HR -->|Low: 40-60| HRNote1[Deep Relaxation/Sleep]
-    HR -->|Mid: 60-80| HRNote2[Resting, Normal State]
-    HR -->|Upper Mid: 80-100| HRNote3[Mild Stress, Cognitive Effort]
-    HR -->|High: 100+| HRNote4[High Stress/Physical Exertion]
+    HR --> HRL(Low: 40-60 BPM)
+    HRL --> HRLN(Deep Relaxation/Sleep)
 
-    HRV -->|Low: <20ms| HRVNote1[Chronic Stress, Fatigue]
-    HRV -->|20-40ms| HRVNote2[Moderate Stress, Cognitive Effort]
-    HRV -->|40-60ms| HRVNote3[Normal Balance, Healthy]
-    HRV -->|60-100ms| HRVNote4[Relaxed, Parasympathetic]
-    HRV -->|>100ms| HRVNote5[Deep Relaxation, Sleep]
+    HR --> HRM(Mid: 60-80 BPM)
+    HRM --> HRMN(Resting, Normal State)
 
-    %% EEG Pathway
-    EEG[EEG (Cyton)] --> BandPowers[Band Powers]
-    BandPowers --> Delta[Delta (0.5-4Hz)]
-    BandPowers --> Theta[Theta (4-8Hz)]
-    BandPowers --> Alpha[Alpha (8-12Hz)]
-    BandPowers --> Beta[Beta (12-30Hz)]
+    HR --> HRUM(Upper Mid: 80-100 BPM)
+    HRUM --> HRUMN(Mild Stress, Cognitive Effort)
 
-    Delta -->|Low: <10| DeltaNote1[Fully Awake, Alert]
-    Delta -->|10-50| DeltaNote2[Light Relaxation, Drowsy]
-    Delta -->|50-200| DeltaNote3[Deep Sleep, Unconscious]
-    Delta -->|>200| DeltaNote4[Very Deep Sleep, Pathological]
+    HR --> HRH(High: 100+ BPM)
+    HRH --> HRHN(High Stress/Physical Exertion)
 
-    Theta -->|Low: <5| ThetaNote1[High Focus, External Attention]
-    Theta -->|5-20| ThetaNote2[Relaxed Alertness, Creativity]
-    Theta -->|20-50| ThetaNote3[Drowsiness, Inward Focus]
-    Theta -->|>50| ThetaNote4[Deep Meditation, Early Sleep]
+    HRV --> HRVL(Low: <20ms)
+    HRVL --> HRVLN(Chronic Stress, Fatigue)
 
-    Alpha -->|Low: <10| AlphaNote1[High Stress, Overactive Mind]
-    Alpha -->|10-30| AlphaNote2[Relaxed but Alert, Idle]
-    Alpha -->|30-50| AlphaNote3[Deep Relaxation, Meditation]
-    Alpha -->|>50| AlphaNote4[Over-relaxation, Drowsiness]
+    HRV --> HRVLM(20-40ms)
+    HRVLM --> HRVLMN(Moderate Stress, Cognitive Effort)
 
-    Beta -->|Low: <5| BetaNote1[Deep Relaxation, Disengagement]
-    Beta -->|5-15| BetaNote2[Calm, Focus, Normal Thinking]
-    Beta -->|15-30| BetaNote3[Problem-solving, Active Effort]
-    Beta -->|>30| BetaNote4[High Stress, Anxiety, Overload]
+    HRV --> HRVM(40-60ms)
+    HRVM --> HRVMN(Normal Balance, Healthy)
+
+    HRV --> HRVUM(60-100ms)
+    HRVUM --> HRVUMN(Relaxed, Parasympathetic)
+
+    HRV --> HRVH(>100ms)
+    HRVH --> HRVHN(Deep Relaxation, Sleep)
+
+    EEG(EEG Cyton) --> BP(Band Powers)
+    BP --> Delta(Delta 0.5-4Hz)
+    BP --> Theta(Theta 4-8Hz)
+    BP --> Alpha(Alpha 8-12Hz)
+    BP --> Beta(Beta 12-30Hz)
+
+    Delta --> DL(Low: <10)
+    DL --> DLN(Fully Awake, Alert)
+
+    Delta --> DML(10-50)
+    DML --> DMLN(Light Relaxation, Drowsy)
+
+    Delta --> DM(50-200)
+    DM --> DMN(Deep Sleep, Unconscious)
+
+    Delta --> DH(>200)
+    DH --> DHN(Very Deep Sleep, Pathological)
+
+    Theta --> TL(Low: <5)
+    TL --> TLN(High Focus, External Attention)
+
+    Theta --> TML(5-20)
+    TML --> TMLN(Relaxed Alertness, Creativity)
+
+    Theta --> TM(20-50)
+    TM --> TMN(Drowsiness, Inward Focus)
+
+    Theta --> TH(>50)
+    TH --> THN(Deep Meditation, Early Sleep)
+
+    Alpha --> AL(Low: <10)
+    AL --> ALN(High Stress, Overactive Mind)
+
+    Alpha --> AML(10-30)
+    AML --> AMLN(Relaxed but Alert, Idle)
+
+    Alpha --> AM(30-50)
+    AM --> AMN(Deep Relaxation, Meditation)
+
+    Alpha --> AH(>50)
+    AH --> AHN(Over-relaxation, Drowsiness)
+
+    Beta --> BL(Low: <5)
+    BL --> BLN(Deep Relaxation, Disengagement)
+
+    Beta --> BML(5-15)
+    BML --> BMLN(Calm, Focus, Normal Thinking)
+
+    Beta --> BM(15-30)
+    BM --> BMN(Problem-solving, Active Effort)
+
+    Beta --> BH(>30)
+    BH --> BHN(High Stress, Anxiety, Overload)
 ```
 
 ### 🎨 **Audiovisual Effects Mapping**
