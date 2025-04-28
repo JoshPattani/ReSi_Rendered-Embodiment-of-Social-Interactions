@@ -166,6 +166,32 @@ flowchart TD
 
     Beta --> BH(>30)
     BH --> BHN(High Stress, Anxiety, Overload)
+
+    %% GSR Pathway
+    GSRS(GSR Sensor) --> MA(Moving Average Filter)
+    MA --> GSR(Skin Conductance)
+
+    GSR --> GSRVL(Very Low: <200)
+    GSRVL --> GSRVLN(Deep Relaxation, Sleep)
+
+    GSR --> GSRL(Low: 200-400)
+    GSRL --> GSRLN(Calm, Low Arousal)
+
+    GSR --> GSRM(Medium: 400-600)
+    GSRM --> GSRMN(Normal Alertness)
+
+    GSR --> GSRH(High: 600-800)
+    GSRH --> GSRHN(Mild Stress/Excitement)
+
+    GSR --> GSRVH(Very High: >800)
+    GSRVH --> GSRVHN(High Stress, Emotional Arousal)
+
+    GSR --> GSRV(Rate of Change)
+    GSRV --> GSRVS(Sudden Spikes)
+    GSRVS --> GSRVSN(Startle Response, Emotional Reaction)
+
+    GSRV --> GSRVF(Gradual Changes)
+    GSRVF --> GSRVFN(Adaptation, Gradual Mood Shifts)
 ```
 
 ### 🎨 **Audiovisual Effects Mapping**
@@ -182,13 +208,13 @@ graph TD;
 
 ## 🎨 Audiovisual Mapping
 
-| Biometric Data                  | Visual Effects               | Audio Effects           |
-| ------------------------------- | ---------------------------- | ----------------------- |
-| EEG Alpha Power (8–12Hz)        | Wave patterns, color shifts  | Reverb, drone harmonics |
-| EEG Beta Power (12–30Hz)        | Rapid particle movement      | Percussion modulations  |
-| HRV (Heart Rate Variability)    | Scene transitions            | Ambient pulses          |
-| GSR Spikes (Emotional Arousal)  | Light bursts, glitch effects | Distorted textures      |
-| Temperature (Emotional Valence) | Color temperature shifts     | Harmonic shifts         |
+| Biometric Data                 | Visual Effects                          | Audio Effects           |
+| ------------------------------ | --------------------------------------- | ----------------------- |
+| EEG Alpha/Beta Ratio           | Wave patterns, color shifts             | Reverb, drone harmonics |
+| EEG Beta/Theta Ratio           | Rapid particle movement, glitch effects | Percussion modulations  |
+| HRV (Heart Rate Variability)   | Scene transitions                       | Ambient pulses          |
+| HR (Heart Rate)                | Light bursts                            | Distorted textures      |
+| GSR Spikes (Emotional Arousal) | Color temperature shifts                | Harmonic shifts         |
 
 ---
 
