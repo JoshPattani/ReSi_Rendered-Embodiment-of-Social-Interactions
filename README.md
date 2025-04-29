@@ -298,15 +298,17 @@ For detailed step-by-step instructions, see the README files in each component f
 
 ## Project Structure
 
+```
 ReSi_Rendered-Embodiment-of-Social-Interactions/
 ├── brainwaveStreaming/
-│ ├── brainflow-duo-lsl/ # Dual OpenBCI streaming
-│ ├── lsl-to-osc-bridge/ # Converts LSL to OSC
-│ └── openbci-brainflow-lsl-master/ # Single board reference
+│   ├── brainflow-duo-lsl/        # Dual OpenBCI streaming
+│   ├── lsl-to-osc-bridge/        # Converts LSL to OSC
+│   └── openbci-brainflow-lsl-master/  # Single board reference
 └── MCU_code/
-└── PlatformIO/
-├── GSR-sensor_Final/ # Galvanic Skin Response sensor
-└── PPG-sensor_Final/ # Photoplethysmography (pulse) sensor
+    └── PlatformIO/
+        ├── GSR-sensor_Final/     # Galvanic Skin Response sensor
+        └── PPG-sensor_Final/     # Photoplethysmography (pulse) sensor
+```
 
 ---
 
